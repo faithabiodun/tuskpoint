@@ -17,6 +17,11 @@ export const metadata: Metadata = {
     "decentralized storage",
   ],
   authors: [{ name: "TuskPoint" }],
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+    apple: ["/icon.svg"],
+  },
   openGraph: {
     title: "TuskPoint — Verifiable LangGraph checkpoints on Walrus",
     description:

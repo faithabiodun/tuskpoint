@@ -12,15 +12,7 @@ export function Hero() {
       <div className="container-page relative pb-10 pt-16 sm:pt-20">
         {/* Centered editorial hero */}
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <p className="eyebrow animate-fade-up">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-teal" />
-            </span>
-            Checkpointer · Walrus · MCP
-          </p>
-
-          <h1 className="display animate-fade-up mt-6 text-cream">
+          <h1 className="display animate-fade-up text-cream">
             Your agent{" "}
             <span className="gradient-text">crashed</span>
             <br />
