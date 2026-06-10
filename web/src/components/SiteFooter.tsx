@@ -1,40 +1,54 @@
 import Link from "next/link";
-import { Logo } from "./Logo";
+import { REPO_URL } from "@/lib/data";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-ink-950/60">
-      <div className="container-page flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2.5">
-          <Logo className="h-7 w-7" />
-          <div>
-            <p className="text-sm font-semibold text-white">
+    <footer className="relative z-10 border-t border-line bg-ink-950/70">
+      <div className="container-page py-14">
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-md">
+            <p className="text-2xl font-extrabold tracking-tight text-cream">
               Tusk<span className="text-teal">Point</span>
             </p>
-            <p className="text-xs text-slate-500">
-              Verifiable LangGraph checkpoints on Walrus.
+            <p className="mt-3 text-sm text-slate-400">
+              Verifiable LangGraph checkpoints on Walrus. Survive a crash, rewind
+              to any moment, and search your run in plain English.
             </p>
           </div>
+
+          <nav className="grid grid-cols-2 gap-x-12 gap-y-2.5 font-mono text-[12px] uppercase tracking-[0.14em] sm:grid-cols-3">
+            <Link href="/#problem" className="link-muted">
+              Problem
+            </Link>
+            <Link href="/#tools" className="link-muted">
+              Tools
+            </Link>
+            <Link href="/#architecture" className="link-muted">
+              How it works
+            </Link>
+            <Link href="/dashboard" className="link-muted">
+              The run
+            </Link>
+            <Link href="/docs" className="link-muted">
+              Docs
+            </Link>
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="link-muted"
+            >
+              GitHub
+            </a>
+          </nav>
         </div>
 
-        <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-          <Link href="/#tools" className="link-muted">
-            Tools
-          </Link>
-          <Link href="/#architecture" className="link-muted">
-            Architecture
-          </Link>
-          <Link href="/dashboard" className="link-muted">
-            Dashboard
-          </Link>
-          <Link href="/docs" className="link-muted">
-            Docs
-          </Link>
-        </nav>
-
-        <p className="text-xs text-slate-600">
-          Built for the Walrus track · UI demo · no secrets stored
-        </p>
+        <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} TuskPoint.</p>
+          <p className="font-mono uppercase tracking-[0.18em]">
+            Walrus · LangGraph · MemWal · MCP
+          </p>
+        </div>
       </div>
     </footer>
   );

@@ -1,21 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { SEARCH_INDEX } from "@/lib/data";
-
-const SUGGESTIONS = [
-  "when did the writer start?",
-  "what sources were gathered?",
-  "the initial input to the graph",
-  "final report state",
-];
+import { SEARCH_RESULTS, SEARCH_QUERY } from "@/lib/data";
 
 type Result = { text: string; distance: number };
 
 export function SearchPanel() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Result[] | null>(null);
+  // Seed with the REAL MemWal recall for the exported query.
+  const [query, setQuery] = useState(SEARCH_QUERY);
+  const [results, setResults] = useState<Result[] | null>(SEARCH_RESULTS);
   const [loading, setLoading] = useState(false);
+  const [note, setNote] = useState<string | null>(
+    `Exact MemWal recall for “${SEARCH_QUERY}”.`,
+  );
 
   function run(q: string) {
     const term = q.trim();
@@ -23,24 +20,35 @@ export function SearchPanel() {
     setQuery(term);
     setLoading(true);
     setResults(null);
-    // Simulate the round-trip to MemWal. Re-rank the baked index by a light
-    // keyword overlap so the demo feels responsive to the query.
+
+    const isExported =
+      term.toLowerCase() === SEARCH_QUERY.toLowerCase();
+
     setTimeout(() => {
-      const words = term.toLowerCase().split(/\s+/).filter(Boolean);
-      const ranked = SEARCH_INDEX.map((r) => {
-        const hay = r.text.toLowerCase();
-        const hits = words.reduce((n, w) => (hay.includes(w) ? n + 1 : n), 0);
-        // lower distance = closer; nudge closer for keyword hits
-        return { ...r, distance: Math.max(0.05, r.distance - hits * 0.06) };
-      }).sort((a, b) => a.distance - b.distance);
-      setResults(ranked);
+      if (isExported) {
+        setResults(SEARCH_RESULTS);
+        setNote(`Exact MemWal recall for “${SEARCH_QUERY}”.`);
+      } else {
+        // For other phrasings, re-rank the same real summaries by light
+        // keyword overlap so the panel stays responsive without inventing data.
+        const words = term.toLowerCase().split(/\s+/).filter(Boolean);
+        const ranked = SEARCH_RESULTS.map((r) => {
+          const hay = r.text.toLowerCase();
+          const hits = words.reduce((n, w) => (hay.includes(w) ? n + 1 : n), 0);
+          return { ...r, distance: Math.max(0.05, r.distance - hits * 0.05) };
+        }).sort((a, b) => a.distance - b.distance);
+        setResults(ranked);
+        setNote(
+          "Re-ranked over the exported summaries (live recall needs the engine).",
+        );
+      }
       setLoading(false);
-    }, 550);
+    }, 480);
   }
 
   return (
-    <div className="card p-6">
-      <h2 className="text-sm font-semibold text-white">
+    <div className="rounded-2xl border border-line bg-ink-900/50 p-6">
+      <h2 className="text-sm font-semibold text-cream">
         Semantic search over history
       </h2>
       <p className="mt-1 text-xs text-slate-500">
@@ -54,7 +62,7 @@ export function SearchPanel() {
           e.preventDefault();
           run(query);
         }}
-        className="mt-5 flex gap-2"
+        className="mt-5 flex flex-col gap-2 sm:flex-row"
       >
         <div className="relative flex-1">
           <svg
@@ -71,7 +79,7 @@ export function SearchPanel() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Ask in plain English…"
-            className="w-full rounded-xl border border-line bg-ink-800/70 py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 outline-none transition focus:border-teal/50 focus:ring-2 focus:ring-teal/20"
+            className="w-full rounded-full border border-line bg-ink-800/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-teal/50 focus:ring-2 focus:ring-teal/20"
           />
         </div>
         <button type="submit" className="btn-primary shrink-0">
@@ -79,17 +87,18 @@ export function SearchPanel() {
         </button>
       </form>
 
-      {/* Suggestions */}
       <div className="mt-3 flex flex-wrap gap-2">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s}
-            onClick={() => run(s)}
-            className="rounded-full border border-line bg-ink-700/40 px-3 py-1 text-xs text-slate-400 transition hover:border-teal/30 hover:text-teal"
-          >
-            {s}
-          </button>
-        ))}
+        {[SEARCH_QUERY, "what sources were gathered?", "the final report"].map(
+          (s) => (
+            <button
+              key={s}
+              onClick={() => run(s)}
+              className="rounded-full border border-line bg-ink-800/40 px-3 py-1 text-xs text-slate-400 transition hover:border-teal/30 hover:text-teal"
+            >
+              {s}
+            </button>
+          ),
+        )}
       </div>
 
       {/* Results */}
@@ -106,30 +115,31 @@ export function SearchPanel() {
         )}
 
         {results && !loading && (
-          <ol className="space-y-2">
-            {results.map((r, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 rounded-xl border border-line bg-ink-950/60 px-4 py-3"
-              >
-                <span
-                  className="mt-0.5 shrink-0 rounded-md border border-teal/30 bg-teal/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-teal"
-                  title="vector distance"
+          <>
+            {note && (
+              <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-slate-500">
+                {note}
+              </p>
+            )}
+            <ol className="space-y-2">
+              {results.map((r, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-3 rounded-xl border border-line bg-ink-950/60 px-4 py-3"
                 >
-                  {r.distance.toFixed(3)}
-                </span>
-                <span className="font-mono text-xs leading-relaxed text-slate-300">
-                  {r.text}
-                </span>
-              </li>
-            ))}
-          </ol>
-        )}
-
-        {!results && !loading && (
-          <p className="rounded-xl border border-dashed border-line px-4 py-8 text-center text-sm text-slate-500">
-            Run a search to see ranked checkpoint summaries.
-          </p>
+                  <span
+                    className="mt-0.5 shrink-0 rounded-md border border-teal/30 bg-teal/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-teal"
+                    title="vector distance"
+                  >
+                    {r.distance.toFixed(3)}
+                  </span>
+                  <span className="text-xs leading-relaxed text-slate-300">
+                    {r.text}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </>
         )}
       </div>
     </div>

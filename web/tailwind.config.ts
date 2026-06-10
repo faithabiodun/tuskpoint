@@ -49,10 +49,24 @@ const config: Config = {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+        float: {
+          "0%,100%": { transform: "translateY(0) rotate(-1deg)" },
+          "50%": { transform: "translateY(-18px) rotate(1.5deg)" },
+        },
+        "marquee": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s ease-out both",
         shimmer: "shimmer 2s infinite",
+        float: "float 6s ease-in-out infinite",
+        marquee: "marquee 32s linear infinite",
+      },
+      fontSize: {
+        display: ["clamp(2.75rem, 8vw, 7rem)", { lineHeight: "0.92", letterSpacing: "-0.03em" }],
+        "display-sm": ["clamp(2rem, 5.5vw, 4rem)", { lineHeight: "0.96", letterSpacing: "-0.025em" }],
       },
     },
   },
