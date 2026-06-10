@@ -12,7 +12,7 @@ its way back to a thread's history.
 Retrieval is ALWAYS exact: ``thread_id`` + ``checkpoint_id`` resolve through the
 manifest to a specific blob. Semantic search lives in a separate layer.
 
-Design note (hackathon scope): unlike the Postgres/SQLite savers, channel values
+Design note: unlike the Postgres/SQLite savers, channel values
 are embedded in the checkpoint envelope rather than stored as separate
 per-channel blobs. This keeps the blob count (and publisher round-trips) low and
 makes exact retrieval a single fetch.
@@ -383,7 +383,7 @@ class WalrusSaver(BaseCheckpointSaver[str]):
             yield tup
 
     # ------------------------------------------------------------------
-    # Async API — thin wrappers; the blob store is sync (hackathon scope)
+    # Async API — thin wrappers; the blob store is sync
     # ------------------------------------------------------------------
 
     async def aput(

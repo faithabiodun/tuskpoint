@@ -47,7 +47,7 @@ export function DiffPanel({ thread }: { thread: Thread }) {
 
   return (
     <div className="card p-6">
-      <h2 className="text-sm font-semibold text-white">Compare checkpoints</h2>
+      <h2 className="text-sm font-semibold text-cream">Compare checkpoints</h2>
       <p className="mt-1 text-xs text-slate-500">
         Exactly what <code className="text-slate-400">checkpoint_diff</code>{" "}
         returns: added, removed, and changed keys.

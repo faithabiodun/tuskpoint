@@ -4,7 +4,7 @@ Verifiable LangGraph agent state on [Walrus](https://docs.wal.app), with
 semantic recall over checkpoint history via
 [MemWal](https://docs.wal.app/walrus-memory).
 
-> **Hackathon project — Walrus track.** Built in small, testable increments.
+Built in small, testable increments.
 
 ## What it is
 

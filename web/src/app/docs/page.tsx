@@ -43,7 +43,7 @@ export default function DocsPage() {
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="block rounded-lg px-3 py-1.5 text-sm text-slate-400 transition hover:bg-ink-700/50 hover:text-white"
+              className="block rounded-lg px-3 py-1.5 text-sm text-slate-400 transition hover:bg-ink-700/50 hover:text-cream"
             >
               {s.label}
             </a>
@@ -52,8 +52,8 @@ export default function DocsPage() {
       </aside>
 
       <article className="max-w-3xl">
-        <p className="pill">Documentation</p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-white">
+        <p className="eyebrow">Documentation</p>
+        <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-cream sm:text-5xl">
           Get started with TuskPoint
         </h1>
         <p className="mt-4 text-lg text-slate-400">
@@ -64,7 +64,7 @@ export default function DocsPage() {
 
         {/* Quick start */}
         <section id="start" className="mt-12 scroll-mt-24">
-          <h2 className="text-2xl font-bold text-white">Quick start</h2>
+          <h2 className="text-2xl font-bold text-cream">Quick start</h2>
           <p className="mt-3 text-slate-400">
             Install the package and copy the env template. All secrets come from
             environment variables — nothing is hard-coded.
@@ -89,7 +89,7 @@ export default function DocsPage() {
 
         {/* Tools */}
         <section id="tools" className="mt-14 scroll-mt-24">
-          <h2 className="text-2xl font-bold text-white">The six tools</h2>
+          <h2 className="text-2xl font-bold text-cream">The six tools</h2>
           <p className="mt-3 text-slate-400">
             Exposed over stdio by{" "}
             <code className="text-slate-300">mcp_server/server.py</code>.
@@ -98,8 +98,10 @@ export default function DocsPage() {
             {TOOLS.map((t) => (
               <div key={t.name} className="card p-5">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">{t.icon}</span>
-                  <code className="font-mono text-sm font-semibold text-teal">
+                  <span className="rounded-md border border-teal/30 bg-teal/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-teal">
+                    {t.glyph}
+                  </span>
+                  <code className="font-mono text-sm font-semibold text-cream">
                     {t.signature}
                   </code>
                 </div>
@@ -114,7 +116,7 @@ export default function DocsPage() {
 
         {/* MCP registration */}
         <section id="mcp" className="mt-14 scroll-mt-24">
-          <h2 className="text-2xl font-bold text-white">Register with a client</h2>
+          <h2 className="text-2xl font-bold text-cream">Register with a client</h2>
           <p className="mt-3 text-slate-400">
             A ready-to-use <code className="text-slate-300">.mcp.json</code> ships
             in the repo. For Claude Desktop, add the equivalent to{" "}
@@ -132,7 +134,7 @@ export default function DocsPage() {
 
         {/* Design */}
         <section id="design" className="mt-14 scroll-mt-24">
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-2xl font-bold text-cream">
             Exact vs. semantic — why both?
           </h2>
           <div className="mt-4 space-y-4 text-slate-400">

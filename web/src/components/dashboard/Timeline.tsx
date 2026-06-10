@@ -21,7 +21,7 @@ export function Timeline({
   return (
     <div className="card p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white">
+        <h2 className="text-sm font-semibold text-cream">
           Checkpoints
           <span className="ml-2 text-slate-500">{thread.checkpoints.length}</span>
         </h2>

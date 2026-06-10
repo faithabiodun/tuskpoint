@@ -31,7 +31,7 @@ export function ToolDirectory() {
 
   return (
     <div>
-      {/* Search + filter bar (the mcpmarket-style control row) */}
+      {/* Search + filter bar */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-md">
           <svg
@@ -48,7 +48,7 @@ export function ToolDirectory() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the six checkpoint tools…"
-            className="w-full rounded-xl border border-line bg-ink-800/70 py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 outline-none transition focus:border-teal/50 focus:ring-2 focus:ring-teal/20"
+            className="w-full rounded-full border border-line bg-ink-900/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-teal/50 focus:ring-2 focus:ring-teal/20"
           />
         </div>
 
@@ -57,10 +57,10 @@ export function ToolDirectory() {
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-full border px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider transition ${
                 category === c
                   ? "border-teal/50 bg-teal/15 text-teal"
-                  : "border-line bg-ink-800/50 text-slate-400 hover:text-slate-200"
+                  : "border-line bg-ink-900/50 text-slate-400 hover:text-cream"
               }`}
             >
               {c}
@@ -70,42 +70,41 @@ export function ToolDirectory() {
       </div>
 
       {/* Card grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((tool) => (
           <article
             key={tool.name}
-            className="group card flex flex-col p-5 transition hover:border-teal/30 hover:shadow-glow"
+            className="group flex flex-col bg-ink-900 p-6 transition hover:bg-ink-800"
           >
-            <div className="mb-3 flex items-start justify-between">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-ink-700/60 text-xl">
-                {tool.icon}
-              </div>
+            <div className="mb-4 flex items-start justify-between">
+              <span className="inline-flex h-9 items-center rounded-lg border border-line bg-ink-950/60 px-2.5 font-mono text-xs font-bold text-teal">
+                {tool.glyph}
+              </span>
               <span
-                className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${CATEGORY_STYLES[tool.category]}`}
+                className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider ${CATEGORY_STYLES[tool.category]}`}
               >
                 {tool.category}
               </span>
             </div>
 
-            <h3 className="font-mono text-sm font-bold text-white">
+            <h3 className="font-mono text-sm font-bold text-cream">
               {tool.name}
             </h3>
             <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">
               {tool.summary}
             </p>
 
-            <div className="mt-4 space-y-1.5 border-t border-line pt-3">
-              <p className="font-mono text-[11px] text-slate-500">
-                <span className="text-slate-600">→ returns</span> {tool.returns}
-              </p>
-            </div>
+            <p className="mt-4 border-t border-line pt-3 font-mono text-[11px] text-slate-500">
+              <span className="text-slate-600">→ </span>
+              {tool.returns}
+            </p>
           </article>
         ))}
       </div>
 
       {filtered.length === 0 && (
         <p className="py-12 text-center text-sm text-slate-500">
-          No tools match “{query}”.
+          No tools match &ldquo;{query}&rdquo;.
         </p>
       )}
     </div>

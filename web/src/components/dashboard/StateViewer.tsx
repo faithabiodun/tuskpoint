@@ -23,7 +23,7 @@ export function StateViewer({
     <div className="card p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold text-white">
+          <h2 className="text-sm font-semibold text-cream">
             Checkpoint state
           </h2>
           <p className="mt-1 font-mono text-xs text-slate-500">
