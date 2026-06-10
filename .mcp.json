@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "tuskpoint-checkpoints": {
+      "command": "python",
+      "args": ["mcp_server/server.py"],
+      "cwd": ".",
+      "env": {
+        "WALRUS_PUBLISHER_URL": "https://publisher.walrus-testnet.walrus.space",
+        "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-testnet.walrus.space",
+        "WALRUS_THREADS_CACHE": ".walrus_threads.json"
+      }
+    }
+  }
+}

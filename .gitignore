@@ -1,0 +1,38 @@
+# Secrets — never commit
+.env
+.walrus_threads.json
+
+# Demo / local runtime artifacts
+demo/.demo_fake_blobs.pkl
+demo/.demo_threads.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Node / Next.js (web/)
+node_modules/
+web/node_modules/
+web/.next/
+web/out/
+web/build/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local tooling
+.claude/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
