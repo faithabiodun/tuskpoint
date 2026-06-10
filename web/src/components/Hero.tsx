@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { CopyButton } from "./CopyButton";
 import { RUN_META } from "@/lib/data";
 
@@ -65,38 +64,55 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right — floating walrus mascot */}
-          <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+          {/* Right — reassurance callout */}
+          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal/20 blur-3xl sm:h-80 sm:w-80"
+              className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-teal/10 blur-3xl"
               aria-hidden
             />
-            <div className="relative animate-float">
-              <Image
-                src="/walrus-hero.png"
-                alt="TuskPoint walrus mascot"
-                width={415}
-                height={900}
-                priority
-                className="mx-auto h-auto w-[200px] drop-shadow-[0_30px_60px_rgba(34,211,238,0.25)] sm:w-[260px] lg:w-[300px]"
+            <div className="animate-fade-up relative overflow-hidden rounded-2xl border border-line bg-ink-950/70 p-7 backdrop-blur sm:p-9">
+              <div
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal/60 to-transparent"
+                aria-hidden
               />
-            </div>
-            {/* Floating data chips */}
-            <div className="pointer-events-none absolute -left-2 top-6 hidden rounded-xl border border-line bg-ink-900/80 px-3 py-2 backdrop-blur sm:block">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                blob id
+              <p className="eyebrow">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-teal" />
+                </span>
+                Crash recovery
               </p>
-              <p className="font-mono text-xs text-teal">
-                {RUN_META.manifestBlobId.slice(0, 10)}…
+
+              <p className="mt-5 text-2xl font-extrabold leading-snug tracking-tight text-cream sm:text-[1.75rem]">
+                Your agent crashed mid-task?
               </p>
-            </div>
-            <div className="pointer-events-none absolute -right-1 bottom-10 hidden rounded-xl border border-line bg-ink-900/80 px-3 py-2 backdrop-blur sm:block">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                checkpoints
+
+              <p className="mt-4 text-base leading-relaxed text-slate-400 sm:text-lg">
+                <span className="font-semibold text-cream">Don&apos;t panic.</span>{" "}
+                TuskPoint saved every step as an immutable{" "}
+                <span className="text-cream">Walrus</span> blob. Resume from
+                exactly where it stopped —{" "}
+                <span className="text-teal">not from the beginning.</span>
               </p>
-              <p className="font-mono text-xs text-cream">
-                {RUN_META.checkpointCount} · on Walrus
-              </p>
+
+              <div className="mt-7 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line">
+                <div className="bg-ink-900 px-4 py-3">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+                    blob id
+                  </p>
+                  <p className="mt-0.5 truncate font-mono text-xs text-teal">
+                    {RUN_META.manifestBlobId.slice(0, 10)}…
+                  </p>
+                </div>
+                <div className="bg-ink-900 px-4 py-3">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+                    checkpoints
+                  </p>
+                  <p className="mt-0.5 font-mono text-xs text-cream">
+                    {RUN_META.checkpointCount} · on Walrus
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
