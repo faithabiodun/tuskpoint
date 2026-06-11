@@ -1,77 +1,81 @@
 {
-  "generatedAt": "2026-06-10T16:47:40.101470+00:00",
+  "generatedAt": "2026-06-11T12:58:26.647839+00:00",
   "topic": "decentralized storage on Walrus",
   "query": "when did the writer start?",
   "thread": {
-    "id": "run-3176",
+    "id": "run-41092",
     "title": "Researcher → Writer",
     "topic": "decentralized storage on Walrus",
-    "manifestBlobId": "WL4TgZgqRE9Pwq1UEclzBJu89KFaaLe75p004_9gJyw",
+    "manifestBlobId": "EU5HmnRbpkiube3a8GAkaCze3a4k6GusMQ6LHTLfszs",
     "checkpoints": [
       {
-        "id": "1f164eb8-ffc0-6d6f-bfff-405ff6739970",
-        "shortId": "1f164eb8…9970",
+        "id": "1f165948-2d14-6777-bfff-b5a957f6722e",
+        "shortId": "1f165948…722e",
         "step": -1,
         "node": "__input__",
-        "blobId": "0Vg_uRhXajaZuI-Qxyoo-zOdc1YcNWc0Zdxwv1BjWEI",
+        "blobId": "BtU7_BtDbJXW7EpLGCMsi6vYWezhYHlKk_VmqBKKtIg",
         "parent": null,
-        "timestamp": "2026-06-10T16:43:52.094840+00:00",
-        "summary": "[thread=run-3176 checkpoint=1f164eb8-ffc0-6d6f-bfff-405ff6739970 step=-1] the graph received its initial input.",
+        "timestamp": "2026-06-11T12:53:14.951442+00:00",
+        "summary": "[thread=run-41092 checkpoint=1f165948-2d14-6777-bfff-b5a957f6722e step=-1] the graph received its initial input.",
         "state": {}
       },
       {
-        "id": "1f164eb8-ffd0-6270-8000-190d98b1658d",
-        "shortId": "1f164eb8…658d",
+        "id": "1f165948-2d24-605a-8000-5ea655af558b",
+        "shortId": "1f165948…558b",
         "step": 0,
         "node": "researcher",
-        "blobId": "KSCBCWVFT3nTFiM5W7zHSoMquXrG9NlkPYJlh6lX4os",
-        "parent": "1f164eb8-ffc0-6d6f-bfff-405ff6739970",
-        "timestamp": "2026-06-10T16:43:52.101104+00:00",
-        "summary": "[thread=run-3176 checkpoint=1f164eb8-ffd0-6270-8000-190d98b1658d step=0] state advanced (step 0); channels now set: topic.",
+        "blobId": "hqAwvsGFRMuZF9Vb6uZJZ49qOb68QjUIl0mAkaGXSP4",
+        "parent": "1f165948-2d14-6777-bfff-b5a957f6722e",
+        "timestamp": "2026-06-11T12:53:14.957804+00:00",
+        "summary": "[thread=run-41092 checkpoint=1f165948-2d24-605a-8000-5ea655af558b step=0] state advanced (step 0); channels now set: topic.",
         "state": {
           "topic": "decentralized storage on Walrus"
         }
       },
       {
-        "id": "1f164eb9-9572-6a06-8001-eb71ea8c5d3f",
-        "shortId": "1f164eb9…5d3f",
+        "id": "1f165948-de75-6944-8001-e44e59a15cec",
+        "shortId": "1f165948…5cec",
         "step": 1,
         "node": "researcher",
-        "blobId": "_lZubRKsmpbV147ZlOjzJo3YsniHPYJXVSulIKGPeTA",
-        "parent": "1f164eb8-ffd0-6270-8000-190d98b1658d",
-        "timestamp": "2026-06-10T16:44:07.791432+00:00",
-        "summary": "[thread=run-3176 checkpoint=1f164eb9-9572-6a06-8001-eb71ea8c5d3f step=1] state advanced (step 1); channels now set: sources, topic.",
+        "blobId": "A4ii0DyP7EXx11gAEWItg-1U5worVYuxg0rq3QQ3jCY",
+        "parent": "1f165948-2d24-605a-8000-5ea655af558b",
+        "timestamp": "2026-06-11T12:53:33.551001+00:00",
+        "summary": "[thread=run-41092 checkpoint=1f165948-de75-6944-8001-e44e59a15cec step=1] state advanced (step 1); channels now set: sources, topic.",
         "state": {
           "topic": "decentralized storage on Walrus",
           "sources": [
-            "Walrus is a decentralized blob storage protocol developed by Mysten Labs for the Sui ecosystem.",
-            "It uses erasure coding to split data into fragments, allowing recovery even if up to two-thirds of storage nodes are unavailable.",
-            "Storage nodes are coordinated and paid through the Sui blockchain, which handles metadata and proofs."
+            "Walrus stores arbitrary data blobs off-chain, with metadata and storage proofs anchored on the Sui blockchain.",
+            "It uses erasure coding to split data into fragments distributed across a decentralized network of storage nodes for redundancy.",
+            "Storage payments and access control are managed via Sui smart contracts, with fees paid in SUI tokens."
           ]
         }
       },
       {
-        "id": "1f164eb9-b898-6843-8002-037a88048b0a",
-        "shortId": "1f164eb9…8b0a",
+        "id": "1f165949-0895-621b-8002-c4a8de29b4be",
+        "shortId": "1f165949…b4be",
         "step": 2,
         "node": "writer",
-        "blobId": "aG4ma9Jk8Pp34iUxPo8u_wLWByY8CNpQCszSX4wFS4Y",
-        "parent": "1f164eb9-9572-6a06-8001-eb71ea8c5d3f",
-        "timestamp": "2026-06-10T16:44:11.476965+00:00",
-        "summary": "[thread=run-3176 checkpoint=1f164eb9-b898-6843-8002-037a88048b0a step=2] state advanced (step 2); channels now set: report, sources, topic.",
+        "blobId": "hnIhsWE941wacFgk8bmBY_G1F3qhyFbmZfX-k0RFCLQ",
+        "parent": "1f165948-de75-6944-8001-e44e59a15cec",
+        "timestamp": "2026-06-11T12:53:37.967949+00:00",
+        "summary": "[thread=run-41092 checkpoint=1f165949-0895-621b-8002-c4a8de29b4be step=2] state advanced (step 2); channels now set: report, sources, topic.",
         "state": {
           "topic": "decentralized storage on Walrus",
           "sources": [
-            "Walrus is a decentralized blob storage protocol developed by Mysten Labs for the Sui ecosystem.",
-            "It uses erasure coding to split data into fragments, allowing recovery even if up to two-thirds of storage nodes are unavailable.",
-            "Storage nodes are coordinated and paid through the Sui blockchain, which handles metadata and proofs."
+            "Walrus stores arbitrary data blobs off-chain, with metadata and storage proofs anchored on the Sui blockchain.",
+            "It uses erasure coding to split data into fragments distributed across a decentralized network of storage nodes for redundancy.",
+            "Storage payments and access control are managed via Sui smart contracts, with fees paid in SUI tokens."
           ],
-          "report": "Walrus is a decentralized blob storage protocol built by Mysten Labs specifically for the Sui ecosystem. It employs erasure coding to fragment data, ensuring full recovery even if up to two-thirds of storage nodes become unavailable. The Sui blockchain coordinates storage nodes and manages payments by handling metadata and verification proofs."
+          "report": "Walrus provides decentralized storage by keeping arbitrary data blobs off-chain while anchoring metadata and storage proofs on the Sui blockchain. To ensure redundancy, it employs erasure coding to split data into fragments and distributes them across a decentralized network of storage nodes. Payments and access control are enforced through Sui smart contracts, with fees settled in SUI tokens."
         }
       }
     ]
   },
   "search": [
+    {
+      "text": "[thread=run-41092 checkpoint=1f165948-2d14-6777-bfff-b5a957f6722e step=-1] the graph received its initial input.",
+      "distance": 0.7749
+    },
     {
       "text": "[thread=run-3176 checkpoint=1f164eb8-ffc0-6d6f-bfff-405ff6739970 step=-1] the graph received its initial input.",
       "distance": 0.7776
@@ -85,13 +89,9 @@
       "distance": 0.7839
     },
     {
-      "text": "[thread=semantic-33112 checkpoint=1f164b8d-6dbd-6a49-8001-04bf11ec36b7 step=1] state advanced (step 1); channels now set: sources, topic.",
-      "distance": 0.8276
-    },
-    {
-      "text": "[thread=run-3176 checkpoint=1f164eb9-9572-6a06-8001-eb71ea8c5d3f step=1] state advanced (step 1); channels now set: sources, topic.",
-      "distance": 0.8297
+      "text": "[thread=run-41092 checkpoint=1f165948-de75-6944-8001-e44e59a15cec step=1] state advanced (step 1); channels now set: sources, topic.",
+      "distance": 0.8228
     }
   ],
-  "report": "Walrus is a decentralized blob storage protocol built by Mysten Labs specifically for the Sui ecosystem. It employs erasure coding to fragment data, ensuring full recovery even if up to two-thirds of storage nodes become unavailable. The Sui blockchain coordinates storage nodes and manages payments by handling metadata and verification proofs."
+  "report": "Walrus provides decentralized storage by keeping arbitrary data blobs off-chain while anchoring metadata and storage proofs on the Sui blockchain. To ensure redundancy, it employs erasure coding to split data into fragments and distributes them across a decentralized network of storage nodes. Payments and access control are enforced through Sui smart contracts, with fees settled in SUI tokens."
 }
