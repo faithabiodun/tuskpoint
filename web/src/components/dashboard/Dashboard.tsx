@@ -24,20 +24,16 @@ export function Dashboard() {
     <div className="container-page py-12 sm:py-16">
       {/* Header */}
       <div className="mb-8 max-w-3xl">
-        <p className="eyebrow">Real run · live Walrus</p>
+        <p className="eyebrow">Real run · live Walrus mainnet</p>
         <h1 className="display-sm mt-5 text-display-sm font-extrabold tracking-tight text-cream">
           The checkpoint run, end to end.
         </h1>
         <p className="mt-5 text-sm text-slate-400 sm:text-base">
           Exactly what the MCP tools return for a real
-          researcher&nbsp;→&nbsp;writer run. Inspect any checkpoint, diff two
-          states, or search the run in plain English. Topic:{" "}
+          researcher&nbsp;→&nbsp;writer run, stored live on Walrus mainnet.
+          Inspect any checkpoint, diff two states, or search the run in plain
+          English. Topic:{" "}
           <span className="text-cream">{RUN_META.topic}</span>.
-        </p>
-        <p className="mt-3 text-xs text-slate-500">
-          This sample run was captured on the Walrus testnet, so its blob links
-          resolve on the testnet aggregator. The engine writes new checkpoints to
-          mainnet by default.
         </p>
       </div>
 
@@ -47,7 +43,7 @@ export function Dashboard() {
           ["thread", thread.id],
           ["checkpoints", String(RUN_META.checkpointCount)],
           ["manifest", `${thread.manifestBlobId.slice(0, 8)}…`],
-          ["backend", "Walrus testnet"],
+          ["backend", "Walrus mainnet"],
         ].map(([k, v]) => (
           <div key={k} className="bg-ink-900 px-4 py-3.5">
             <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">

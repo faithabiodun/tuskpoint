@@ -20,14 +20,10 @@ export function RunEvidence() {
             Every step, an immutable receipt.
           </h2>
           <p className="mt-5 text-slate-400">
-            These are real checkpoints from one researcher&nbsp;→&nbsp;writer run.
-            Each blob ID below resolves to the exact bytes that were written —
-            click any to verify on the public aggregator.
-          </p>
-          <p className="mt-3 text-xs text-slate-500">
-            This sample run was captured on the Walrus testnet, so its blob links
-            resolve on the testnet aggregator. The engine writes new checkpoints
-            to mainnet by default.
+            These are real checkpoints from one researcher&nbsp;→&nbsp;writer run,
+            stored live on Walrus mainnet. Each blob ID below resolves to the exact
+            bytes that were written — click any to verify on the public mainnet
+            aggregator.
           </p>
         </Reveal>
 
