@@ -22,7 +22,7 @@ export function DocsSidebar() {
                     href={link.href}
                     className={`block rounded-lg px-3 py-1.5 text-sm transition ${
                       active
-                        ? "bg-teal/10 font-semibold text-teal"
+                        ? "bg-flame/10 font-semibold text-flame"
                         : "text-slate-400 hover:bg-ink-700/50 hover:text-cream"
                     }`}
                   >

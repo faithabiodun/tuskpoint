@@ -56,19 +56,19 @@ export function StateViewer({
       </dl>
 
       {/* Walrus blob link */}
-      <div className="mt-4 flex items-center gap-2 rounded-xl border border-teal/20 bg-teal/5 px-4 py-3">
-        <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0 text-teal" fill="currentColor">
+      <div className="mt-4 flex items-center gap-2 rounded-xl border border-flame/20 bg-flame/5 px-4 py-3">
+        <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0 text-flame" fill="currentColor">
           <path d="M10 2a4 4 0 0 0-4 4v1H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1V6a4 4 0 0 0-4-4Zm2 5H8V6a2 2 0 1 1 4 0v1Z" />
         </svg>
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] uppercase tracking-wider text-teal/80">
+          <p className="text-[11px] uppercase tracking-wider text-flame/80">
             Walrus blob id
           </p>
           <a
             href={aggregatorUrl}
             target="_blank"
             rel="noreferrer"
-            className="block truncate font-mono text-xs text-slate-300 hover:text-teal"
+            className="block truncate font-mono text-xs text-slate-300 hover:text-flame"
             title={checkpoint.blobId}
           >
             {checkpoint.blobId}

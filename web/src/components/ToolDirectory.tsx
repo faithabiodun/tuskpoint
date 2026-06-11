@@ -7,9 +7,9 @@ const CATEGORIES = ["All", "Write", "Read", "Discover"] as const;
 type Category = (typeof CATEGORIES)[number];
 
 const CATEGORY_STYLES: Record<Tool["category"], string> = {
-  Write: "text-teal border-teal/30 bg-teal/10",
+  Write: "text-flame border-flame/30 bg-flame/10",
   Read: "text-sky-300 border-sky-400/30 bg-sky-400/10",
-  Discover: "text-accent-soft border-accent/30 bg-accent/10",
+  Discover: "text-flame-soft border-accent/30 bg-accent/10",
 };
 
 export function ToolDirectory() {
@@ -48,7 +48,7 @@ export function ToolDirectory() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the eight checkpoint tools…"
-            className="w-full rounded-full border border-line bg-ink-900/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-teal/50 focus:ring-2 focus:ring-teal/20"
+            className="w-full rounded-full border border-line bg-ink-900/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-flame/50 focus:ring-2 focus:ring-flame/20"
           />
         </div>
 
@@ -59,7 +59,7 @@ export function ToolDirectory() {
               onClick={() => setCategory(c)}
               className={`rounded-full border px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider transition ${
                 category === c
-                  ? "border-teal/50 bg-teal/15 text-teal"
+                  ? "border-flame/50 bg-flame/15 text-flame"
                   : "border-line bg-ink-900/50 text-slate-400 hover:text-cream"
               }`}
             >
@@ -77,7 +77,7 @@ export function ToolDirectory() {
             className="group flex flex-col bg-ink-900 p-6 transition hover:bg-ink-800"
           >
             <div className="mb-4 flex items-start justify-between">
-              <span className="inline-flex h-9 items-center rounded-lg border border-line bg-ink-950/60 px-2.5 font-mono text-xs font-bold text-teal">
+              <span className="inline-flex h-9 items-center rounded-lg border border-line bg-ink-950/60 px-2.5 font-mono text-xs font-bold text-flame">
                 {tool.glyph}
               </span>
               <span

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Hero } from "@/components/Hero";
 import { Ticker } from "@/components/Ticker";
+import { Steps } from "@/components/Steps";
 import { ProblemList } from "@/components/ProblemList";
 import { RunEvidence } from "@/components/RunEvidence";
 import { ToolDirectory } from "@/components/ToolDirectory";
@@ -17,6 +18,8 @@ export default function HomePage() {
 
       <ProblemList />
 
+      <Steps />
+
       <RunEvidence />
 
       {/* Tool directory */}
@@ -24,9 +27,12 @@ export default function HomePage() {
         <div className="container-page">
           <Reveal className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl">
-              <p className="eyebrow">MCP server · stdio</p>
+              <p className="eyebrow">
+                <span className="status-dot" />
+                MCP server · stdio
+              </p>
               <h2 className="display-sm mt-5 text-display-sm font-extrabold tracking-tight text-cream">
-                Six tools, any agent can call.
+                Eight tools, any agent can call.
               </h2>
               <p className="mt-5 text-slate-400">
                 A complete checkpoint API over the Model Context Protocol — it
@@ -46,7 +52,7 @@ export default function HomePage() {
 
       <Comparison />
 
-      <Ticker tone="teal" />
+      <Ticker tone="flame" />
 
       {/* CTA */}
       <section className="border-t border-line py-24">

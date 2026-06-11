@@ -41,7 +41,7 @@ const ROWS = [
 
 function Cell({ on }: { on: boolean }) {
   return on ? (
-    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-teal/15 text-teal">
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-flame/15 text-flame">
       <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="currentColor">
         <path
           fillRule="evenodd"
@@ -90,7 +90,7 @@ export function Comparison() {
                 <th className="px-3 py-4 text-center font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">
                   Vector-only
                 </th>
-                <th className="px-3 py-4 text-center font-mono text-[11px] uppercase tracking-[0.14em] text-teal">
+                <th className="px-3 py-4 text-center font-mono text-[11px] uppercase tracking-[0.14em] text-flame">
                   TuskPoint
                 </th>
               </tr>
@@ -113,7 +113,7 @@ export function Comparison() {
                   <td className="px-3 py-4 text-center">
                     <Cell on={r.vectorOnly} />
                   </td>
-                  <td className="bg-teal/[0.04] px-3 py-4 text-center">
+                  <td className="bg-flame/[0.04] px-3 py-4 text-center">
                     <Cell on={true} />
                   </td>
                 </tr>

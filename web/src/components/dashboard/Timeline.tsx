@@ -2,7 +2,7 @@ import type { Thread } from "@/lib/data";
 
 const NODE_COLOR: Record<string, string> = {
   __input__: "bg-slate-500",
-  researcher: "bg-teal",
+  researcher: "bg-flame",
   writer: "bg-accent",
 };
 
@@ -39,7 +39,7 @@ export function Timeline({
               <button
                 onClick={() => onSelect(c.id)}
                 className={`flex w-full items-start gap-3 rounded-xl px-2.5 py-2.5 text-left transition ${
-                  active ? "bg-teal/10" : "hover:bg-ink-700/50"
+                  active ? "bg-flame/10" : "hover:bg-ink-700/50"
                 }`}
               >
                 <span className="relative z-10 mt-0.5 flex h-2.5 w-2.5 shrink-0">
@@ -53,7 +53,7 @@ export function Timeline({
                   <span className="flex items-center justify-between gap-2">
                     <span
                       className={`font-mono text-xs font-semibold ${
-                        active ? "text-teal" : "text-slate-200"
+                        active ? "text-flame" : "text-slate-200"
                       }`}
                     >
                       {c.node}

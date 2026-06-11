@@ -4,8 +4,8 @@ import { THREAD, EVIDENCE_AGGREGATOR } from "@/lib/data";
 
 const NODE_TINT: Record<string, string> = {
   __input__: "text-slate-400 border-slate-500/30 bg-slate-500/10",
-  researcher: "text-teal border-teal/30 bg-teal/10",
-  writer: "text-accent-soft border-accent/30 bg-accent/10",
+  researcher: "text-flame border-flame/30 bg-flame/10",
+  writer: "text-flame-soft border-accent/30 bg-accent/10",
 };
 
 export function RunEvidence() {
@@ -34,7 +34,7 @@ export function RunEvidence() {
         {/* Manifest line */}
         <Reveal className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-line bg-ink-900/60 px-4 py-3 font-mono text-xs">
           <span className="text-slate-500">manifest</span>
-          <span className="truncate text-teal">{THREAD.manifestBlobId}</span>
+          <span className="truncate text-flame">{THREAD.manifestBlobId}</span>
           <span className="text-slate-500">thread</span>
           <span className="text-cream">{THREAD.id}</span>
         </Reveal>
@@ -46,7 +46,7 @@ export function RunEvidence() {
               key={c.id}
               as="article"
               delay={i * 60}
-              className="group flex flex-col rounded-2xl border border-line bg-ink-900/50 p-5 transition hover:border-teal/30"
+              className="group flex flex-col rounded-2xl border border-line bg-ink-900/50 p-5 transition hover:border-flame/30"
             >
               <div className="flex items-center justify-between">
                 <span
@@ -66,7 +66,7 @@ export function RunEvidence() {
               </p>
 
               <div className="mt-4 flex items-center gap-2 border-t border-line pt-3">
-                <span className="flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-teal">
+                <span className="flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-flame">
                   <svg
                     viewBox="0 0 20 20"
                     className="h-3.5 w-3.5"
@@ -83,7 +83,7 @@ export function RunEvidence() {
                   href={`${EVIDENCE_AGGREGATOR}${c.blobId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="ml-auto truncate font-mono text-[11px] text-slate-500 transition hover:text-teal"
+                  className="ml-auto truncate font-mono text-[11px] text-slate-500 transition hover:text-flame"
                   title={c.blobId}
                 >
                   {c.blobId.slice(0, 18)}…

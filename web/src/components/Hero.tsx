@@ -1,33 +1,69 @@
 import Link from "next/link";
 import { CopyButton } from "./CopyButton";
+import { LogoMark } from "./Logo";
 import { RUN_META } from "@/lib/data";
+
+const STATUS = [
+  "walrus.certified",
+  "checkpoint.saved",
+  "manifest.linked",
+  "recall.ready",
+];
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
       {/* Ambient glow + grid */}
-      <div className="pointer-events-none absolute inset-0 bg-radial-teal" />
+      <div className="pointer-events-none absolute inset-0 bg-radial-flame" />
       <div className="pointer-events-none absolute inset-0 bg-grid-faint [background-size:54px_54px] [mask-image:radial-gradient(70%_55%_at_50%_0%,#000,transparent)]" />
 
-      <div className="container-page relative pb-10 pt-16 sm:pt-20">
-        {/* Centered editorial hero */}
+      <div className="container-page relative pb-14 pt-20 sm:pt-28">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <h1 className="display animate-fade-up text-cream">
-            Your agent{" "}
-            <span className="gradient-text">crashed</span>
-            <br />
-            mid-task?
+          {/* Floating mark */}
+          <LogoMark
+            idPrefix="hero"
+            className="h-20 w-20 animate-float drop-shadow-[0_8px_30px_rgba(255,107,44,0.35)]"
+          />
+
+          <p className="animate-fade-up mt-6 eyebrow">
+            <span className="status-dot" />
+            LangGraph checkpoints · on Walrus
+          </p>
+
+          <h1 className="display animate-fade-up mt-6 text-cream">
+            Save agent state to a{" "}
+            <span className="gradient-text">network that remembers.</span>
           </h1>
 
           <p className="animate-fade-up mt-7 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">
-            <span className="font-semibold text-cream">Don&apos;t panic.</span>{" "}
-            TuskPoint saved every step as an immutable{" "}
-            <span className="text-cream">Walrus</span> blob. Resume from exactly
-            where it stopped —{" "}
-            <span className="text-teal">not from the beginning.</span>
+            TuskPoint is a drop-in LangGraph checkpointer. Every step becomes an
+            immutable <span className="text-cream">Walrus</span> blob — so you can
+            survive a crash, rewind to any moment, and{" "}
+            <span className="text-flame">search your run in plain English.</span>
           </p>
 
-          <div className="animate-fade-up mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center">
+          {/* Terminal install — the centerpiece */}
+          <div className="animate-fade-up mt-9 w-full max-w-xl">
+            <div className="overflow-hidden rounded-2xl border border-line bg-ink-950/80 shadow-card backdrop-blur-sm">
+              <div className="flex items-center gap-2 border-b border-line px-4 py-2.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-flame/70" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+                <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500">
+                  install
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3 px-4 py-4">
+                <code className="truncate font-mono text-sm text-slate-200 sm:text-[15px]">
+                  <span className="text-flame">$ </span>
+                  pip install -e &quot;.[all]&quot;
+                </code>
+                <CopyButton text={'pip install -e ".[all]"'} />
+              </div>
+            </div>
+          </div>
+
+          <div className="animate-fade-up mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center">
             <Link href="/dashboard" className="btn-primary w-full sm:w-auto">
               See a real run
               <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor">
@@ -42,38 +78,19 @@ export function Hero() {
             </Link>
           </div>
 
-          {/* Install line */}
-          <div className="animate-fade-up mt-8 flex w-full max-w-md items-center justify-between gap-3 rounded-xl border border-line bg-ink-950/70 px-4 py-3">
-            <code className="truncate font-mono text-sm text-slate-300">
-              <span className="text-slate-600">$ </span>
-              pip install -e &quot;.[all]&quot;
-            </code>
-            <CopyButton text={'pip install -e ".[all]"'} />
-          </div>
-
-          {/* Real-run proof chips */}
-          <div className="animate-fade-up mt-6 grid w-full max-w-md grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line">
-            <div className="bg-ink-900 px-4 py-3 text-left">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                blob id
-              </p>
-              <p className="mt-0.5 truncate font-mono text-xs text-teal">
-                {RUN_META.manifestBlobId.slice(0, 10)}…
-              </p>
-            </div>
-            <div className="bg-ink-900 px-4 py-3 text-left">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                checkpoints
-              </p>
-              <p className="mt-0.5 font-mono text-xs text-cream">
-                {RUN_META.checkpointCount} · on Walrus
-              </p>
-            </div>
+          {/* Status line — aeroplane motif */}
+          <div className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[12px] text-slate-500">
+            {STATUS.map((s) => (
+              <span key={s} className="inline-flex items-center gap-2">
+                <span className="status-dot" />
+                {s}
+              </span>
+            ))}
           </div>
         </div>
 
         {/* Stat strip */}
-        <div className="animate-fade-up mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
+        <div className="animate-fade-up mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
           {[
             { k: "8", v: "MCP tools" },
             { k: "2", v: "storage layers" },
@@ -89,6 +106,19 @@ export function Hero() {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* Real-run proof line */}
+        <div className="animate-fade-up mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-center font-mono text-[11px] text-slate-600">
+          <span>
+            manifest{" "}
+            <span className="text-flame">
+              {RUN_META.manifestBlobId.slice(0, 12)}…
+            </span>
+          </span>
+          <span>
+            {RUN_META.checkpointCount} checkpoints · stored live on Walrus
+          </span>
         </div>
       </div>
     </section>

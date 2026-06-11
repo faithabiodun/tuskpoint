@@ -18,12 +18,12 @@ export function DocsPager() {
       {prev ? (
         <Link
           href={prev.href}
-          className="group rounded-xl border border-line bg-ink-900/50 px-4 py-3 transition hover:border-teal/40"
+          className="group rounded-xl border border-line bg-ink-900/50 px-4 py-3 transition hover:border-flame/40"
         >
           <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
             ← Previous
           </span>
-          <span className="mt-0.5 block text-sm font-semibold text-cream group-hover:text-teal">
+          <span className="mt-0.5 block text-sm font-semibold text-cream group-hover:text-flame">
             {prev.label}
           </span>
         </Link>
@@ -33,12 +33,12 @@ export function DocsPager() {
       {next ? (
         <Link
           href={next.href}
-          className="group rounded-xl border border-line bg-ink-900/50 px-4 py-3 text-right transition hover:border-teal/40"
+          className="group rounded-xl border border-line bg-ink-900/50 px-4 py-3 text-right transition hover:border-flame/40"
         >
           <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
             Next →
           </span>
-          <span className="mt-0.5 block text-sm font-semibold text-cream group-hover:text-teal">
+          <span className="mt-0.5 block text-sm font-semibold text-cream group-hover:text-flame">
             {next.label}
           </span>
         </Link>

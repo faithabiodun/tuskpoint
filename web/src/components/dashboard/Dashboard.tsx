@@ -72,7 +72,7 @@ export function Dashboard() {
             onClick={() => setTab(id)}
             className={`rounded-full px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider transition ${
               tab === id
-                ? "bg-teal text-ink-950"
+                ? "bg-flame text-ink-950"
                 : "text-slate-400 hover:text-cream"
             }`}
           >
