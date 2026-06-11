@@ -4,7 +4,7 @@ import { CopyButton } from "../CopyButton";
 function JsonView({ value }: { value: unknown }) {
   const json = JSON.stringify(value, null, 2);
   return (
-    <pre className="overflow-x-auto rounded-xl border border-line bg-ink-950/80 px-4 py-3.5 text-[13px] leading-relaxed">
+    <pre className="whitespace-pre-wrap break-words rounded-xl border border-line bg-ink-950/80 px-4 py-3.5 text-[13px] leading-relaxed">
       <code className="font-mono text-slate-300">{json}</code>
     </pre>
   );
