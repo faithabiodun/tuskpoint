@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "./Reveal";
-import { THREAD, WALRUS_AGGREGATOR } from "@/lib/data";
+import { THREAD, EVIDENCE_AGGREGATOR } from "@/lib/data";
 
 const NODE_TINT: Record<string, string> = {
   __input__: "text-slate-400 border-slate-500/30 bg-slate-500/10",
@@ -20,10 +20,14 @@ export function RunEvidence() {
             Every step, an immutable receipt.
           </h2>
           <p className="mt-5 text-slate-400">
-            These are real checkpoints from one researcher&nbsp;→&nbsp;writer run,
-            stored live on Walrus mainnet. Each blob ID below resolves to the
-            exact bytes that were written — click any to verify on the public
-            aggregator.
+            These are real checkpoints from one researcher&nbsp;→&nbsp;writer run.
+            Each blob ID below resolves to the exact bytes that were written —
+            click any to verify on the public aggregator.
+          </p>
+          <p className="mt-3 text-xs text-slate-500">
+            This sample run was captured on the Walrus testnet, so its blob links
+            resolve on the testnet aggregator. The engine writes new checkpoints
+            to mainnet by default.
           </p>
         </Reveal>
 
@@ -76,7 +80,7 @@ export function RunEvidence() {
                   verified
                 </span>
                 <a
-                  href={`${WALRUS_AGGREGATOR}${c.blobId}`}
+                  href={`${EVIDENCE_AGGREGATOR}${c.blobId}`}
                   target="_blank"
                   rel="noreferrer"
                   className="ml-auto truncate font-mono text-[11px] text-slate-500 transition hover:text-teal"
