@@ -32,7 +32,7 @@ gh repo create tuskpoint --public --source=. --remote=origin --push
 ```bash
 cd C:/Users/User/Documents/tuskpoint
 git branch -M main
-git remote add origin https://github.com/<your-username>/tuskpoint.git
+git remote add origin https://github.com/faithabiodun/tuskpoint.git
 git push -u origin main
 ```
 

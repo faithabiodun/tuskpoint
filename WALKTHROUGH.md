@@ -83,8 +83,9 @@ something fuzzily, then load it exactly. **Search to discover, ID to retrieve.**
 ### Layer 2: The MCP server (the remote control)
 
 **MCP** (Model Context Protocol) is a standard way for AI apps (like Claude
-Desktop) to call external **tools**. TuskPoint ships a small MCP server exposing
-six tools, so *any* MCP-capable agent can drive the checkpoint store:
+Desktop) to call external **tools**. TuskPoint ships an **all-in-one** MCP
+server exposing eight tools, so *any* MCP-capable agent can drive the whole
+checkpoint store:
 
 | Tool | What it does |
 |------|--------------|
@@ -94,6 +95,11 @@ six tools, so *any* MCP-capable agent can drive the checkpoint store:
 | `checkpoint_resume` | Shortcut: load the latest state to continue work. |
 | `checkpoint_diff` | Show what changed between two checkpoints. |
 | `checkpoint_search` | Plain-English search over checkpoint summaries (MemWal). |
+| `checkpoint_fork` | Branch a checkpoint into a new thread — "git for agent runs." |
+| `verify_trail` | Audit a thread's blob chain end-to-end (tamper-evident). |
+
+There's also a ninth helper, `tuskpoint_info`, which returns ready-to-paste
+config for connecting the server to Claude, Cursor, Windsurf, and others.
 
 > **Why not just use MemWal's own MCP?** MemWal already has an MCP for general
 > "memories." Ours is different on purpose: it manages **checkpoints** — exact,
@@ -135,17 +141,105 @@ summaries — the agent searching its own history.
 
 ---
 
+## 5b. Fork & replay — "git for agent runs"
+
+Sometimes you don't want to *resume* a run — you want to **branch** it. Take a
+known-good checkpoint and try a different path from there, without disturbing the
+original. That's a fork.
+
+```bash
+python demo/run_demo.py --fork
+```
+
+Step by step, this:
+1. Runs the agent to completion on a source thread.
+2. Grabs that thread's latest checkpoint ID.
+3. Calls `saver.fork(source_thread, source_checkpoint, new_thread)`.
+4. Writes the source state as the **genesis checkpoint** of a brand-new thread,
+   recording a `forked_from` lineage like `fork-src-123:1f1657a1-…`.
+
+The original thread is never touched. You now have two independent runs that
+share a common ancestor — the manifest describes a *tree*, not just a line. Any
+connected agent can do the same with the `checkpoint_fork` MCP tool.
+
+## 5c. Audit trail — prove the run wasn't tampered with
+
+Because every checkpoint's blob ID is derived from its content, you can re-fetch
+the whole chain and prove nothing changed underneath you.
+
+```bash
+python demo/run_demo.py --audit
+```
+
+Step by step, this:
+1. Runs the agent to completion.
+2. Calls `saver.verify_trail(thread_id)`, which walks every checkpoint in order.
+3. Re-fetches each blob from Walrus and confirms it still unpacks cleanly.
+4. Prints a per-checkpoint `OK`/`BAD` line and an overall verdict.
+
+`ok` is `true` only when every blob verifies. A single corrupt or missing blob
+flips it to `false` and flags the offending step. Agents call this via the
+`verify_trail` MCP tool — for compliance, debugging, or before resuming from
+another agent's work.
+
+---
+
+## 5d. Connecting the MCP server to your client
+
+The server runs over **stdio**. Start it directly with
+`python mcp_server/server.py`, or register it with a client. The config block is
+the same everywhere — only the file location changes:
+
+```json
+{
+  "mcpServers": {
+    "tuskpoint": {
+      "command": "python",
+      "args": ["mcp_server/server.py"],
+      "cwd": "/absolute/path/to/tuskpoint"
+    }
+  }
+}
+```
+
+- **Claude Desktop** → add it to `claude_desktop_config.json`, then restart.
+- **Claude Code** → `claude mcp add tuskpoint -- python mcp_server/server.py`
+- **Cursor** → put the block in `.cursor/mcp.json`.
+- **Windsurf** → put it in `~/.codeium/windsurf/mcp_config.json`.
+
+Or just call the `tuskpoint_info` tool and let the agent emit the exact snippet.
+Full instructions live at https://tuskpoint.vercel.app/docs/clients.
+
+---
+
+## 5e. Mainnet vs. testnet (where the blobs actually live)
+
+TuskPoint defaults to Walrus **mainnet**. Two facts to remember:
+
+- **Reads are free and public.** Any mainnet aggregator serves a blob by ID to
+  anyone. Nothing to configure.
+- **Writes cost money.** Storing a blob on mainnet costs SUI (gas) + WAL
+  (storage), so there is *no* free public publisher. To `checkpoint_save` or
+  `checkpoint_fork` you use a community publisher, run your own, or use the
+  upload relay with a funded key (see `.env.example`).
+
+To experiment for free, point both `WALRUS_AGGREGATOR_URL` and
+`WALRUS_PUBLISHER_URL` at the testnet endpoints — they take precedence over the
+built-in defaults.
+
+---
+
 ## 6. How the code is organized
 
 ```
 src/langgraph_checkpoint_walrus/   ← the engine (Layer 1)
   walrus_client.py    Talks to Walrus over HTTP (PUT/GET). Has a fake in-memory
                       version for fast tests, and the real testnet client.
-  manifest.py         The per-conversation index (id → blob_id, parent, time, summary).
-  saver.py            WalrusSaver: serialize → gzip → store; load by ID; the glue.
+  manifest.py         The per-conversation index (id → blob_id, parent, time, summary, forked_from).
+  saver.py            WalrusSaver: serialize → gzip → store; load by ID; fork(); verify_trail().
   memwal_layer.py     Writes summaries to MemWal and runs the English search.
 
-mcp_server/server.py  ← the remote control (Layer 2): the six tools over stdio.
+mcp_server/server.py  ← the remote control (Layer 2): the eight tools + tuskpoint_info over stdio.
 
 demo/                 ← the researcher→writer agent and the crash/resume demos.
 scripts/              ← tiny standalone "does this even work?" proofs.

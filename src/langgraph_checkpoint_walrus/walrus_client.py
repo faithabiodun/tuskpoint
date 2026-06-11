@@ -76,18 +76,22 @@ class InMemoryWalrusClient:
         return len(self._blobs)
 
 
-# Public testnet fallbacks. Env vars (WALRUS_PUBLISHER_URL / WALRUS_AGGREGATOR_URL)
-# take precedence; these provide one retry's worth of resilience against flaky
-# public nodes.
+# Walrus **mainnet** endpoints. Env vars (WALRUS_PUBLISHER_URL /
+# WALRUS_AGGREGATOR_URL) take precedence; the lists below provide one retry's
+# worth of resilience against a flaky public node.
+#
+# Reads are public and free: any mainnet aggregator serves a content-addressed
+# blob to anyone. Writes are NOT free — mainnet has no public, unauthenticated
+# publisher, because storing a blob costs SUI (gas) + WAL (storage). The default
+# below points at a community publisher (Staketab); for production you run your
+# own publisher or use the upload relay with a funded key. See .env.example.
 DEFAULT_PUBLISHERS = [
-    "https://publisher.walrus-testnet.walrus.space",
-    "https://walrus-testnet-publisher.nodes.guru",
-    "https://walrus-testnet-publisher.stakely.io",
+    "https://walrus-mainnet-publisher-1.staketab.org:443",
 ]
 DEFAULT_AGGREGATORS = [
-    "https://aggregator.walrus-testnet.walrus.space",
-    "https://walrus-testnet-aggregator.nodes.guru",
-    "https://walrus-testnet-aggregator.stakely.io",
+    "https://aggregator.walrus-mainnet.walrus.space",
+    "https://walrus.globalstake.io",
+    "https://walrus-mainnet-aggregator.nodes.guru",
 ]
 
 

@@ -4,7 +4,7 @@ Two backends:
 
 * **fake** (default): in-memory Walrus stand-in. For the two-part flow, the
   fake's blobs are pickled between runs so a separate process can restore them.
-* **--real**: the live Walrus testnet HTTP client. Here the two-part flow needs
+* **--real**: the live Walrus HTTP client (mainnet by default). Here the two-part flow needs
   no pickling at all — checkpoints live on Walrus and the latest manifest blob
   ID is cached in the threads file, so ``--part2`` in a genuinely fresh process
   rehydrates state straight from the network. This is the real "survive a
@@ -20,6 +20,13 @@ Usage:
 
     python demo/run_demo.py --semantic       # REAL Walrus + MemWal: run, then ask
                                              # "when did the writer start?"
+
+    python demo/run_demo.py --fork           # fake: run, then branch a checkpoint
+                                             # into a new thread ("git for runs")
+    python demo/run_demo.py --audit          # fake: run, then verify_trail the
+                                             # thread's blob chain end-to-end
+
+    Add --real to --fork / --audit to run them against live Walrus.
 """
 
 from __future__ import annotations
@@ -80,7 +87,7 @@ def run_part1(real: bool) -> None:
     saver = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
     agent = build_agent(saver, interrupt_before_writer=True)
 
-    backend = "REAL Walrus testnet" if real else "in-memory fake"
+    backend = "REAL Walrus network" if real else "in-memory fake"
     print(f"[part1] Backend: {backend}")
     print(f"[part1] Starting agent on topic: {TOPIC!r}")
     agent.invoke({"topic": TOPIC}, _config())
@@ -107,7 +114,7 @@ def run_part2(real: bool) -> None:
     saver = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
     agent = build_agent(saver, interrupt_before_writer=True)
 
-    backend = "REAL Walrus testnet" if real else "in-memory fake"
+    backend = "REAL Walrus network" if real else "in-memory fake"
     print(f"[part2] Backend: {backend}")
     snap = agent.get_state(_config())
     print(f"[part2] Restored. Resuming; next node: {snap.next}")
@@ -127,7 +134,7 @@ def run_full(real: bool) -> None:
     saver = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
     agent = build_agent(saver, interrupt_before_writer=True)
 
-    backend = "REAL Walrus testnet" if real else "in-memory fake"
+    backend = "REAL Walrus network" if real else "in-memory fake"
     print(f"[full] Backend: {backend}")
     print(f"[full] Starting agent on topic: {TOPIC!r}")
     agent.invoke({"topic": TOPIC}, _config())
@@ -179,12 +186,81 @@ def run_semantic() -> None:
     print("[semantic] Semantic self-search SUCCESS.\n")
 
 
+def run_fork(real: bool) -> None:
+    """Run the agent, then fork its latest checkpoint into a new thread.
+
+    This is the "git branch for agent runs" proof: we take a known-good
+    checkpoint and create a brand-new thread from it, leaving the original
+    untouched. The fork records a ``forked_from`` lineage so the manifest can
+    describe a tree of runs.
+    """
+    client = _make_client(real)
+    saver = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
+    agent = build_agent(saver)  # run to completion
+
+    backend = "REAL Walrus network" if real else "in-memory fake"
+    source_thread = f"fork-src-{os.getpid()}"
+    config = {"configurable": {"thread_id": source_thread}}
+    print(f"[fork] Backend: {backend}")
+    print(f"[fork] Running source agent (thread={source_thread})...")
+    agent.invoke({"topic": TOPIC}, config)
+
+    snap = agent.get_state(config)
+    source_cp = snap.config["configurable"]["checkpoint_id"]
+    print(f"[fork] Source checkpoint: {source_cp}")
+
+    new_thread = f"fork-alt-{os.getpid()}"
+    result = saver.fork(
+        source_thread_id=source_thread,
+        source_checkpoint_id=source_cp,
+        new_thread_id=new_thread,
+    )
+    print(f"[fork] Forked into new thread: {result['new_thread_id']}")
+    print(f"[fork]   new checkpoint: {result['checkpoint_id']}")
+    print(f"[fork]   blob id:        {result['blob_id']}")
+    print(f"[fork]   forked_from:    {result['forked_from']}")
+    print("[fork] Fork SUCCESS — original thread is untouched.\n")
+
+
+def run_audit(real: bool) -> None:
+    """Run the agent, then verify every checkpoint blob in the thread.
+
+    ``verify_trail`` re-fetches each content-addressed blob in order. Because
+    blob IDs are derived from content, a clean pass proves the run is intact and
+    tamper-evident.
+    """
+    client = _make_client(real)
+    saver = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
+    agent = build_agent(saver)
+
+    backend = "REAL Walrus network" if real else "in-memory fake"
+    thread_id = f"audit-{os.getpid()}"
+    config = {"configurable": {"thread_id": thread_id}}
+    print(f"[audit] Backend: {backend}")
+    print(f"[audit] Running agent (thread={thread_id})...")
+    agent.invoke({"topic": TOPIC}, config)
+
+    report = saver.verify_trail(thread_id)
+    print(
+        f"[audit] Verified {report['verified']}/{report['checkpoint_count']} "
+        f"checkpoints. ok={report['ok']}"
+    )
+    for step in report["steps"]:
+        mark = "OK " if step["ok"] else "BAD"
+        print(f"   [{mark}] {step['checkpoint_id']}  blob={step['blob_id']}")
+    print("[audit] Audit trail SUCCESS.\n" if report["ok"] else "[audit] FAILED.\n")
+
+
 def main() -> int:
     """Dispatch based on flags. ``--real`` selects the live Walrus backend."""
     args = sys.argv[1:]
     real = "--real" in args
     if "--semantic" in args:
         run_semantic()
+    elif "--fork" in args:
+        run_fork(real)
+    elif "--audit" in args:
+        run_audit(real)
     elif "--part1" in args:
         run_part1(real)
     elif "--part2" in args:

@@ -23,6 +23,8 @@ from __future__ import annotations
 import os
 import json
 import gzip
+import time
+import uuid
 import base64
 import threading
 from typing import Any, Iterator, AsyncIterator, Sequence
@@ -440,6 +442,162 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         if self.memwal_layer is None:
             return []
         return self.memwal_layer.search_history(query, limit=limit)
+
+    # ------------------------------------------------------------------
+    # Forking — "git branch" for agent runs
+    # ------------------------------------------------------------------
+
+    def fork(
+        self,
+        source_thread_id: str,
+        source_checkpoint_id: str,
+        new_thread_id: str,
+    ) -> dict[str, Any]:
+        """Branch a new thread from an existing checkpoint.
+
+        Loads the exact ``source_checkpoint_id`` from ``source_thread_id`` and
+        writes its state as the genesis checkpoint of ``new_thread_id``. The new
+        thread starts byte-identical to the fork point; running an agent on it
+        explores a different path while the original line stays untouched. The
+        new genesis entry records ``forked_from`` so the manifest describes a
+        tree of runs, not just a single line.
+
+        Args:
+            source_thread_id: Thread that holds the checkpoint to branch from.
+            source_checkpoint_id: Exact checkpoint to branch from.
+            new_thread_id: Thread ID for the new branch. Must not already exist.
+
+        Returns:
+            ``{"source", "new_thread_id", "checkpoint_id", "blob_id",
+            "forked_from"}``.
+
+        Raises:
+            KeyError: if the source checkpoint cannot be found.
+            ValueError: if ``new_thread_id`` already has checkpoints.
+        """
+        source_config: RunnableConfig = {
+            "configurable": {
+                "thread_id": source_thread_id,
+                "checkpoint_id": source_checkpoint_id,
+            }
+        }
+        source = self.get_tuple(source_config)
+        if source is None:
+            raise KeyError(
+                f"checkpoint not found: {source_thread_id}:{source_checkpoint_id}"
+            )
+
+        existing = self._load_manifest(new_thread_id)
+        if existing.entries:
+            raise ValueError(
+                f"thread already exists: {new_thread_id} "
+                f"({len(existing.entries)} checkpoint(s)). Fork into a fresh id."
+            )
+
+        forked_from = f"{source_thread_id}:{source_checkpoint_id}"
+        new_checkpoint_id = str(uuid.uuid1())
+        ts = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
+
+        # Genesis checkpoint for the new thread: same state, new identity, no
+        # parent (the lineage to the source is captured by ``forked_from``).
+        checkpoint: Checkpoint = {
+            **source.checkpoint,
+            "id": new_checkpoint_id,
+            "ts": ts,
+        }
+        metadata: CheckpointMetadata = {
+            **(source.metadata or {}),
+            "source": "fork",
+            "forked_from": forked_from,
+        }
+
+        blob = self._pack_envelope(checkpoint, metadata, None, "")
+        blob_id = self.client.store(blob)
+
+        summary = ""
+        if self.memwal_layer is not None:
+            summary = self.memwal_layer.summarize_and_remember(
+                thread_id=new_thread_id,
+                checkpoint_id=new_checkpoint_id,
+                checkpoint=checkpoint,
+                metadata=metadata,
+            )
+
+        manifest = self._load_manifest(new_thread_id)
+        manifest.add(
+            new_checkpoint_id,
+            CheckpointEntry(
+                blob_id=blob_id,
+                parent_checkpoint_id=None,
+                timestamp=ts,
+                summary=summary,
+                checkpoint_ns="",
+                forked_from=forked_from,
+            ),
+        )
+        self._store_manifest(manifest)
+
+        return {
+            "source": forked_from,
+            "new_thread_id": new_thread_id,
+            "checkpoint_id": new_checkpoint_id,
+            "blob_id": blob_id,
+            "forked_from": forked_from,
+        }
+
+    # ------------------------------------------------------------------
+    # Verifiable audit trail — "flight recorder" for agent runs
+    # ------------------------------------------------------------------
+
+    def verify_trail(self, thread_id: str) -> dict[str, Any]:
+        """Walk a thread's blob chain and confirm every checkpoint is intact.
+
+        For each checkpoint in the manifest (oldest first) this fetches the blob
+        from Walrus and confirms it is present and decodes cleanly. Because
+        Walrus blobs are content-addressed and immutable, a blob that still
+        fetches and unpacks under its recorded ID has not been altered — the
+        ordered chain is a tamper-evident record of what the agent did.
+
+        Args:
+            thread_id: The thread whose chain to verify.
+
+        Returns:
+            ``{"thread_id", "ok", "checkpoint_count", "verified", "steps"[]}``
+            where each step is ``{"checkpoint_id", "blob_id", "parent",
+            "forked_from", "ok", "error"}``.
+        """
+        manifest = self._load_manifest(thread_id)
+        steps: list[dict[str, Any]] = []
+        verified = 0
+
+        for cid in manifest.ordered_ids(newest_first=False):
+            entry = manifest.get(cid)
+            assert entry is not None  # ids come from the manifest itself
+            step: dict[str, Any] = {
+                "checkpoint_id": cid,
+                "blob_id": entry.blob_id,
+                "parent": entry.parent_checkpoint_id,
+                "forked_from": entry.forked_from,
+                "ok": False,
+                "error": None,
+            }
+            try:
+                raw = self.client.read(entry.blob_id)
+                self._unpack_envelope(raw)  # raises if corrupt/altered
+                step["ok"] = True
+                verified += 1
+            except Exception as exc:  # noqa: BLE001 - report, don't crash
+                step["error"] = str(exc)
+            steps.append(step)
+
+        total = len(steps)
+        return {
+            "thread_id": thread_id,
+            "ok": total > 0 and verified == total,
+            "checkpoint_count": total,
+            "verified": verified,
+            "steps": steps,
+        }
 
     def get_next_version(self, current: str | None, channel: None = None) -> str:
         """Return the next monotonic channel version string.
