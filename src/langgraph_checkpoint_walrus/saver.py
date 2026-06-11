@@ -509,6 +509,9 @@ class WalrusSaver(BaseCheckpointSaver[str]):
             **(source.metadata or {}),
             "source": "fork",
             "forked_from": forked_from,
+            # This is the genesis of a new thread, so its step resets to 0; the
+            # link back to the source line is carried by ``forked_from``.
+            "step": 0,
         }
 
         blob = self._pack_envelope(checkpoint, metadata, None, "")
