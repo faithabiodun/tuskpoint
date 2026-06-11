@@ -1,10 +1,10 @@
-"""Integration tests against the real Walrus testnet (marked ``integration``).
+"""Integration tests against the real Walrus network (marked ``integration``).
 
 Run explicitly with:
 
     pytest -m integration
 
-These hit public testnet publishers/aggregators and are skipped by the default
+These hit live Walrus publishers/aggregators and are skipped by the default
 suite. They prove the real blob round-trip and a full WalrusSaver persist/resume
 across independent saver instances (a stand-in for separate processes).
 """

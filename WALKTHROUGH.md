@@ -234,7 +234,7 @@ built-in defaults.
 ```
 src/langgraph_checkpoint_walrus/   ← the engine (Layer 1)
   walrus_client.py    Talks to Walrus over HTTP (PUT/GET). Has a fake in-memory
-                      version for fast tests, and the real testnet client.
+                      version for fast tests, and the real mainnet client.
   manifest.py         The per-conversation index (id → blob_id, parent, time, summary, forked_from).
   saver.py            WalrusSaver: serialize → gzip → store; load by ID; fork(); verify_trail().
   memwal_layer.py     Writes summaries to MemWal and runs the English search.

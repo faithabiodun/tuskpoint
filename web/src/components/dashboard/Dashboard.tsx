@@ -24,7 +24,7 @@ export function Dashboard() {
     <div className="container-page py-12 sm:py-16">
       {/* Header */}
       <div className="mb-8 max-w-3xl">
-        <p className="eyebrow">Real run · live Walrus testnet</p>
+        <p className="eyebrow">Real run · live Walrus mainnet</p>
         <h1 className="display-sm mt-5 text-display-sm font-extrabold tracking-tight text-cream">
           The checkpoint run, end to end.
         </h1>
@@ -42,7 +42,7 @@ export function Dashboard() {
           ["thread", thread.id],
           ["checkpoints", String(RUN_META.checkpointCount)],
           ["manifest", `${thread.manifestBlobId.slice(0, 8)}…`],
-          ["backend", "Walrus testnet"],
+          ["backend", "Walrus mainnet"],
         ].map(([k, v]) => (
           <div key={k} className="bg-ink-900 px-4 py-3.5">
             <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
