@@ -16,6 +16,15 @@ const config: Config = {
           600: "#1e2942",
           500: "#2a3754",
         },
+        // Primary brand accent — the warm tusk/checkpoint glow from the logo.
+        flame: {
+          DEFAULT: "#ff6b2c",
+          soft: "#ff8a52",
+          bright: "#ff7a3c",
+          deep: "#e8390a",
+          ember: "#ffd9b0",
+        },
+        // Secondary accent — retained for subtle contrast accents only.
         teal: {
           DEFAULT: "#22d3ee",
           soft: "#67e8f9",
@@ -32,12 +41,14 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(34,211,238,0.15), 0 8px 40px -8px rgba(34,211,238,0.25)",
+        glow: "0 0 0 1px rgba(255,107,44,0.18), 0 10px 44px -10px rgba(255,107,44,0.35)",
         card: "0 1px 0 0 rgba(255,255,255,0.04) inset, 0 8px 30px -12px rgba(0,0,0,0.6)",
       },
       backgroundImage: {
         "grid-faint":
           "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)",
+        "radial-flame":
+          "radial-gradient(60% 50% at 50% 0%, rgba(255,107,44,0.20) 0%, rgba(232,57,10,0.06) 42%, transparent 76%)",
         "radial-teal":
           "radial-gradient(60% 50% at 50% 0%, rgba(34,211,238,0.18) 0%, rgba(124,92,255,0.06) 40%, transparent 75%)",
       },

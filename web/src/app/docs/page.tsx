@@ -103,9 +103,9 @@ export default function DocsOverviewPage() {
           <Link
             key={c.href}
             href={c.href}
-            className="group card p-5 transition hover:border-teal/40"
+            className="group card p-5 transition hover:border-flame/40"
           >
-            <p className="font-semibold text-cream group-hover:text-teal">
+            <p className="font-semibold text-cream group-hover:text-flame">
               {c.title}
             </p>
             <p className="mt-1.5 text-sm text-slate-400">{c.body}</p>

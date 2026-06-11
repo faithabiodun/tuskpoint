@@ -79,7 +79,7 @@ export function SearchPanel() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Ask in plain English…"
-            className="w-full rounded-full border border-line bg-ink-800/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-teal/50 focus:ring-2 focus:ring-teal/20"
+            className="w-full rounded-full border border-line bg-ink-800/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-flame/50 focus:ring-2 focus:ring-flame/20"
           />
         </div>
         <button type="submit" className="btn-primary shrink-0">
@@ -93,7 +93,7 @@ export function SearchPanel() {
             <button
               key={s}
               onClick={() => run(s)}
-              className="rounded-full border border-line bg-ink-800/40 px-3 py-1 text-xs text-slate-400 transition hover:border-teal/30 hover:text-teal"
+              className="rounded-full border border-line bg-ink-800/40 px-3 py-1 text-xs text-slate-400 transition hover:border-flame/30 hover:text-flame"
             >
               {s}
             </button>
@@ -128,7 +128,7 @@ export function SearchPanel() {
                   className="flex items-start gap-3 rounded-xl border border-line bg-ink-950/60 px-4 py-3"
                 >
                   <span
-                    className="mt-0.5 shrink-0 rounded-md border border-teal/30 bg-teal/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-teal"
+                    className="mt-0.5 shrink-0 rounded-md border border-flame/30 bg-flame/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-flame"
                     title="vector distance"
                   >
                     {r.distance.toFixed(3)}

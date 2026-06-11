@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { REPO_URL } from "@/lib/data";
+import { LogoMark } from "./Logo";
 
 export function SiteFooter() {
   return (
@@ -7,10 +8,13 @@ export function SiteFooter() {
       <div className="container-page py-14">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-md">
-            <p className="text-2xl font-extrabold tracking-tight text-cream">
-              Tusk<span className="text-teal">Point</span>
-            </p>
-            <p className="mt-3 text-sm text-slate-400">
+            <div className="flex items-center gap-2.5">
+              <LogoMark className="h-9 w-9" idPrefix="ftr" />
+              <p className="text-2xl font-extrabold tracking-tight text-cream">
+                Tusk<span className="text-flame">Point</span>
+              </p>
+            </div>
+            <p className="mt-4 text-sm text-slate-400">
               Verifiable LangGraph checkpoints on Walrus. Survive a crash, rewind
               to any moment, and search your run in plain English.
             </p>

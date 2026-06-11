@@ -53,7 +53,7 @@ export function Architecture() {
               className="bg-ink-900 p-6"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-3xl font-bold text-teal">
+                <span className="font-mono text-3xl font-bold text-flame">
                   {f.step}
                 </span>
                 <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
@@ -96,7 +96,7 @@ export function Architecture() {
         <div className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {STACK.map((s, i) => (
             <Reveal key={s.name} delay={i * 60} className="bg-ink-900 p-6">
-              <h3 className="font-mono text-sm font-bold text-teal">{s.name}</h3>
+              <h3 className="font-mono text-sm font-bold text-flame">{s.name}</h3>
               <p className="mt-2 text-sm text-slate-400">{s.role}</p>
             </Reveal>
           ))}

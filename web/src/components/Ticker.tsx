@@ -8,11 +8,17 @@ const ITEMS = [
   "WALRUS · LANGGRAPH · MEMWAL",
 ];
 
-export function Ticker({ tone = "dark" }: { tone?: "dark" | "teal" }) {
+export function Ticker({
+  tone = "dark",
+}: {
+  tone?: "dark" | "teal" | "flame";
+}) {
   const base =
-    tone === "teal"
-      ? "bg-teal text-ink-950 border-teal"
-      : "bg-ink-900 text-cream border-line";
+    tone === "flame"
+      ? "bg-flame text-ink-950 border-flame"
+      : tone === "teal"
+        ? "bg-teal text-ink-950 border-teal"
+        : "bg-ink-900 text-cream border-line";
   return (
     <div className={`overflow-hidden border-y ${base}`}>
       <div className="flex w-max animate-marquee whitespace-nowrap py-2.5">

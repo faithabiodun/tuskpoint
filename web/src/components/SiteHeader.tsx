@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { REPO_URL } from "@/lib/data";
+import { Logo } from "./Logo";
 
 const NAV = [
   { href: "/#problem", label: "Problem" },
@@ -13,12 +14,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-ink-950/75 backdrop-blur-xl">
       <div className="container-page flex h-16 items-center justify-between">
-        <Link
-          href="/"
-          className="text-lg font-extrabold tracking-tight text-cream"
-        >
-          Tusk<span className="text-teal">Point</span>
-        </Link>
+        <Logo idPrefix="hdr" markClassName="h-9 w-9" />
 
         <nav className="hidden items-center gap-1 md:flex">
           {NAV.map((item) => (

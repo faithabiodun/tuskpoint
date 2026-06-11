@@ -47,7 +47,7 @@ export function ProblemList() {
                 delay={i * 60}
                 className="group grid grid-cols-[auto_1fr] gap-5 border-t border-line py-7 first:border-t-0 sm:gap-8"
               >
-                <span className="font-mono text-2xl font-bold text-teal sm:text-3xl">
+                <span className="font-mono text-2xl font-bold text-flame sm:text-3xl">
                   /{p.n}
                 </span>
                 <div>

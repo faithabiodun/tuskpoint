@@ -53,8 +53,8 @@ export function Callout({
   const styles =
     tone === "amber"
       ? "border-amber-400/25 bg-amber-400/5"
-      : "border-teal/20 bg-teal/5";
-  const titleColor = tone === "amber" ? "text-amber-300" : "text-teal";
+      : "border-flame/20 bg-flame/5";
+  const titleColor = tone === "amber" ? "text-amber-300" : "text-flame";
   return (
     <div className={`card mt-6 p-5 ${styles}`}>
       <p className={`text-sm font-semibold ${titleColor}`}>{title}</p>

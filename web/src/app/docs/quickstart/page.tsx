@@ -78,7 +78,7 @@ python -m pip install -e ".[all]"`}
       <P>
         The same engine is exposed as an MCP server over stdio. Run it directly,
         or register it with a client (see{" "}
-        <a href="/docs/clients" className="text-teal underline-offset-4 hover:underline">
+        <a href="/docs/clients" className="text-flame underline-offset-4 hover:underline">
           Connect a client
         </a>
         ).

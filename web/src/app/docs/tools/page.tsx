@@ -42,7 +42,7 @@ export default function ToolsPage() {
               {tools.map((t) => (
                 <div key={t.name} className="card p-5">
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-md border border-teal/30 bg-teal/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-teal">
+                    <span className="rounded-md border border-flame/30 bg-flame/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-flame">
                       {t.glyph}
                     </span>
                     <code className="font-mono text-sm font-semibold text-cream">

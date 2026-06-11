@@ -30,7 +30,7 @@ function fmt(v: unknown) {
 }
 
 const KIND_META = {
-  added: { sign: "+", cls: "text-teal", bg: "bg-teal/5 border-teal/20" },
+  added: { sign: "+", cls: "text-flame", bg: "bg-flame/5 border-flame/20" },
   removed: { sign: "−", cls: "text-rose-400", bg: "bg-rose-500/5 border-rose-500/20" },
   changed: { sign: "~", cls: "text-amber-300", bg: "bg-amber-400/5 border-amber-400/20" },
 } as const;
@@ -65,7 +65,7 @@ export function DiffPanel({ thread }: { thread: Thread }) {
             <select
               value={val}
               onChange={(e) => setter(e.target.value)}
-              className="w-full rounded-xl border border-line bg-ink-800/70 px-3 py-2.5 text-sm text-slate-200 outline-none transition focus:border-teal/50 focus:ring-2 focus:ring-teal/20"
+              className="w-full rounded-xl border border-line bg-ink-800/70 px-3 py-2.5 text-sm text-slate-200 outline-none transition focus:border-flame/50 focus:ring-2 focus:ring-flame/20"
             >
               {cps.map((c) => (
                 <option key={c.id} value={c.id} className="bg-ink-900">
