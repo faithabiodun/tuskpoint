@@ -190,8 +190,9 @@ export const REPO_URL = "https://github.com/faithabiodun/tuskpoint";
 export const WALRUS_AGGREGATOR =
   "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/";
 
-// The sample run shown on the site was captured live on Walrus mainnet, so its
-// evidence blobs resolve on the public mainnet aggregator — same network the
-// engine writes to by default.
+// The sample run shown on the site was captured on Walrus testnet (free writes),
+// so its evidence blobs resolve on the testnet aggregator. Links to those
+// specific blobs use this URL so they stay clickable; the engine still writes
+// new checkpoints to mainnet (WALRUS_AGGREGATOR) by default.
 export const EVIDENCE_AGGREGATOR =
-  "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/";
+  "https://aggregator.walrus-testnet.walrus.space/v1/blobs/";

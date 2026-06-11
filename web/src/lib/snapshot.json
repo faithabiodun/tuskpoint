@@ -1,72 +1,72 @@
 {
-  "generatedAt": "2026-06-11T12:58:26.647839+00:00",
+  "generatedAt": "2026-06-11T13:19:26.474981+00:00",
   "topic": "decentralized storage on Walrus",
   "query": "when did the writer start?",
   "thread": {
-    "id": "run-41092",
+    "id": "run-43312",
     "title": "Researcher → Writer",
     "topic": "decentralized storage on Walrus",
-    "manifestBlobId": "EU5HmnRbpkiube3a8GAkaCze3a4k6GusMQ6LHTLfszs",
+    "manifestBlobId": "wHK1WMSMhPPDehX8slPGMRZZ3nPaG0K18_ScVo4fBHA",
     "checkpoints": [
       {
-        "id": "1f165948-2d14-6777-bfff-b5a957f6722e",
-        "shortId": "1f165948…722e",
+        "id": "1f16597a-56d6-6861-bfff-6bd3f3153197",
+        "shortId": "1f16597a…3197",
         "step": -1,
         "node": "__input__",
-        "blobId": "BtU7_BtDbJXW7EpLGCMsi6vYWezhYHlKk_VmqBKKtIg",
+        "blobId": "5HhjbJfw-cWJyQw8WOTtN9UZOwQkeUkexRuAprf7EI4",
         "parent": null,
-        "timestamp": "2026-06-11T12:53:14.951442+00:00",
-        "summary": "[thread=run-41092 checkpoint=1f165948-2d14-6777-bfff-b5a957f6722e step=-1] the graph received its initial input.",
+        "timestamp": "2026-06-11T13:15:41.507370+00:00",
+        "summary": "[thread=run-43312 checkpoint=1f16597a-56d6-6861-bfff-6bd3f3153197 step=-1] the graph received its initial input.",
         "state": {}
       },
       {
-        "id": "1f165948-2d24-605a-8000-5ea655af558b",
-        "shortId": "1f165948…558b",
+        "id": "1f16597a-56e0-61f1-8000-a97ecdf0700d",
+        "shortId": "1f16597a…700d",
         "step": 0,
         "node": "researcher",
-        "blobId": "hqAwvsGFRMuZF9Vb6uZJZ49qOb68QjUIl0mAkaGXSP4",
-        "parent": "1f165948-2d14-6777-bfff-b5a957f6722e",
-        "timestamp": "2026-06-11T12:53:14.957804+00:00",
-        "summary": "[thread=run-41092 checkpoint=1f165948-2d24-605a-8000-5ea655af558b step=0] state advanced (step 0); channels now set: topic.",
+        "blobId": "1Z2dmG6pKcyns4MUjbHzpYdz7bjrOr_1SBWfaJu3Ifg",
+        "parent": "1f16597a-56d6-6861-bfff-6bd3f3153197",
+        "timestamp": "2026-06-11T13:15:41.511293+00:00",
+        "summary": "[thread=run-43312 checkpoint=1f16597a-56e0-61f1-8000-a97ecdf0700d step=0] state advanced (step 0); channels now set: topic.",
         "state": {
           "topic": "decentralized storage on Walrus"
         }
       },
       {
-        "id": "1f165948-de75-6944-8001-e44e59a15cec",
-        "shortId": "1f165948…5cec",
+        "id": "1f16597a-f746-6126-8001-1100658a265b",
+        "shortId": "1f16597a…265b",
         "step": 1,
         "node": "researcher",
-        "blobId": "A4ii0DyP7EXx11gAEWItg-1U5worVYuxg0rq3QQ3jCY",
-        "parent": "1f165948-2d24-605a-8000-5ea655af558b",
-        "timestamp": "2026-06-11T12:53:33.551001+00:00",
-        "summary": "[thread=run-41092 checkpoint=1f165948-de75-6944-8001-e44e59a15cec step=1] state advanced (step 1); channels now set: sources, topic.",
+        "blobId": "RGaZhhHY1K-oMBHpQ9T1fniSB81ivqgONmH58RMFIVQ",
+        "parent": "1f16597a-56e0-61f1-8000-a97ecdf0700d",
+        "timestamp": "2026-06-11T13:15:58.330250+00:00",
+        "summary": "[thread=run-43312 checkpoint=1f16597a-f746-6126-8001-1100658a265b step=1] state advanced (step 1); channels now set: sources, topic.",
         "state": {
           "topic": "decentralized storage on Walrus",
           "sources": [
-            "Walrus stores arbitrary data blobs off-chain, with metadata and storage proofs anchored on the Sui blockchain.",
-            "It uses erasure coding to split data into fragments distributed across a decentralized network of storage nodes for redundancy.",
-            "Storage payments and access control are managed via Sui smart contracts, with fees paid in SUI tokens."
+            "Walrus uses erasure coding to split files into encoded shards, requiring only a fraction of shards for reconstruction.",
+            "It is a decentralized blob store natively integrated with the Sui blockchain for coordination, access control, and micropayments.",
+            "Storage nodes must periodically prove they hold their shards, with slashing penalties for those that fail to provide timely proofs."
           ]
         }
       },
       {
-        "id": "1f165949-0895-621b-8002-c4a8de29b4be",
-        "shortId": "1f165949…b4be",
+        "id": "1f16597b-3ee9-63e4-8002-88e4f5308f63",
+        "shortId": "1f16597b…8f63",
         "step": 2,
         "node": "writer",
-        "blobId": "hnIhsWE941wacFgk8bmBY_G1F3qhyFbmZfX-k0RFCLQ",
-        "parent": "1f165948-de75-6944-8001-e44e59a15cec",
-        "timestamp": "2026-06-11T12:53:37.967949+00:00",
-        "summary": "[thread=run-41092 checkpoint=1f165949-0895-621b-8002-c4a8de29b4be step=2] state advanced (step 2); channels now set: report, sources, topic.",
+        "blobId": "bCZT2GNdVPRr3gDzeS6WcauVxO8MX-5A89GQxZAUB_8",
+        "parent": "1f16597a-f746-6126-8001-1100658a265b",
+        "timestamp": "2026-06-11T13:16:05.841998+00:00",
+        "summary": "[thread=run-43312 checkpoint=1f16597b-3ee9-63e4-8002-88e4f5308f63 step=2] state advanced (step 2); channels now set: report, sources, topic.",
         "state": {
           "topic": "decentralized storage on Walrus",
           "sources": [
-            "Walrus stores arbitrary data blobs off-chain, with metadata and storage proofs anchored on the Sui blockchain.",
-            "It uses erasure coding to split data into fragments distributed across a decentralized network of storage nodes for redundancy.",
-            "Storage payments and access control are managed via Sui smart contracts, with fees paid in SUI tokens."
+            "Walrus uses erasure coding to split files into encoded shards, requiring only a fraction of shards for reconstruction.",
+            "It is a decentralized blob store natively integrated with the Sui blockchain for coordination, access control, and micropayments.",
+            "Storage nodes must periodically prove they hold their shards, with slashing penalties for those that fail to provide timely proofs."
           ],
-          "report": "Walrus provides decentralized storage by keeping arbitrary data blobs off-chain while anchoring metadata and storage proofs on the Sui blockchain. To ensure redundancy, it employs erasure coding to split data into fragments and distributes them across a decentralized network of storage nodes. Payments and access control are enforced through Sui smart contracts, with fees settled in SUI tokens."
+          "report": "Walrus is a decentralized blob store natively integrated with the Sui blockchain for coordination, access control, and micropayments. It uses erasure coding to split files into encoded shards, requiring only a fraction of those shards for reconstruction. Storage nodes must periodically prove they hold their shards, with slashing penalties applied to those that fail to provide timely proofs."
         }
       }
     ]
@@ -81,17 +81,17 @@
       "distance": 0.7776
     },
     {
+      "text": "[thread=run-43312 checkpoint=1f16597a-56d6-6861-bfff-6bd3f3153197 step=-1] the graph received its initial input.",
+      "distance": 0.7782
+    },
+    {
       "text": "[thread=semantic-26812 checkpoint=1f164b83-abff-608e-bfff-a9d6d88248a6 step=-1] the graph received its initial input.",
       "distance": 0.7835
     },
     {
       "text": "[thread=semantic-33112 checkpoint=1f164b8d-6dab-62f4-bfff-ac76d337a658 step=-1] the graph received its initial input.",
       "distance": 0.7839
-    },
-    {
-      "text": "[thread=run-41092 checkpoint=1f165948-de75-6944-8001-e44e59a15cec step=1] state advanced (step 1); channels now set: sources, topic.",
-      "distance": 0.8228
     }
   ],
-  "report": "Walrus provides decentralized storage by keeping arbitrary data blobs off-chain while anchoring metadata and storage proofs on the Sui blockchain. To ensure redundancy, it employs erasure coding to split data into fragments and distributes them across a decentralized network of storage nodes. Payments and access control are enforced through Sui smart contracts, with fees settled in SUI tokens."
+  "report": "Walrus is a decentralized blob store natively integrated with the Sui blockchain for coordination, access control, and micropayments. It uses erasure coding to split files into encoded shards, requiring only a fraction of those shards for reconstruction. Storage nodes must periodically prove they hold their shards, with slashing penalties applied to those that fail to provide timely proofs."
 }
