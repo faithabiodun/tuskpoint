@@ -21,7 +21,7 @@ export function RunEvidence() {
           </h2>
           <p className="mt-5 text-slate-400">
             These are real checkpoints from one researcher&nbsp;→&nbsp;writer run,
-            stored live on the Walrus testnet. Each blob ID below resolves to the
+            stored live on Walrus mainnet. Each blob ID below resolves to the
             exact bytes that were written — click any to verify on the public
             aggregator.
           </p>
