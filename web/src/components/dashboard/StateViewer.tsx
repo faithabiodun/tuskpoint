@@ -1,4 +1,4 @@
-import { type Checkpoint, WALRUS_AGGREGATOR } from "@/lib/data";
+import { type Checkpoint, EVIDENCE_AGGREGATOR } from "@/lib/data";
 import { CopyButton } from "../CopyButton";
 
 function JsonView({ value }: { value: unknown }) {
@@ -17,7 +17,7 @@ export function StateViewer({
   checkpoint: Checkpoint;
   threadId: string;
 }) {
-  const aggregatorUrl = `${WALRUS_AGGREGATOR}${checkpoint.blobId}`;
+  const aggregatorUrl = `${EVIDENCE_AGGREGATOR}${checkpoint.blobId}`;
 
   return (
     <div className="card p-6">

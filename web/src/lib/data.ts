@@ -185,5 +185,14 @@ export const STACK = [
 ];
 
 export const REPO_URL = "https://github.com/faithabiodun/tuskpoint";
+
+// The engine's default network. TuskPoint writes new checkpoints to mainnet.
 export const WALRUS_AGGREGATOR =
   "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/";
+
+// The sample run shown on the site was captured on testnet, so its evidence
+// blobs resolve only on the testnet aggregator. Links to those specific blobs
+// use this URL so they stay clickable; a fresh mainnet capture will move them
+// to WALRUS_AGGREGATOR.
+export const EVIDENCE_AGGREGATOR =
+  "https://aggregator.walrus-testnet.walrus.space/v1/blobs/";
