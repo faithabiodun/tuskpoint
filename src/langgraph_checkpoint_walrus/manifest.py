@@ -28,6 +28,10 @@ class CheckpointEntry:
         summary: One-sentence natural-language description (filled by the MemWal
             layer in Step 5; empty string until then).
         checkpoint_ns: LangGraph checkpoint namespace (usually "").
+        forked_from: When this checkpoint is the genesis of a fork, the
+            ``"{thread_id}:{checkpoint_id}"`` it was branched from; ``None`` for
+            normal checkpoints. Lets the manifest describe a tree of runs, not
+            just a single line.
     """
 
     blob_id: str
@@ -35,6 +39,7 @@ class CheckpointEntry:
     timestamp: str
     summary: str = ""
     checkpoint_ns: str = ""
+    forked_from: str | None = None
 
 
 @dataclass

@@ -1,8 +1,10 @@
-"""TuskPoint MCP server — six checkpoint tools over stdio.
+"""TuskPoint MCP server — the all-in-one checkpoint toolbelt over stdio.
 
 This server wraps :class:`~langgraph_checkpoint_walrus.WalrusSaver` so any
-MCP-capable agent (Claude Desktop, etc.) can save, load, list, resume, diff, and
-semantically search **LangGraph-style checkpoints** stored on Walrus.
+MCP-capable agent (Claude Desktop, Claude Code, Cursor, Windsurf, …) can save,
+load, list, resume, diff, semantically search, **fork**, and **audit**
+LangGraph-style checkpoints stored on Walrus — plus a ``tuskpoint_info`` tool
+that returns ready-to-paste client setup so an agent can wire itself up.
 
 It deliberately does NOT duplicate MemWal's own MCP (remember/recall/analyze/
 restore/login/logout). Those manage free-form *memories*; these manage durable,
@@ -85,7 +87,7 @@ def _state_from_tuple(tup: Any) -> Any:
 
 
 # ----------------------------------------------------------------------
-# The six tools
+# The checkpoint tools
 # ----------------------------------------------------------------------
 
 @mcp.tool()
@@ -269,6 +271,135 @@ def checkpoint_search(query: str) -> str:
         )
     hits = _saver.search_history(query, limit=5)
     return json.dumps({"query": query, "results": hits})
+
+
+# ----------------------------------------------------------------------
+# Fork & replay — "git branch" for agent runs
+# ----------------------------------------------------------------------
+
+@mcp.tool()
+def checkpoint_fork(
+    source_thread_id: str,
+    source_checkpoint_id: str,
+    new_thread_id: str,
+) -> str:
+    """Fork an existing checkpoint into a brand-new thread to explore a different path.
+
+    This is the "git branch" for agent runs: it copies the exact state at
+    ``source_checkpoint_id`` into ``new_thread_id`` as that thread's genesis
+    checkpoint, recording the ``forked_from`` lineage. The original thread is
+    left untouched, so you can replay from a known-good point and try an
+    alternative without losing history.
+
+    Args:
+        source_thread_id: The thread to branch from.
+        source_checkpoint_id: The exact checkpoint in that thread to copy.
+        new_thread_id: The new thread to create (must not already have history).
+
+    Returns:
+        A JSON string
+        ``{"source", "new_thread_id", "checkpoint_id", "blob_id", "forked_from"}``.
+    """
+    try:
+        result = _saver.fork(
+            source_thread_id=source_thread_id,
+            source_checkpoint_id=source_checkpoint_id,
+            new_thread_id=new_thread_id,
+        )
+    except KeyError as exc:
+        return json.dumps({"error": f"source checkpoint not found: {exc}"})
+    except ValueError as exc:
+        return json.dumps({"error": str(exc)})
+    return json.dumps(result)
+
+
+@mcp.tool()
+def verify_trail(thread_id: str) -> str:
+    """Audit a thread's checkpoint chain end-to-end (tamper-evident flight recorder).
+
+    Walks every checkpoint in the thread in order and re-fetches its
+    content-addressed Walrus blob, confirming each one still fetches and unpacks
+    cleanly. Because blob IDs are derived from content, any silent corruption or
+    tampering shows up as a failed step.
+
+    Args:
+        thread_id: The thread whose blob chain should be verified.
+
+    Returns:
+        A JSON string
+        ``{"thread_id", "ok", "checkpoint_count", "verified", "steps"}`` where
+        each step is ``{"checkpoint_id", "blob_id", "parent", "forked_from",
+        "ok", "error"}``.
+    """
+    return json.dumps(_saver.verify_trail(thread_id))
+
+
+# ----------------------------------------------------------------------
+# Self-describing setup — let an agent wire itself into any MCP client
+# ----------------------------------------------------------------------
+
+@mcp.tool()
+def tuskpoint_info() -> str:
+    """Describe this server and return ready-to-paste client setup.
+
+    Returns the full tool list plus copy-paste MCP configuration for the common
+    clients (Claude Desktop, Claude Code, Cursor, Windsurf, and the generic
+    ``.mcp.json`` form), so an agent or user can connect TuskPoint without
+    leaving the chat.
+
+    Returns:
+        A JSON string ``{"name", "transport", "tools", "connect", "notes"}``.
+    """
+    server_cmd = {
+        "command": "python",
+        "args": ["mcp_server/server.py"],
+    }
+    tools = [
+        {"name": "checkpoint_save", "summary": "Persist agent state as a new Walrus blob."},
+        {"name": "checkpoint_load", "summary": "Load a specific (or latest) checkpoint by id."},
+        {"name": "checkpoint_list", "summary": "List a thread's checkpoints, newest first."},
+        {"name": "checkpoint_resume", "summary": "Return the latest state to continue a thread."},
+        {"name": "checkpoint_diff", "summary": "Human-readable diff between two checkpoints."},
+        {"name": "checkpoint_search", "summary": "Semantic recall over checkpoint summaries (MemWal)."},
+        {"name": "checkpoint_fork", "summary": "Branch a checkpoint into a new thread to replay a different path."},
+        {"name": "verify_trail", "summary": "Audit a thread's blob chain for tamper-evident integrity."},
+        {"name": "tuskpoint_info", "summary": "This tool: describe the server and emit client setup."},
+    ]
+    connect = {
+        "claude_desktop": {
+            "file": "claude_desktop_config.json",
+            "config": {"mcpServers": {"tuskpoint": server_cmd}},
+        },
+        "claude_code": {
+            "command": "claude mcp add tuskpoint -- python mcp_server/server.py",
+        },
+        "cursor": {
+            "file": ".cursor/mcp.json",
+            "config": {"mcpServers": {"tuskpoint": server_cmd}},
+        },
+        "windsurf": {
+            "file": "~/.codeium/windsurf/mcp_config.json",
+            "config": {"mcpServers": {"tuskpoint": server_cmd}},
+        },
+        "generic": {
+            "file": ".mcp.json",
+            "config": {"mcpServers": {"tuskpoint": server_cmd}},
+        },
+    }
+    notes = [
+        "Transport is stdio; run from the repo root so 'mcp_server/server.py' resolves.",
+        "Reads are public on Walrus mainnet; writes need a publisher (see .env.example).",
+        "Set MEMWAL_PRIVATE_KEY / MEMWAL_ACCOUNT_ID to enable checkpoint_search.",
+    ]
+    return json.dumps(
+        {
+            "name": "tuskpoint-checkpoints",
+            "transport": "stdio",
+            "tools": tools,
+            "connect": connect,
+            "notes": notes,
+        }
+    )
 
 
 if __name__ == "__main__":

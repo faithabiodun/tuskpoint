@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 export const metadata: Metadata = {
   title: "TuskPoint — Verifiable LangGraph checkpoints on Walrus",
   description:
-    "TuskPoint is a drop-in LangGraph checkpointer that stores agent state as immutable Walrus blobs, with semantic recall via MemWal and an MCP server exposing six checkpoint tools.",
+    "TuskPoint is a drop-in LangGraph checkpointer that stores agent state as immutable Walrus blobs, with semantic recall via MemWal and an MCP server exposing eight checkpoint tools.",
   keywords: [
     "Walrus",
     "LangGraph",

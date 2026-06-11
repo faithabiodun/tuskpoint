@@ -2,9 +2,9 @@
 //
 // The checkpoint history, blob IDs, summaries, report, and semantic-search
 // results below are REAL: they were produced by running the actual engine
-// (WalrusSaver + MemWal + a live LangGraph agent) against the Walrus testnet
-// and exported to `snapshot.json` via `scripts/export_snapshot.py`. No secrets
-// ship to the site — only this exported record of one genuine run.
+// (WalrusSaver + MemWal + a live LangGraph agent) against Walrus and exported to
+// `snapshot.json` via `scripts/export_snapshot.py`. No secrets ship to the site
+// — only this exported record of one genuine run.
 
 import snapshot from "./snapshot.json";
 
@@ -79,6 +79,26 @@ export const TOOLS: Tool[] = [
     glyph: "FIND",
     returns: "{ results: [{ text, distance }] }",
     example: 'checkpoint_search("when did the writer start?")',
+  },
+  {
+    name: "checkpoint_fork",
+    signature: "checkpoint_fork(source_thread, source_id, new_thread)",
+    summary:
+      "Git-branch an agent run. Copy any checkpoint into a new thread to replay a different path — the original stays untouched.",
+    category: "Write",
+    glyph: "FORK",
+    returns: "{ new_thread_id, checkpoint_id, blob_id, forked_from }",
+    example: 'checkpoint_fork("run-42", "0c3b84d1-…", "run-42-alt")',
+  },
+  {
+    name: "verify_trail",
+    signature: "verify_trail(thread_id)",
+    summary:
+      "Audit a thread end-to-end. Re-fetches every content-addressed blob so tampering or corruption shows up as a failed step.",
+    category: "Read",
+    glyph: "AUDIT",
+    returns: "{ ok, checkpoint_count, verified, steps[] }",
+    example: 'verify_trail("run-42")',
   },
 ];
 
@@ -160,10 +180,10 @@ export const STACK = [
   },
   {
     name: "MCP",
-    role: "Model Context Protocol — six tools any agent can call.",
+    role: "Model Context Protocol — eight tools any agent can call.",
   },
 ];
 
 export const REPO_URL = "https://github.com/faithabiodun/tuskpoint";
 export const WALRUS_AGGREGATOR =
-  "https://aggregator.walrus-testnet.walrus.space/v1/blobs/";
+  "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/";

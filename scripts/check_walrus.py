@@ -1,15 +1,18 @@
-"""Step 1 proof: write a blob to Walrus testnet, read it back, verify identity.
+"""Step 1 proof: write a blob to Walrus, read it back, verify identity.
 
 Run:
 
     python scripts/check_walrus.py
 
-It generates random bytes, ``PUT``s them to a testnet *publisher*, extracts the
-returned blob ID, ``GET``s the blob back from an *aggregator*, and asserts the
+It generates random bytes, ``PUT``s them to a *publisher*, extracts the returned
+blob ID, ``GET``s the blob back from an *aggregator*, and asserts the
 round-tripped bytes are byte-identical to what we sent. Publisher/aggregator
 base URLs come from the environment (``WALRUS_PUBLISHER_URL`` /
-``WALRUS_AGGREGATOR_URL``) with sensible public-testnet fallbacks, and each
-request is retried once against an alternate node on failure.
+``WALRUS_AGGREGATOR_URL``) with mainnet defaults, and each request is retried
+once against an alternate node on failure.
+
+Note: mainnet writes need a funded publisher (see ``.env.example``). To run this
+for free, point the env vars at the public testnet endpoints.
 """
 
 from __future__ import annotations
@@ -23,17 +26,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Public testnet fallbacks (the env vars take precedence if set). The first
-# entry of each list is the canonical Mysten-operated node.
+# Walrus mainnet endpoints (the env vars take precedence if set). Reads are
+# public; writes require a publisher with a funded key (mainnet has no free
+# public publisher — see .env.example).
 DEFAULT_PUBLISHERS = [
-    "https://publisher.walrus-testnet.walrus.space",
-    "https://walrus-testnet-publisher.nodes.guru",
-    "https://walrus-testnet-publisher.stakely.io",
+    "https://walrus-mainnet-publisher-1.staketab.org:443",
 ]
 DEFAULT_AGGREGATORS = [
-    "https://aggregator.walrus-testnet.walrus.space",
-    "https://walrus-testnet-aggregator.nodes.guru",
-    "https://walrus-testnet-aggregator.stakely.io",
+    "https://aggregator.walrus-mainnet.walrus.space",
+    "https://walrus.globalstake.io",
+    "https://walrus-mainnet-aggregator.nodes.guru",
 ]
 
 # Store the blob for a few epochs so the aggregator has time to serve it.
@@ -124,11 +126,11 @@ def main() -> int:
     payload = b"tuskpoint-walrus-check::" + secrets.token_bytes(64)
     print(f"Generated {len(payload)} random bytes.")
 
-    print("Storing blob on Walrus testnet...")
+    print("Storing blob on Walrus...")
     blob_id = store_blob(payload)
     print(f"  blob ID: {blob_id}")
 
-    print("Reading blob back from Walrus testnet...")
+    print("Reading blob back from Walrus...")
     fetched = read_blob(blob_id)
 
     if fetched == payload:

@@ -38,7 +38,7 @@ export function Hero() {
               </svg>
             </Link>
             <Link href="/#tools" className="btn-ghost w-full sm:w-auto">
-              Browse the 6 tools
+              Browse the 8 tools
             </Link>
           </div>
 
@@ -75,7 +75,7 @@ export function Hero() {
         {/* Stat strip */}
         <div className="animate-fade-up mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
           {[
-            { k: "6", v: "MCP tools" },
+            { k: "8", v: "MCP tools" },
             { k: "2", v: "storage layers" },
             { k: "100%", v: "byte-exact reads" },
             { k: "0", v: "secrets on-site" },

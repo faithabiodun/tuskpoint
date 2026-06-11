@@ -1,193 +1,182 @@
-# TuskPoint — `langgraph-checkpoint-walrus`
+# TuskPoint: Verifiable LangGraph checkpoints on Walrus
 
-Verifiable LangGraph agent state on [Walrus](https://docs.wal.app), with
-semantic recall over checkpoint history via
-[MemWal](https://docs.wal.app/walrus-memory).
+TuskPoint is a drop-in [LangGraph](https://langchain-ai.github.io/langgraph/)
+checkpointer that stores every step of an agent run as an immutable
+[Walrus](https://docs.wal.app) blob. When a process crashes, you resume from
+exactly where it stopped — not from the beginning — and you can **fork**, diff,
+search, and **audit** the entire history. It ships an all-in-one MCP server so
+any agent (Claude, Cursor, Windsurf, …) can do all of this with a tool call.
 
-Built in small, testable increments.
+- **Docs:** https://tuskpoint.vercel.app/docs
+- **Live run dashboard:** https://tuskpoint.vercel.app/dashboard
 
-## What it is
+## What is TuskPoint?
 
-Two layers:
+- **A checkpointer, not a database.** `WalrusSaver` is a standard LangGraph
+  `BaseCheckpointSaver`. Drop it into your graph and every checkpoint is
+  serialized, gzipped, and stored as a content-addressed Walrus blob — the
+  *exact* layer you rewind to.
+- **Crash-proof by construction.** State lives on a decentralized network, not
+  in your process. A fresh process rehydrates the latest checkpoint and
+  continues. The only thing kept locally is a blob pointer.
+- **Git for agent runs.** `checkpoint_fork` branches any checkpoint into a new
+  thread so you can replay a different path without touching the original.
+- **Tamper-evident.** `verify_trail` re-fetches every blob in a thread; because
+  blob IDs are derived from content, corruption or tampering shows up as a
+  failed step.
+- **Searchable in plain English.** An optional MemWal layer writes a one-line
+  summary per checkpoint, so an agent can recall its own past — pointers it then
+  loads *exactly*.
+- **All-in-one MCP server.** Eight tools over stdio, plus `tuskpoint_info` which
+  returns ready-to-paste client config.
 
-1. **`WalrusSaver`** — a drop-in LangGraph `BaseCheckpointSaver`. Every
-   checkpoint is serialized with LangGraph's own serde, gzipped, and stored as
-   an immutable **Walrus blob** (the *exact* layer). A per-thread JSON
-   **manifest** maps `checkpoint_id -> {blob_id, parent, timestamp, summary}`.
-   On every save it also writes a one-sentence natural-language **summary** to
-   MemWal (the *semantic* layer), so an agent can later *search its own past*.
+## Summary of MCP tools
 
-2. **`mcp_server`** — an MCP server exposing six checkpoint tools
-   (save / load / list / resume / diff / search) over stdio. It complements,
-   and does not duplicate, MemWal's own MCP.
+The server (`mcp_server/server.py`) exposes these over stdio:
 
-## Architecture
+| Tool | Category | What it does |
+| --- | --- | --- |
+| `checkpoint_save(thread_id, state_json)` | Write | Persist agent state as a new Walrus blob. |
+| `checkpoint_fork(source_thread, source_id, new_thread)` | Write | Branch a checkpoint into a new thread (replay a different path). |
+| `checkpoint_load(thread_id, checkpoint_id?)` | Read | Load a specific checkpoint (or the latest) by ID. |
+| `checkpoint_list(thread_id)` | Read | List a thread's checkpoints, newest first, with lineage. |
+| `checkpoint_resume(thread_id)` | Read | Return the latest state so an agent can continue. |
+| `checkpoint_diff(thread_id, id_a, id_b)` | Read | Human-readable diff between two checkpoints. |
+| `verify_trail(thread_id)` | Read | Audit a thread's blob chain for tamper-evident integrity. |
+| `checkpoint_search(query)` | Discover | Semantic recall over checkpoint summaries (MemWal). |
+| `tuskpoint_info()` | Meta | Describe the server and emit copy-paste client config. |
 
-```
-                      ┌─────────────────────────────────────────┐
-   LangGraph agent ──▶│             WalrusSaver                  │
-   (put / get_tuple)  │  BaseCheckpointSaver[str]                │
-                      │                                          │
-                      │  EXACT layer            SEMANTIC layer   │
-                      │  ───────────            ──────────────   │
-                      │  serde→gzip→blob        build_summary()  │
-                      │       │                       │          │
-                      └───────┼───────────────────────┼──────────┘
-                              ▼                        ▼
-                    ┌──────────────────┐     ┌──────────────────┐
-                    │  Walrus testnet  │     │      MemWal       │
-                    │ publisher PUT /  │     │ remember / recall │
-                    │ aggregator GET   │     │ (vector search)   │
-                    └──────────────────┘     └──────────────────┘
-                              ▲
-                              │ latest manifest blob id cached in
-                              │ .walrus_threads.json  (only local state)
-                              ▼
-                      ┌──────────────────┐
-                      │  mcp_server      │  6 tools over stdio:
-                      │  (FastMCP)       │  save load list resume diff search
-                      └──────────────────┘
-```
+## Quick Start
 
-### Exact vs. semantic — why both?
-
-- **Exact lookups are by ID, never fuzzy.** `checkpoint_load(thread, id)`
-  resolves the manifest entry → blob ID → Walrus GET → de-gzip → de-serialize.
-  This is deterministic and content-addressed: the blob you read is byte-for-byte
-  the blob you wrote. This is the part you *rewind to*.
-- **Semantic search is for discovery.** `checkpoint_search("when did the
-  writer start?")` asks MemWal for the nearest summaries. It returns *pointers*
-  (summaries with thread/checkpoint IDs), which you then load *exactly*. Vector
-  recall is never the source of truth — it's an index into the exact store.
-
-### How this differs from MemWal's own MCP
-
-MemWal ships an MCP for free-form **memories** (`remember` / `recall` /
-`analyze` / `restore` / `login` / `logout`). TuskPoint manages durable,
-exactly-addressable **checkpoints** — agent state you can resume a graph from.
-The only overlap, `checkpoint_search`, is deliberately scoped to *our*
-checkpoint summaries, not general memories.
-
-## Quick start
+### 1. Install
 
 ```bash
+git clone https://github.com/faithabiodun/tuskpoint.git
+cd tuskpoint
 python -m pip install -e ".[all]"
+```
+
+### 2. Configure environment
+
+```bash
 cp .env.example .env   # then fill in your keys
 ```
 
-All secrets come from environment variables (loaded from `.env`). See
-[`.env.example`](.env.example) for the full list. **Never commit your real
-`.env`** — it is git-ignored.
+All secrets come from environment variables (loaded from `.env`).
+**Never commit your real `.env`** — it is git-ignored. Reads from Walrus are
+public and free; only writes need a publisher and semantic search needs MemWal
+credentials (see `.env.example`).
 
-## Proofs and demos
-
-Each build step has a runnable proof.
-
-### 1. Walrus blob round-trip
+### 3. Prove the Walrus round-trip
 
 ```bash
 python scripts/check_walrus.py
 ```
 
-Writes a random blob to a testnet **publisher**, reads it back from an
-**aggregator**, and asserts the bytes are identical — printing the blob ID.
+Writes a random blob to a publisher, reads it back from an aggregator, and
+asserts the bytes are identical — printing the blob ID.
 
-### 2. MemWal remember / recall
-
-```bash
-python scripts/check_memwal.py
-```
-
-Remembers a sentence, then recalls it semantically and prints the distance.
-
-### 3–4. Crash / resume demo (the headline)
+### 4. Run the crash / resume demo (the headline)
 
 ```bash
-# In-memory fake backend (single process, interrupt then resume):
-python demo/run_demo.py
-
-# REAL Walrus testnet, surviving a genuine process kill:
-python demo/run_demo.py --real --part1   # run to interrupt, persist, EXIT
-python demo/run_demo.py --real --part2   # FRESH process rehydrates from Walrus
+python demo/run_demo.py --real --part1   # run, persist, EXIT
+python demo/run_demo.py --real --part2   # FRESH process resumes from Walrus
 ```
 
 A researcher→writer agent is interrupted before the writer runs. `--part2`
 starts a brand-new process that reads only the manifest blob ID from
-`.walrus_threads.json`, pulls the checkpoint back from Walrus, and resumes the
-writer to completion. That is the "survive a process kill" proof.
+`.walrus_threads.json`, pulls the checkpoint back from Walrus, and resumes to
+completion.
 
-### 5. Semantic self-search
+### 5. Try fork & audit
 
 ```bash
-python demo/run_demo.py --semantic
+python demo/run_demo.py --fork    # branch a checkpoint into a new thread
+python demo/run_demo.py --audit   # verify_trail over a thread's blob chain
 ```
 
-Runs the agent on real Walrus + MemWal, then asks *"when did the writer
-start?"* and prints the nearest checkpoint summaries — the agent searching its
-own history.
-
-## MCP server
-
-Six tools over stdio: `checkpoint_save`, `checkpoint_load`, `checkpoint_list`,
-`checkpoint_resume`, `checkpoint_diff`, `checkpoint_search`.
-
-Run it directly:
+### 6. Start the MCP server
 
 ```bash
 python mcp_server/server.py
 ```
 
-### Register with an MCP client
+### 7. Register with an MCP client
 
-A ready-to-use [`.mcp.json`](.mcp.json) is included. For Claude Desktop, add
-the equivalent to `claude_desktop_config.json`:
+A ready-to-use [`.mcp.json`](.mcp.json) is included. The same block works for
+every client; only the file location changes.
 
 ```json
 {
   "mcpServers": {
-    "tuskpoint-checkpoints": {
+    "tuskpoint": {
       "command": "python",
       "args": ["mcp_server/server.py"],
-      "cwd": "C:/Users/User/Documents/tuskpoint",
+      "cwd": "/absolute/path/to/tuskpoint",
       "env": {
-        "WALRUS_PUBLISHER_URL": "https://publisher.walrus-testnet.walrus.space",
-        "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-testnet.walrus.space",
-        "WALRUS_THREADS_CACHE": ".walrus_threads.json"
+        "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-mainnet.walrus.space",
+        "WALRUS_PUBLISHER_URL": "https://walrus-mainnet-publisher-1.staketab.org:443"
       }
     }
   }
 }
 ```
 
-`checkpoint_search` returns an explanatory message instead of failing if no
-MemWal credentials are present, so the server runs fine without them.
+- **Claude Desktop:** add the block to `claude_desktop_config.json`.
+- **Claude Code:** `claude mcp add tuskpoint -- python mcp_server/server.py`
+- **Cursor:** `.cursor/mcp.json`
+- **Windsurf:** `~/.codeium/windsurf/mcp_config.json`
+
+Full per-client instructions: https://tuskpoint.vercel.app/docs/clients
+
+> **Note:** `checkpoint_search` returns an explanatory message instead of
+> failing when no MemWal credentials are present, so the server runs fine
+> without them.
+
+## Exact vs. semantic — why both?
+
+- **Exact lookups are by ID, never fuzzy.** `checkpoint_load` resolves the
+  manifest entry → blob ID → Walrus GET → de-gzip → de-serialize. The blob you
+  read is byte-for-byte the blob you wrote. This is the part you rewind to.
+- **Semantic search is for discovery.** `checkpoint_search` asks MemWal for the
+  nearest summaries — pointers carrying checkpoint IDs you then load exactly.
+  Vector recall indexes the exact store; it is never the source of truth.
+
+TuskPoint is **not** a MemWal MCP clone. MemWal manages free-form memories;
+TuskPoint manages durable, exactly-addressable checkpoints you resume a graph
+from. The only overlap, search, is scoped to *our* checkpoint summaries.
+
+## Walrus mainnet
+
+TuskPoint defaults to Walrus **mainnet**. Reads are public and free via any
+aggregator. Writes cost SUI (gas) + WAL (storage), so there is no public,
+unauthenticated publisher — use a community publisher, run your own, or use the
+upload relay with a funded key. Both URLs are env-overridable; point them at the
+testnet endpoints to experiment for free. See
+https://tuskpoint.vercel.app/docs/mainnet.
 
 ## Tests
 
 ```bash
-python -m pytest -m "not integration"   # 16 fast unit tests, no network
+python -m pytest -m "not integration"   # fast unit tests, no network
 python -m pytest -m integration         # live Walrus round-trip + resume
 ```
 
-## Project layout
+## What's included
 
 ```
 src/langgraph_checkpoint_walrus/
   walrus_client.py   BlobStore protocol, InMemoryWalrusClient, real WalrusClient
-  manifest.py        ThreadManifest / CheckpointEntry (id -> blob_id, lineage)
-  saver.py           WalrusSaver (BaseCheckpointSaver): gzip envelope per checkpoint
+  manifest.py        ThreadManifest / CheckpointEntry (id -> blob_id, lineage, forked_from)
+  saver.py           WalrusSaver: gzip envelope per checkpoint, fork(), verify_trail()
   memwal_layer.py    MemWalLayer: build_summary + summarize_and_remember + search
-mcp_server/server.py 6 checkpoint tools over stdio (FastMCP)
-demo/                researcher→writer agent + crash/resume/semantic demos
+mcp_server/server.py All-in-one MCP server: 8 checkpoint tools + tuskpoint_info (FastMCP)
+demo/                researcher→writer agent + crash/resume/fork/audit/semantic demos
 scripts/             check_walrus.py, check_memwal.py (standalone proofs)
+web/                 Next.js site + docs (https://tuskpoint.vercel.app)
 tests/               unit (no network) + integration (live Walrus) suites
 ```
 
-## 90-second video demo script
+## License
 
-1. **(0:00)** Show `check_walrus.py` — "agent state lands on Walrus, byte-identical round-trip."
-2. **(0:15)** Run `demo/run_demo.py --real --part1` — agent interrupts before the writer, exits.
-3. **(0:35)** Point at `.walrus_threads.json` — "only a blob pointer survives locally; the state is on the network."
-4. **(0:45)** Run `--real --part2` in a fresh shell — "new process, resumes from Walrus, writer finishes."
-5. **(1:05)** Run `--semantic` — ask *"when did the writer start?"*, show ranked summaries.
-6. **(1:20)** Show the MCP server tools list — "any MCP agent can save/load/diff/search checkpoints."
+MIT — see [LICENSE](LICENSE).
