@@ -1,0 +1,35 @@
+# Render Blueprint for the TuskPoint API service (free tier, $0).
+# Render's Blueprint flow reads this file from the REPO ROOT on the main branch.
+# In Render: New > Blueprint > pick this repo. Then set the secret env vars
+# (marked sync:false) in the dashboard.
+services:
+  - type: web
+    name: tuskpoint-api
+    runtime: python
+    plan: free
+    # Build from the REPO ROOT so the engine package installs.
+    rootDir: .
+    buildCommand: pip install . && pip install -r api_service/requirements.txt
+    startCommand: uvicorn api_service.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Walrus TESTNET = free writes (visitors can't drain funds).
+      - key: WALRUS_PUBLISHER_URL
+        value: https://publisher.walrus-testnet.walrus.space
+      - key: WALRUS_AGGREGATOR_URL
+        value: https://aggregator.walrus-testnet.walrus.space
+      - key: TUSKPOINT_DEMO_THREAD
+        value: run-43312
+      - key: MEMWAL_ENV
+        value: prod
+      - key: MEMWAL_NAMESPACE
+        value: tuskpoint
+      # --- Secrets: set these in the Render dashboard (never commit) ---
+      - key: MEMWAL_PRIVATE_KEY
+        sync: false
+      - key: MEMWAL_ACCOUNT_ID
+        sync: false
+      - key: TUSKPOINT_API_TOKEN
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false
