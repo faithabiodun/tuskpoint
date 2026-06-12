@@ -149,14 +149,6 @@ export const THREAD: Thread = {
   })),
 };
 
-// Real MemWal recall response for the query "when did the writer start?".
-export const SEARCH_QUERY: string = snapshot.query;
-export const SEARCH_RESULTS: { text: string; distance: number }[] =
-  snapshot.search.map((r) => ({
-    text: cleanSummary(r.text),
-    distance: r.distance,
-  }));
-
 export const RUN_META = {
   generatedAt: snapshot.generatedAt,
   topic: snapshot.topic,
@@ -186,13 +178,13 @@ export const STACK = [
 
 export const REPO_URL = "https://github.com/faithabiodun/tuskpoint";
 
-// The engine's default network. TuskPoint writes new checkpoints to mainnet.
+// Mainnet aggregator — used when an operator runs the engine on mainnet.
 export const WALRUS_AGGREGATOR =
   "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/";
 
-// The sample run shown on the site was captured on Walrus testnet (free writes),
-// so its evidence blobs resolve on the testnet aggregator. Links to those
-// specific blobs use this URL so they stay clickable; the engine still writes
-// new checkpoints to mainnet (WALRUS_AGGREGATOR) by default.
+// The sample run shown on the site, and the live dashboard, run on the Walrus
+// testnet (free writes), so evidence blobs resolve on the testnet aggregator.
+// Running the same engine on mainnet only requires pointing the engine's
+// WALRUS_PUBLISHER_URL / WALRUS_AGGREGATOR_URL at mainnet.
 export const EVIDENCE_AGGREGATOR =
   "https://aggregator.walrus-testnet.walrus.space/v1/blobs/";
