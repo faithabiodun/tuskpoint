@@ -18,9 +18,11 @@ provided for Hugging Face Spaces / Koyeb).
 
 from __future__ import annotations
 
+import json
 import os
 import time
 import uuid
+from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
@@ -43,6 +45,30 @@ _API_TOKEN = os.getenv("TUSKPOINT_API_TOKEN", "")
 _DEMO_THREAD = os.getenv("TUSKPOINT_DEMO_THREAD", "run-43312")
 _ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "*")
 
+# Committed seed of public thread_id -> manifest-blob-id pairs. These are public
+# Walrus content addresses (not secrets), shipped so a fresh, ephemeral host
+# (e.g. Render's scale-to-zero disk) can resolve the demo thread on first boot —
+# the writable cache (`.walrus_threads.json`) is gitignored and starts empty there.
+_SEED_THREADS = Path(__file__).with_name("seed_threads.json")
+
+
+def _seed_manifest_cache(saver: WalrusSaver) -> None:
+    """Merge committed demo manifest IDs into the saver's cache if missing."""
+    try:
+        seed = json.loads(_SEED_THREADS.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return
+    changed = False
+    for thread_id, blob_id in seed.items():
+        if thread_id not in saver._manifest_ids:  # noqa: SLF001 - internal cache
+            saver._manifest_ids[str(thread_id)] = str(blob_id)  # noqa: SLF001
+            changed = True
+    if changed:
+        try:
+            saver._save_threads_cache()  # noqa: SLF001 - persist to host disk
+        except OSError:
+            pass  # in-memory seed is enough; disk is best-effort
+
 
 def _build_saver() -> WalrusSaver:
     memwal_layer = None
@@ -53,9 +79,11 @@ def _build_saver() -> WalrusSaver:
             memwal_layer = MemWalLayer.from_env()
         except Exception:  # noqa: BLE001 - degrade gracefully without MemWal
             memwal_layer = None
-    return WalrusSaver(
+    saver = WalrusSaver(
         WalrusClient(), threads_cache_path=_THREADS_CACHE, memwal_layer=memwal_layer
     )
+    _seed_manifest_cache(saver)
+    return saver
 
 
 _saver = _build_saver()
