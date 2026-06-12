@@ -1,50 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { SEARCH_RESULTS, SEARCH_QUERY } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { api, ApiError } from "@/lib/api";
 
 type Result = { text: string; distance: number };
 
-export function SearchPanel() {
-  // Seed with the REAL MemWal recall for the exported query.
-  const [query, setQuery] = useState(SEARCH_QUERY);
-  const [results, setResults] = useState<Result[] | null>(SEARCH_RESULTS);
-  const [loading, setLoading] = useState(false);
-  const [note, setNote] = useState<string | null>(
-    `Exact MemWal recall for “${SEARCH_QUERY}”.`,
-  );
+const SUGGESTIONS = [
+  "when did the writer start?",
+  "what sources were gathered?",
+  "the final report",
+];
 
-  function run(q: string) {
+export function SearchPanel() {
+  const [query, setQuery] = useState(SUGGESTIONS[0]);
+  const [results, setResults] = useState<Result[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [ran, setRan] = useState<string | null>(null);
+
+  async function run(q: string) {
     const term = q.trim();
     if (!term) return;
     setQuery(term);
     setLoading(true);
+    setError(null);
     setResults(null);
-
-    const isExported =
-      term.toLowerCase() === SEARCH_QUERY.toLowerCase();
-
-    setTimeout(() => {
-      if (isExported) {
-        setResults(SEARCH_RESULTS);
-        setNote(`Exact MemWal recall for “${SEARCH_QUERY}”.`);
-      } else {
-        // For other phrasings, re-rank the same real summaries by light
-        // keyword overlap so the panel stays responsive without inventing data.
-        const words = term.toLowerCase().split(/\s+/).filter(Boolean);
-        const ranked = SEARCH_RESULTS.map((r) => {
-          const hay = r.text.toLowerCase();
-          const hits = words.reduce((n, w) => (hay.includes(w) ? n + 1 : n), 0);
-          return { ...r, distance: Math.max(0.05, r.distance - hits * 0.05) };
-        }).sort((a, b) => a.distance - b.distance);
-        setResults(ranked);
-        setNote(
-          "Re-ranked over the exported summaries (live recall needs the engine).",
-        );
-      }
+    try {
+      const res = await api.search(term);
+      setResults(res.results);
+      setRan(term);
+    } catch (e) {
+      setError(
+        e instanceof ApiError ? e.message : "Search failed against the engine.",
+      );
+    } finally {
       setLoading(false);
-    }, 480);
+    }
   }
+
+  // Run the default query once on mount so the panel opens with live results.
+  useEffect(() => {
+    run(SUGGESTIONS[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="rounded-2xl border border-line bg-ink-900/50 p-6">
@@ -52,9 +50,9 @@ export function SearchPanel() {
         Semantic search over history
       </h2>
       <p className="mt-1 text-xs text-slate-500">
-        Mirrors <code className="text-slate-400">checkpoint_search</code> →
-        MemWal recall. Lower distance = closer match. Results are pointers you
-        then load <em>exactly</em>.
+        Live <code className="text-slate-400">checkpoint_search</code> → MemWal
+        recall over real checkpoint summaries. Lower distance = closer match.
+        Results are pointers you then load <em>exactly</em>.
       </p>
 
       <form
@@ -82,23 +80,21 @@ export function SearchPanel() {
             className="w-full rounded-full border border-line bg-ink-800/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-flame/50 focus:ring-2 focus:ring-flame/20"
           />
         </div>
-        <button type="submit" className="btn-primary shrink-0">
-          Search
+        <button type="submit" className="btn-primary shrink-0" disabled={loading}>
+          {loading ? "Searching…" : "Search"}
         </button>
       </form>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {[SEARCH_QUERY, "what sources were gathered?", "the final report"].map(
-          (s) => (
-            <button
-              key={s}
-              onClick={() => run(s)}
-              className="rounded-full border border-line bg-ink-800/40 px-3 py-1 text-xs text-slate-400 transition hover:border-flame/30 hover:text-flame"
-            >
-              {s}
-            </button>
-          ),
-        )}
+        {SUGGESTIONS.map((s) => (
+          <button
+            key={s}
+            onClick={() => run(s)}
+            className="rounded-full border border-line bg-ink-800/40 px-3 py-1 text-xs text-slate-400 transition hover:border-flame/30 hover:text-flame"
+          >
+            {s}
+          </button>
+        ))}
       </div>
 
       {/* Results */}
@@ -114,13 +110,19 @@ export function SearchPanel() {
           </div>
         )}
 
-        {results && !loading && (
+        {error && !loading && (
+          <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 px-4 py-3 text-sm text-rose-300">
+            {error}
+          </div>
+        )}
+
+        {results && !loading && !error && (
           <>
-            {note && (
-              <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-slate-500">
-                {note}
-              </p>
-            )}
+            <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-slate-500">
+              {results.length > 0
+                ? `Live MemWal recall for “${ran}”.`
+                : `No matches for “${ran}”.`}
+            </p>
             <ol className="space-y-2">
               {results.map((r, i) => (
                 <li

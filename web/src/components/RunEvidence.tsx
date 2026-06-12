@@ -25,9 +25,12 @@ export function RunEvidence() {
             click any to verify on the public aggregator.
           </p>
           <p className="mt-3 text-xs text-slate-500">
-            This sample run was captured on the Walrus testnet, so its blob links
-            resolve on the testnet aggregator. The engine writes new checkpoints
-            to mainnet by default.
+            This run, and the live dashboard, run on the Walrus testnet (free
+            writes), so blob links resolve on the testnet aggregator. The same
+            engine runs unchanged on mainnet — point{" "}
+            <code className="text-slate-400">WALRUS_PUBLISHER_URL</code> /{" "}
+            <code className="text-slate-400">WALRUS_AGGREGATOR_URL</code> at
+            mainnet for paid, production writes.
           </p>
         </Reveal>
 
