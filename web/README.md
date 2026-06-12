@@ -41,6 +41,10 @@ npm start        # serve the production build
 
 Set the project **Root Directory** to `web/` in the Vercel dashboard (or via
 the CLI), since the Next app is a subfolder of the Python repo. Framework
-preset: **Next.js**. No environment variables are required.
+preset: **Next.js**.
 
-See `DEPLOY.md` in the repo root for full step-by-step instructions.
+The dashboard talks to the TuskPoint API service over HTTP, so set two
+environment variables (Production + Preview):
+
+- `TUSKPOINT_API_URL` — the deployed API base URL (see `api_service/README.md`).
+- `TUSKPOINT_API_TOKEN` — the shared token gating mutating routes.
