@@ -39,8 +39,10 @@ export async function proxy(path: string, init: ProxyInit = {}) {
         ...(API_TOKEN ? { "x-tuskpoint-token": API_TOKEN } : {}),
       },
       body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
-      // The free-tier engine may cold-start (~30-60s); give it room.
-      signal: AbortSignal.timeout(75_000),
+      // The free-tier engine may cold-start (~30-60s); give it room, but stay
+      // under the route's Vercel maxDuration so we return friendly JSON rather
+      // than getting killed mid-flight (which yields an empty body).
+      signal: AbortSignal.timeout(55_000),
       cache: "no-store",
     });
 
