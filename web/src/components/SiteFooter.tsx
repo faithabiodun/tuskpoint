@@ -60,7 +60,7 @@ export function SiteFooter() {
             </a>
             <span aria-hidden>·</span>
             <a
-              href="https://www.walrus.xyz"
+              href="https://memory.walrus.xyz"
               target="_blank"
               rel="noreferrer"
               className="link-muted"
