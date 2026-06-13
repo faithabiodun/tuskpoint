@@ -121,11 +121,33 @@ class WalrusClient:
         timeout: float = 60.0,
     ) -> None:
         self.epochs = epochs
-        self.timeout = httpx.Timeout(timeout)
+        # Split timeouts: fail fast if a node won't even accept a connection
+        # (dead/overloaded public node), but still allow a long read/write since
+        # a Walrus publisher legitimately takes seconds to encode + distribute a
+        # blob. ``connect`` short-circuits failover; ``read``/``write`` cover the
+        # actual storage work.
+        self.timeout = httpx.Timeout(timeout, connect=5.0)
         env_pub = publisher_url or os.getenv("WALRUS_PUBLISHER_URL")
         env_agg = aggregator_url or os.getenv("WALRUS_AGGREGATOR_URL")
         self.publishers = self._order(env_pub, DEFAULT_PUBLISHERS)
         self.aggregators = self._order(env_agg, DEFAULT_AGGREGATORS)
+        # One pooled client reused across every store/read. Keep-alive means the
+        # TCP + TLS handshake to a given node happens once, not on every call —
+        # the single biggest win for list/verify which do many reads in a row.
+        self._http = httpx.Client(
+            timeout=self.timeout,
+            limits=httpx.Limits(max_keepalive_connections=10, keepalive_expiry=30.0),
+        )
+
+    def close(self) -> None:
+        """Close the pooled HTTP client (releases keep-alive connections)."""
+        self._http.close()
+
+    def __enter__(self) -> "WalrusClient":
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.close()
 
     @staticmethod
     def _order(preferred: str | None, fallbacks: list[str]) -> list[str]:
@@ -153,10 +175,11 @@ class WalrusClient:
         for base in self.publishers:
             url = f"{base.rstrip('/')}/v1/blobs"
             try:
-                with httpx.Client(timeout=self.timeout) as client:
-                    resp = client.put(url, params={"epochs": self.epochs}, content=data)
-                    resp.raise_for_status()
-                    body = resp.json()
+                resp = self._http.put(
+                    url, params={"epochs": self.epochs}, content=data
+                )
+                resp.raise_for_status()
+                body = resp.json()
             except Exception as exc:  # noqa: BLE001 - try next node
                 last_error = exc
                 continue
@@ -180,13 +203,12 @@ class WalrusClient:
         for base in self.aggregators:
             url = f"{base.rstrip('/')}/v1/blobs/{blob_id}"
             try:
-                with httpx.Client(timeout=self.timeout) as client:
-                    resp = client.get(url)
-                    if resp.status_code == 404:
-                        not_found = True
-                        continue
-                    resp.raise_for_status()
-                    return resp.content
+                resp = self._http.get(url)
+                if resp.status_code == 404:
+                    not_found = True
+                    continue
+                resp.raise_for_status()
+                return resp.content
             except Exception as exc:  # noqa: BLE001 - try next node
                 last_error = exc
                 continue
