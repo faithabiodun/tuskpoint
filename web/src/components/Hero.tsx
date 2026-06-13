@@ -22,7 +22,7 @@ export function Hero() {
           {/* Floating mark */}
           <LogoMark
             idPrefix="hero"
-            className="h-20 w-20 animate-float drop-shadow-[0_8px_30px_rgba(255,107,44,0.35)]"
+            className="h-20 w-20 animate-float drop-shadow-[0_8px_30px_rgba(47,212,192,0.35)]"
           />
 
           <p className="animate-fade-up mt-6 eyebrow">

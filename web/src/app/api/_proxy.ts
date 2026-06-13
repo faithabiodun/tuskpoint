@@ -57,7 +57,7 @@ export async function proxy(path: string, init: ProxyInit = {}) {
   } catch (err) {
     const msg =
       err instanceof Error && err.name === "TimeoutError"
-        ? "The live engine is waking up (free-tier cold start). Try again in a moment."
+        ? "Loading… the live engine is starting up. Try again in a moment."
         : "Could not reach the live engine.";
     return NextResponse.json({ error: msg }, { status: 504 });
   }

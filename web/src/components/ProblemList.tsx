@@ -29,8 +29,7 @@ export function ProblemList() {
       <div className="container-page">
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
-            <p className="eyebrow-muted">The problem</p>
-            <h2 className="display-sm mt-5 text-display-sm font-extrabold tracking-tight text-cream">
+            <h2 className="display-sm text-display-sm font-extrabold tracking-tight text-cream">
               Agents forget the moment they crash.
             </h2>
             <p className="mt-5 max-w-md text-slate-400">

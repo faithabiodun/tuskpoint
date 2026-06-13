@@ -176,8 +176,8 @@ export function Dashboard() {
       {waking && (
         <div className="mb-6 flex items-center gap-3 rounded-xl border border-flame/20 bg-flame/5 px-4 py-3 text-sm text-flame">
           <span className="h-2 w-2 animate-pulse rounded-full bg-flame" />
-          Waking the live engine (free-tier cold start)… this can take up to a
-          minute on the first request.
+          Loading the live engine… this can take up to a minute on the first
+          request.
         </div>
       )}
       {error && !waking && (
