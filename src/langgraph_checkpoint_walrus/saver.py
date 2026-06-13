@@ -27,6 +27,7 @@ import time
 import uuid
 import base64
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Iterator, AsyncIterator, Sequence
 
 from langchain_core.runnables import RunnableConfig
@@ -142,6 +143,39 @@ class WalrusSaver(BaseCheckpointSaver[str]):
             self._manifest_ids[manifest.thread_id] = blob_id
             self._save_threads_cache()
         return blob_id
+
+    def _read_blobs(self, blob_ids: Sequence[str]) -> dict[str, bytes | Exception]:
+        """Fetch many blobs concurrently, returning ``blob_id -> bytes | error``.
+
+        ``list`` and ``verify_trail`` walk a whole thread, which otherwise means
+        one network round-trip per checkpoint, strictly back-to-back. Fanning the
+        reads out across a small thread pool turns N sequential round-trips into
+        roughly one — the blob store is content-addressed and stateless, so the
+        order they complete in doesn't matter. Errors are captured per blob so a
+        single bad read doesn't sink the others (``verify_trail`` reports them).
+        """
+        unique = list(dict.fromkeys(blob_ids))
+        if len(unique) <= 1:
+            results: dict[str, bytes | Exception] = {}
+            for bid in unique:
+                try:
+                    results[bid] = self.client.read(bid)
+                except Exception as exc:  # noqa: BLE001 - captured per blob
+                    results[bid] = exc
+            return results
+
+        results = {}
+
+        def _one(bid: str) -> tuple[str, bytes | Exception]:
+            try:
+                return bid, self.client.read(bid)
+            except Exception as exc:  # noqa: BLE001 - captured per blob
+                return bid, exc
+
+        with ThreadPoolExecutor(max_workers=min(8, len(unique))) as pool:
+            for bid, value in pool.map(_one, unique):
+                results[bid] = value
+        return results
 
     # ------------------------------------------------------------------
     # Envelope pack / unpack
@@ -361,15 +395,27 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         manifest = self._load_manifest(thread_id)
 
         before_id = get_checkpoint_id(before) if before else None
-        count = 0
+
+        # Resolve which checkpoints are in range first, then fetch their blobs
+        # concurrently — one parallel batch instead of a read per checkpoint.
+        candidates: list[tuple[str, Any]] = []
         for checkpoint_id in manifest.ordered_ids(newest_first=True):
             if before_id and checkpoint_id >= before_id:
                 continue
             entry = manifest.get(checkpoint_id)
             if entry is None:
                 continue
+            candidates.append((checkpoint_id, entry))
 
-            env = self._unpack_envelope(self.client.read(entry.blob_id))
+        blobs = self._read_blobs([entry.blob_id for _, entry in candidates])
+
+        count = 0
+        for checkpoint_id, entry in candidates:
+            raw = blobs.get(entry.blob_id)
+            if isinstance(raw, Exception) or raw is None:
+                # Skip an unreadable blob rather than aborting the whole listing.
+                continue
+            env = self._unpack_envelope(raw)
             tup = self._envelope_to_tuple(
                 thread_id, checkpoint_ns, checkpoint_id, env
             )
@@ -573,7 +619,13 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         steps: list[dict[str, Any]] = []
         verified = 0
 
-        for cid in manifest.ordered_ids(newest_first=False):
+        ordered = list(manifest.ordered_ids(newest_first=False))
+        # Fetch every checkpoint blob concurrently up front, then verify locally.
+        blobs = self._read_blobs(
+            [e.blob_id for cid in ordered if (e := manifest.get(cid)) is not None]
+        )
+
+        for cid in ordered:
             entry = manifest.get(cid)
             assert entry is not None  # ids come from the manifest itself
             step: dict[str, Any] = {
@@ -584,8 +636,10 @@ class WalrusSaver(BaseCheckpointSaver[str]):
                 "ok": False,
                 "error": None,
             }
+            raw = blobs.get(entry.blob_id)
             try:
-                raw = self.client.read(entry.blob_id)
+                if isinstance(raw, Exception):
+                    raise raw
                 self._unpack_envelope(raw)  # raises if corrupt/altered
                 step["ok"] = True
                 verified += 1
