@@ -49,8 +49,33 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} TuskPoint.</p>
-          <p className="font-mono uppercase tracking-[0.18em]">
-            Walrus · LangGraph · MemWal · MCP
+          <p className="flex items-center gap-2 font-mono uppercase tracking-[0.18em]">
+            <a
+              href="https://www.walrus.xyz"
+              target="_blank"
+              rel="noreferrer"
+              className="link-muted"
+            >
+              Walrus
+            </a>
+            <span aria-hidden>·</span>
+            <a
+              href="https://www.walrus.xyz"
+              target="_blank"
+              rel="noreferrer"
+              className="link-muted"
+            >
+              MemWal
+            </a>
+            <span aria-hidden>·</span>
+            <a
+              href="https://sui.io"
+              target="_blank"
+              rel="noreferrer"
+              className="link-muted"
+            >
+              Sui
+            </a>
           </p>
         </div>
       </div>

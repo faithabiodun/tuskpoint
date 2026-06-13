@@ -1,6 +1,8 @@
 # Secrets — never commit
 .env
 .walrus_threads.json
+*.local.txt
+DEPLOY_VALUES.local.txt
 
 # Demo / local runtime artifacts
 demo/.demo_fake_blobs.pkl
@@ -30,6 +32,7 @@ next-env.d.ts
 
 # Local tooling
 .claude/
+.tools/
 
 # OS / editor
 .DS_Store

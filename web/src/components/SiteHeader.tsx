@@ -3,7 +3,6 @@ import { REPO_URL } from "@/lib/data";
 import { Logo } from "./Logo";
 
 const NAV = [
-  { href: "/#problem", label: "Problem" },
   { href: "/#tools", label: "Tools" },
   { href: "/#architecture", label: "How it works" },
   { href: "/dashboard", label: "Run" },
