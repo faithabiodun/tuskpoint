@@ -7,50 +7,51 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // TuskPoint palette — dark, walrus-deep navy with cyan/teal accents.
+        // TuskPoint palette — deep teal-ink base matching the Walrus brand.
         ink: {
-          950: "#070b14",
-          900: "#0a0f1c",
-          800: "#0f1626",
-          700: "#161f33",
-          600: "#1e2942",
-          500: "#2a3754",
+          950: "#03100f",
+          900: "#061817",
+          800: "#0a221f",
+          700: "#102e2a",
+          600: "#173d38",
+          500: "#214f48",
         },
-        // Primary brand accent — the warm tusk/checkpoint glow from the logo.
+        // Primary brand accent — Walrus mint/teal (replaces the old flame orange).
+        // Kept under the `flame` token name so every component inherits it.
         flame: {
-          DEFAULT: "#ff6b2c",
-          soft: "#ff8a52",
-          bright: "#ff7a3c",
-          deep: "#e8390a",
-          ember: "#ffd9b0",
+          DEFAULT: "#2fd4c0",
+          soft: "#6ee7d6",
+          bright: "#48ddca",
+          deep: "#0fb3a1",
+          ember: "#d4f7f1",
         },
-        // Secondary accent — retained for subtle contrast accents only.
+        // Secondary accent — Walrus mint highlight.
         teal: {
-          DEFAULT: "#22d3ee",
-          soft: "#67e8f9",
-          deep: "#0891b2",
+          DEFAULT: "#34d2c0",
+          soft: "#99efe4",
+          deep: "#0e9a8b",
         },
         accent: {
-          DEFAULT: "#7c5cff",
-          soft: "#a78bfa",
+          DEFAULT: "#5fe0cf",
+          soft: "#a7f0e6",
         },
-        line: "rgba(255,255,255,0.08)",
+        line: "rgba(153,239,228,0.10)",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(255,107,44,0.18), 0 10px 44px -10px rgba(255,107,44,0.35)",
+        glow: "0 0 0 1px rgba(47,212,192,0.20), 0 10px 44px -10px rgba(47,212,192,0.38)",
         card: "0 1px 0 0 rgba(255,255,255,0.04) inset, 0 8px 30px -12px rgba(0,0,0,0.6)",
       },
       backgroundImage: {
         "grid-faint":
           "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)",
         "radial-flame":
-          "radial-gradient(60% 50% at 50% 0%, rgba(255,107,44,0.20) 0%, rgba(232,57,10,0.06) 42%, transparent 76%)",
+          "radial-gradient(60% 50% at 50% 0%, rgba(47,212,192,0.20) 0%, rgba(15,179,161,0.06) 42%, transparent 76%)",
         "radial-teal":
-          "radial-gradient(60% 50% at 50% 0%, rgba(34,211,238,0.18) 0%, rgba(124,92,255,0.06) 40%, transparent 75%)",
+          "radial-gradient(60% 50% at 50% 0%, rgba(52,210,192,0.18) 0%, rgba(153,239,228,0.06) 40%, transparent 75%)",
       },
       keyframes: {
         "fade-up": {

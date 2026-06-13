@@ -27,9 +27,9 @@ export function LogoMark({
     >
       <defs>
         <radialGradient id={halo} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ff7a3c" stopOpacity="0.45" />
-          <stop offset="45%" stopColor="#ff5a1f" stopOpacity="0.14" />
-          <stop offset="100%" stopColor="#ff5a1f" stopOpacity="0" />
+          <stop offset="0%" stopColor="#48ddca" stopOpacity="0.5" />
+          <stop offset="45%" stopColor="#0fb3a1" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#0fb3a1" stopOpacity="0" />
         </radialGradient>
         <linearGradient id={ivory} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#fdfaf2" />
@@ -44,13 +44,13 @@ export function LogoMark({
         </linearGradient>
         <radialGradient id={core} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="30%" stopColor="#ffd9b0" />
-          <stop offset="65%" stopColor="#ff6b2c" />
-          <stop offset="100%" stopColor="#e8390a" />
+          <stop offset="30%" stopColor="#d4f7f1" />
+          <stop offset="65%" stopColor="#2fd4c0" />
+          <stop offset="100%" stopColor="#0fb3a1" />
         </radialGradient>
         <linearGradient id={trail} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ff7a3c" stopOpacity="0" />
-          <stop offset="100%" stopColor="#ff7a3c" stopOpacity="0.85" />
+          <stop offset="0%" stopColor="#48ddca" stopOpacity="0" />
+          <stop offset="100%" stopColor="#48ddca" stopOpacity="0.85" />
         </linearGradient>
       </defs>
 
@@ -82,10 +82,10 @@ export function LogoMark({
           opacity="0.55"
         />
         <g opacity="0.85">
-          <circle cx="-120" cy="-58" r="3" fill="#ff7a3c" />
-          <circle cx="-40" cy="-78" r="3.4" fill="#ff7a3c" />
-          <circle cx="55" cy="-62" r="3.8" fill="#ff7a3c" />
-          <circle cx="125" cy="-22" r="4.4" fill="#ff7a3c" />
+          <circle cx="-120" cy="-58" r="3" fill="#48ddca" />
+          <circle cx="-40" cy="-78" r="3.4" fill="#48ddca" />
+          <circle cx="55" cy="-62" r="3.8" fill="#48ddca" />
+          <circle cx="125" cy="-22" r="4.4" fill="#48ddca" />
         </g>
         <path
           d="M 90 -50 C 130 -14, 162 24, 184 66"
@@ -96,10 +96,10 @@ export function LogoMark({
           strokeDasharray="2 7"
         />
         <circle cx="184" cy="66" r="46" fill={`url(#${halo})`} />
-        <circle cx="184" cy="66" r="22" fill="#ff5a1f" opacity="0.25" />
+        <circle cx="184" cy="66" r="22" fill="#0fb3a1" opacity="0.25" />
         <circle cx="184" cy="66" r="13" fill={`url(#${core})`} />
         <circle cx="180" cy="61" r="3.5" fill="#ffffff" opacity="0.95" />
-        <g stroke="#ff7a3c" strokeWidth="2" strokeLinecap="round" opacity="0.7">
+        <g stroke="#48ddca" strokeWidth="2" strokeLinecap="round" opacity="0.7">
           <line x1="184" y1="38" x2="184" y2="28" />
           <line x1="184" y1="94" x2="184" y2="104" />
           <line x1="212" y1="66" x2="222" y2="66" />

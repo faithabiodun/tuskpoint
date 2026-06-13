@@ -17,8 +17,8 @@ body {
   color: var(--cream);
   background-image: radial-gradient(
     90% 60% at 50% -10%,
-    rgba(255, 107, 44, 0.1) 0%,
-    rgba(232, 57, 10, 0.04) 38%,
+    rgba(47, 212, 192, 0.12) 0%,
+    rgba(15, 179, 161, 0.05) 38%,
     transparent 72%
   );
   background-attachment: fixed;
@@ -36,8 +36,8 @@ body::before {
 }
 
 ::selection {
-  background: rgba(255, 107, 44, 0.34);
-  color: #fff;
+  background: rgba(47, 212, 192, 0.34);
+  color: #03100f;
 }
 
 ::-webkit-scrollbar {
@@ -113,7 +113,7 @@ body::before {
 
   /* aeroplane-style status line: walrus.certified · checkpoint.saved */
   .status-dot {
-    @apply inline-block h-1.5 w-1.5 rounded-full bg-flame shadow-[0_0_8px_2px_rgba(255,107,44,0.5)];
+    @apply inline-block h-1.5 w-1.5 rounded-full bg-flame shadow-[0_0_8px_2px_rgba(47,212,192,0.5)];
   }
 
   .hairline {
@@ -151,6 +151,6 @@ body::before {
     color: var(--cream);
   }
   .text-flame {
-    color: #ff6b2c;
+    color: #2fd4c0;
   }
 }

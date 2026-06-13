@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "TuskPoint" }],
   icons: {
-    icon: [{ url: "/icon.svg?v=2", type: "image/svg+xml" }],
-    shortcut: ["/icon.svg?v=2"],
-    apple: ["/icon.svg?v=2"],
+    icon: [{ url: "/icon.svg?v=3", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg?v=3"],
+    apple: ["/icon.svg?v=3"],
   },
   openGraph: {
     title: "TuskPoint — Verifiable LangGraph checkpoints on Walrus",
