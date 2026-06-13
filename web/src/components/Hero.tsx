@@ -25,12 +25,7 @@ export function Hero() {
             className="h-20 w-20 animate-float drop-shadow-[0_8px_30px_rgba(47,212,192,0.35)]"
           />
 
-          <p className="animate-fade-up mt-6 eyebrow">
-            <span className="status-dot" />
-            LangGraph checkpoints · on Walrus
-          </p>
-
-          <h1 className="display animate-fade-up mt-6 text-cream">
+          <h1 className="display animate-fade-up mt-10 text-cream">
             Save agent state to a{" "}
             <span className="gradient-text">network that remembers.</span>
           </h1>

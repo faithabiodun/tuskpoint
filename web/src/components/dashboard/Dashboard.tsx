@@ -109,11 +109,7 @@ export function Dashboard() {
     <div className="container-page py-12 sm:py-16">
       {/* Header */}
       <div className="mb-8 max-w-3xl">
-        <p className="eyebrow">
-          <span className="status-dot" />
-          Live engine · real Walrus
-        </p>
-        <h1 className="display-sm mt-5 text-display-sm font-extrabold tracking-tight text-cream">
+        <h1 className="display-sm text-display-sm font-extrabold tracking-tight text-cream">
           The checkpoint run, end to end.
         </h1>
         <p className="mt-5 text-sm text-slate-400 sm:text-base">
