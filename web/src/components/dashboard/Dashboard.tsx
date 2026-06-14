@@ -12,9 +12,10 @@ import { StateViewer } from "./StateViewer";
 import { DiffPanel } from "./DiffPanel";
 import { SearchPanel } from "./SearchPanel";
 import { WritePanel } from "./WritePanel";
+import { RollbackPanel } from "./RollbackPanel";
 import { VerifyPanel } from "./VerifyPanel";
 
-type Tab = "inspect" | "diff" | "search" | "write" | "verify";
+type Tab = "inspect" | "diff" | "search" | "write" | "handoff" | "verify";
 
 // Parse the engine's summary prefix "[thread=… step=N] sentence" into the
 // pieces the UI shows. The live list endpoint mirrors the MCP tool, which
@@ -102,6 +103,7 @@ export function Dashboard() {
     ["diff", "Diff"],
     ["search", "Search"],
     ["write", "Save / Fork"],
+    ["handoff", "Rollback / Handoff"],
     ["verify", "Verify"],
   ];
 
@@ -233,6 +235,20 @@ export function Dashboard() {
 
           {tab === "write" && (
             <WritePanel
+              threadId={threadId}
+              items={items}
+              network={health?.network}
+              onChanged={refresh}
+              onOpenThread={(id) => {
+                setThreadId(id);
+                loadThread(id);
+                setTab("inspect");
+              }}
+            />
+          )}
+
+          {tab === "handoff" && (
+            <RollbackPanel
               threadId={threadId}
               items={items}
               network={health?.network}

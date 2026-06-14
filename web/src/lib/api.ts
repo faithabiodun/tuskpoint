@@ -59,13 +59,14 @@ export type ForkResult = {
   forked_from: string;
 };
 
+export type VerifyStatus = "PASS" | "FAIL" | "UNVERIFIED";
+
 export type VerifyStep = {
   checkpoint_id: string;
   blob_id: string;
-  parent: string | null;
-  forked_from: string | null;
-  ok: boolean;
-  error: string | null;
+  stored_hash: string | null;
+  recomputed_hash: string | null;
+  status: VerifyStatus;
 };
 
 export type VerifyResult = {
@@ -73,7 +74,34 @@ export type VerifyResult = {
   ok: boolean;
   checkpoint_count: number;
   verified: number;
+  tampered_count: number;
   steps: VerifyStep[];
+};
+
+export type RollbackResult = {
+  thread_id: string;
+  checkpoint_id: string;
+  restored_from: string;
+  blob_id: string;
+  rolled_back_from: string;
+};
+
+export type HandoffDescriptor = {
+  source: string;
+  thread_id: string;
+  checkpoint_id: string;
+  blob_id: string;
+  blob_sha256: string | null;
+  to_agent: string | null;
+  summary: string;
+};
+
+export type AdoptResult = {
+  adopted_from: string;
+  new_thread_id: string;
+  checkpoint_id: string;
+  blob_id: string;
+  verified: boolean;
 };
 
 export class ApiError extends Error {
@@ -138,6 +166,21 @@ export const api = {
     }),
   verify: (id: string) =>
     call<VerifyResult>(`/api/thread/${encodeURIComponent(id)}/verify`),
+  rollback: (id: string, checkpoint_id: string) =>
+    call<RollbackResult>(`/api/thread/${encodeURIComponent(id)}/rollback`, {
+      method: "POST",
+      body: JSON.stringify({ checkpoint_id }),
+    }),
+  handoff: (id: string, checkpoint_id: string, to_agent?: string) =>
+    call<HandoffDescriptor>(`/api/thread/${encodeURIComponent(id)}/handoff`, {
+      method: "POST",
+      body: JSON.stringify({ checkpoint_id, to_agent: to_agent ?? null }),
+    }),
+  adopt: (handoff: HandoffDescriptor, new_thread_id: string) =>
+    call<AdoptResult>("/api/adopt", {
+      method: "POST",
+      body: JSON.stringify({ handoff, new_thread_id }),
+    }),
 };
 
 // Default aggregator for clickable blob evidence links. The live demo runs on
