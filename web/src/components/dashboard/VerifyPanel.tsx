@@ -72,8 +72,10 @@ export function VerifyPanel({ threadId }: { threadId: string }) {
               }`}
             />
             {result.ok
-              ? `Trail intact — ${result.verified}/${result.checkpoint_count} blobs verified.`
-              : `Trail FAILED — ${result.verified}/${result.checkpoint_count} verified.`}
+              ? `Trail intact — ${result.verified}/${result.checkpoint_count} blobs hash-verified, 0 tampered.`
+              : result.tampered_count > 0
+                ? `Trail FAILED — ${result.tampered_count} blob(s) tampered of ${result.checkpoint_count}.`
+                : `Unverifiable — ${result.verified}/${result.checkpoint_count} carry a stored hash.`}
           </div>
 
           <ol className="mt-4 space-y-2">
@@ -84,18 +86,47 @@ export function VerifyPanel({ threadId }: { threadId: string }) {
               >
                 <span
                   className={`mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full ${
-                    s.ok ? "bg-flame" : "bg-rose-400"
+                    s.status === "PASS"
+                      ? "bg-flame"
+                      : s.status === "FAIL"
+                        ? "bg-rose-400"
+                        : "bg-slate-600"
                   }`}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="break-all font-mono text-xs text-slate-300">
-                    {s.checkpoint_id}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold tracking-wide ${
+                        s.status === "PASS"
+                          ? "bg-flame/10 text-flame"
+                          : s.status === "FAIL"
+                            ? "bg-rose-500/10 text-rose-300"
+                            : "bg-slate-700/40 text-slate-400"
+                      }`}
+                    >
+                      {s.status}
+                    </span>
+                    <p className="break-all font-mono text-xs text-slate-300">
+                      {s.checkpoint_id}
+                    </p>
+                  </div>
                   <p className="mt-0.5 break-all font-mono text-[10px] text-slate-600">
                     blob {s.blob_id}
                   </p>
-                  {s.error && (
-                    <p className="mt-1 text-xs text-rose-300">{s.error}</p>
+                  {s.stored_hash ? (
+                    <p className="mt-1 break-all font-mono text-[10px] text-slate-600">
+                      sha256 {s.recomputed_hash ?? "—"}
+                      {s.status === "PASS" ? " ✓ matches stored" : ""}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-[10px] text-slate-600">
+                      no stored hash (written before integrity proofs)
+                    </p>
+                  )}
+                  {s.status === "FAIL" && (
+                    <p className="mt-1 text-xs text-rose-300">
+                      recomputed hash does not match stored — blob changed.
+                    </p>
                   )}
                 </div>
               </li>
