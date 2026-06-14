@@ -43,6 +43,7 @@ from langgraph.checkpoint.base import (
     get_checkpoint_id,
     get_checkpoint_metadata,
 )
+from langgraph.checkpoint.base.id import uuid6
 
 from .walrus_client import BlobStore, InMemoryWalrusClient
 from .manifest import CheckpointEntry, ThreadManifest
@@ -603,6 +604,113 @@ class WalrusSaver(BaseCheckpointSaver[str]):
             "checkpoint_id": new_checkpoint_id,
             "blob_id": blob_id,
             "forked_from": forked_from,
+        }
+
+    # ------------------------------------------------------------------
+    # Rollback — "undo" to an earlier checkpoint on the SAME thread
+    # ------------------------------------------------------------------
+
+    def rollback_to(
+        self, thread_id: str, checkpoint_id: str
+    ) -> dict[str, Any]:
+        """Restore an earlier checkpoint's state as the new head of its thread.
+
+        Unlike :meth:`fork` (which branches into a *new* thread), rollback stays
+        on the same thread: it reads the exact ``checkpoint_id`` and writes its
+        state back as a brand-new checkpoint at the head. Crucially this is
+        *append-only* — the intervening checkpoints are never deleted, so the
+        thread's verifiable trail stays intact and the rollback itself is an
+        auditable event. The new head records ``rolled_back_from`` (the
+        checkpoint it restored) and parents off the previous head, so the history
+        reads: ...-> bad state -> (rollback) -> restored good state.
+
+        This is the durable version of LangGraph's "update state to a past
+        checkpoint": after a rollback, ``get_tuple``/``resume`` return the
+        restored state and the agent continues from there.
+
+        Args:
+            thread_id: The thread to roll back.
+            checkpoint_id: The earlier checkpoint whose state to restore.
+
+        Returns:
+            ``{"thread_id", "checkpoint_id" (the new head), "restored_from",
+            "blob_id", "rolled_back_from"}``.
+
+        Raises:
+            KeyError: if ``checkpoint_id`` is not found in the thread.
+        """
+        manifest = self._load_manifest(thread_id)
+        target = manifest.get(checkpoint_id)
+        if target is None:
+            raise KeyError(
+                f"checkpoint not found: {thread_id}:{checkpoint_id}"
+            )
+
+        source = self.get_tuple(
+            {
+                "configurable": {
+                    "thread_id": thread_id,
+                    "checkpoint_id": checkpoint_id,
+                }
+            }
+        )
+        if source is None:
+            raise KeyError(
+                f"checkpoint not found: {thread_id}:{checkpoint_id}"
+            )
+
+        prev_head = manifest.latest_id()
+        # Use a time-ordered UUIDv6 like LangGraph so this new checkpoint sorts
+        # as the thread's latest (lexical max == chronological latest).
+        new_checkpoint_id = str(uuid6(clock_seq=-2))
+        ts = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
+
+        # New head: the restored state under a fresh identity, parented off the
+        # previous head so the rollback is a visible step in the chain.
+        checkpoint: Checkpoint = {
+            **source.checkpoint,
+            "id": new_checkpoint_id,
+            "ts": ts,
+        }
+        metadata: CheckpointMetadata = {
+            **(source.metadata or {}),
+            "source": "rollback",
+            "rolled_back_from": checkpoint_id,
+        }
+
+        blob = self._pack_envelope(checkpoint, metadata, prev_head, "")
+        blob_sha256 = _sha256(blob)
+        blob_id = self.client.store(blob)
+
+        summary = ""
+        if self.memwal_layer is not None:
+            summary = self.memwal_layer.summarize_and_remember(
+                thread_id=thread_id,
+                checkpoint_id=new_checkpoint_id,
+                checkpoint=checkpoint,
+                metadata=metadata,
+            )
+
+        manifest.add(
+            new_checkpoint_id,
+            CheckpointEntry(
+                blob_id=blob_id,
+                parent_checkpoint_id=prev_head,
+                timestamp=ts,
+                summary=summary,
+                checkpoint_ns="",
+                rolled_back_from=checkpoint_id,
+                blob_sha256=blob_sha256,
+            ),
+        )
+        self._store_manifest(manifest)
+
+        return {
+            "thread_id": thread_id,
+            "checkpoint_id": new_checkpoint_id,
+            "restored_from": checkpoint_id,
+            "blob_id": blob_id,
+            "rolled_back_from": checkpoint_id,
         }
 
     # ------------------------------------------------------------------

@@ -186,6 +186,10 @@ class ForkBody(BaseModel):
     new_thread_id: str
 
 
+class RollbackBody(BaseModel):
+    checkpoint_id: str
+
+
 @app.get("/health")
 def health() -> dict[str, Any]:
     return {
@@ -354,6 +358,22 @@ def fork(
         raise HTTPException(status_code=404, detail=f"source checkpoint not found: {exc}")
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
+
+
+@app.post("/thread/{thread_id}/rollback")
+def rollback(
+    thread_id: str,
+    body: RollbackBody,
+    x_tuskpoint_token: str | None = Header(default=None),
+) -> dict[str, Any]:
+    """Restore an earlier checkpoint as the new head (mirrors checkpoint_rollback)."""
+    _require_token(x_tuskpoint_token)
+    try:
+        return _saver.rollback_to(
+            thread_id=thread_id, checkpoint_id=body.checkpoint_id
+        )
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"checkpoint not found: {exc}")
 
 
 @app.get("/thread/{thread_id}/verify")
