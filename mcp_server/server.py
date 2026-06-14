@@ -340,6 +340,71 @@ def checkpoint_rollback(thread_id: str, checkpoint_id: str) -> str:
     return json.dumps(result)
 
 
+# ----------------------------------------------------------------------
+# Cross-agent handoff — pass a checkpoint between agents/processes
+# ----------------------------------------------------------------------
+
+@mcp.tool()
+def handoff_checkpoint(
+    thread_id: str, checkpoint_id: str, to_agent: str = ""
+) -> str:
+    """Export a checkpoint so a DIFFERENT agent can pick up exactly where you left off.
+
+    Emits a small portable descriptor (the Walrus blob ID + its SHA-256 +
+    provenance) — not a copy of the state. Hand the returned JSON to another
+    agent/process, which calls ``adopt_checkpoint`` to re-fetch the same blob
+    from Walrus and verify the hash. The state crosses the boundary
+    tamper-evidently with nothing trusted in between; no keys or Sui gating.
+
+    Args:
+        thread_id: The thread holding the checkpoint to hand off.
+        checkpoint_id: The exact checkpoint to hand off.
+        to_agent: Optional label for the intended recipient (audit only; does
+            not restrict who can adopt).
+
+    Returns:
+        A JSON descriptor ``{"source", "thread_id", "checkpoint_id", "blob_id",
+        "blob_sha256", "to_agent", "summary"}`` to pass to ``adopt_checkpoint``.
+    """
+    try:
+        result = _saver.handoff_checkpoint(
+            thread_id, checkpoint_id, to_agent=to_agent or None
+        )
+    except KeyError as exc:
+        return json.dumps({"error": f"checkpoint not found: {exc}"})
+    return json.dumps(result)
+
+
+@mcp.tool()
+def adopt_checkpoint(handoff_json: str, new_thread_id: str) -> str:
+    """Adopt a handed-off checkpoint as the start of your own new thread.
+
+    Takes the JSON descriptor from ``handoff_checkpoint``, re-fetches the blob
+    from Walrus, verifies its SHA-256 against the sender's hash (rejecting any
+    tampered blob), and writes it as the genesis of ``new_thread_id`` with an
+    ``adopted_from`` lineage link. You then resume from this state as your own.
+
+    Args:
+        handoff_json: The JSON descriptor returned by ``handoff_checkpoint``.
+        new_thread_id: A fresh thread ID to adopt into (must be empty).
+
+    Returns:
+        A JSON string ``{"adopted_from", "new_thread_id", "checkpoint_id",
+        "blob_id", "verified"}``.
+    """
+    try:
+        handoff = json.loads(handoff_json)
+    except json.JSONDecodeError as exc:
+        return json.dumps({"error": f"invalid handoff JSON: {exc}"})
+    try:
+        result = _saver.adopt_checkpoint(handoff, new_thread_id)
+    except KeyError as exc:
+        return json.dumps({"error": f"handoff blob not found: {exc}"})
+    except ValueError as exc:
+        return json.dumps({"error": str(exc)})
+    return json.dumps(result)
+
+
 @mcp.tool()
 def verify_trail(thread_id: str) -> str:
     """Cryptographically verify a thread's checkpoint chain (tamper-evident).
@@ -392,6 +457,8 @@ def tuskpoint_info() -> str:
         {"name": "checkpoint_search", "summary": "Semantic recall over checkpoint summaries (MemWal)."},
         {"name": "checkpoint_fork", "summary": "Branch a checkpoint into a new thread to replay a different path."},
         {"name": "checkpoint_rollback", "summary": "Restore an earlier checkpoint as the new head of the same thread (auditable undo)."},
+        {"name": "handoff_checkpoint", "summary": "Export a checkpoint descriptor for another agent to adopt."},
+        {"name": "adopt_checkpoint", "summary": "Adopt a handed-off checkpoint (hash-verified) as a new thread's start."},
         {"name": "verify_trail", "summary": "Audit a thread's blob chain for tamper-evident integrity."},
         {"name": "tuskpoint_info", "summary": "This tool: describe the server and emit client setup."},
     ]

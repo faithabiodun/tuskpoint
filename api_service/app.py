@@ -190,6 +190,16 @@ class RollbackBody(BaseModel):
     checkpoint_id: str
 
 
+class HandoffBody(BaseModel):
+    checkpoint_id: str
+    to_agent: str | None = None
+
+
+class AdoptBody(BaseModel):
+    handoff: dict[str, Any]
+    new_thread_id: str
+
+
 @app.get("/health")
 def health() -> dict[str, Any]:
     return {
@@ -374,6 +384,37 @@ def rollback(
         )
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"checkpoint not found: {exc}")
+
+
+@app.post("/thread/{thread_id}/handoff")
+def handoff(
+    thread_id: str,
+    body: HandoffBody,
+    x_tuskpoint_token: str | None = Header(default=None),
+) -> dict[str, Any]:
+    """Export a checkpoint descriptor for another agent (mirrors handoff_checkpoint)."""
+    _require_token(x_tuskpoint_token)
+    try:
+        return _saver.handoff_checkpoint(
+            thread_id, body.checkpoint_id, to_agent=body.to_agent
+        )
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"checkpoint not found: {exc}")
+
+
+@app.post("/adopt")
+def adopt(
+    body: AdoptBody,
+    x_tuskpoint_token: str | None = Header(default=None),
+) -> dict[str, Any]:
+    """Adopt a handed-off checkpoint into a new thread (mirrors adopt_checkpoint)."""
+    _require_token(x_tuskpoint_token)
+    try:
+        return _saver.adopt_checkpoint(body.handoff, body.new_thread_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"handoff blob not found: {exc}")
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
 
 
 @app.get("/thread/{thread_id}/verify")
