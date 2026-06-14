@@ -91,13 +91,43 @@ export const TOOLS: Tool[] = [
     example: 'checkpoint_fork("run-42", "0c3b84d1-…", "run-42-alt")',
   },
   {
+    name: "checkpoint_rollback",
+    signature: "checkpoint_rollback(thread_id, checkpoint_id)",
+    summary:
+      "Durable, auditable undo. Re-writes an earlier checkpoint's state as a new head of the same thread — append-only, so history (and the audit trail) stays intact.",
+    category: "Write",
+    glyph: "UNDO",
+    returns: "{ checkpoint_id, restored_from, blob_id, rolled_back_from }",
+    example: 'checkpoint_rollback("run-42", "0c3b84d1-…")',
+  },
+  {
+    name: "handoff_checkpoint",
+    signature: "handoff_checkpoint(thread_id, checkpoint_id, to_agent?)",
+    summary:
+      "Emit a tiny portable descriptor (blob id + SHA-256 + provenance) so another agent can adopt this exact state. No state is copied — only the Walrus pointer and its hash cross the boundary.",
+    category: "Write",
+    glyph: "HAND",
+    returns: "{ source, blob_id, blob_sha256, to_agent }",
+    example: 'handoff_checkpoint("run-42", "0c3b84d1-…", "agent-b")',
+  },
+  {
+    name: "adopt_checkpoint",
+    signature: "adopt_checkpoint(handoff_json, new_thread_id)",
+    summary:
+      "Adopt a handoff descriptor: re-fetch the blob from Walrus, verify its SHA-256 against the sender's, and write it as the genesis of a new thread. A tampered blob is rejected before it becomes state.",
+    category: "Write",
+    glyph: "ADOPT",
+    returns: "{ adopted_from, new_thread_id, checkpoint_id, verified }",
+    example: 'adopt_checkpoint(descriptor, "agent-b-run")',
+  },
+  {
     name: "verify_trail",
     signature: "verify_trail(thread_id)",
     summary:
-      "Audit a thread end-to-end. Re-fetches every content-addressed blob so tampering or corruption shows up as a failed step.",
+      "Audit a thread end-to-end. Re-fetches every content-addressed blob and recomputes its SHA-256, so tampering or corruption shows up as a FAIL step — cryptographic, not just a successful fetch.",
     category: "Read",
     glyph: "AUDIT",
-    returns: "{ ok, checkpoint_count, verified, steps[] }",
+    returns: "{ ok, checkpoint_count, verified, tampered_count, steps[] }",
     example: 'verify_trail("run-42")',
   },
 ];
@@ -172,7 +202,7 @@ export const STACK = [
   },
   {
     name: "MCP",
-    role: "Model Context Protocol — eight tools any agent can call.",
+    role: "Model Context Protocol — eleven tools any agent can call.",
   },
 ];
 

@@ -31,8 +31,10 @@ export function VerifyPanel({ threadId }: { threadId: string }) {
           </h2>
           <p className="mt-1 max-w-xl text-xs text-slate-500">
             Live <code className="text-slate-400">verify_trail</code> — re-fetches
-            every checkpoint&apos;s content-addressed Walrus blob in order and
-            confirms it still unpacks. Any tampering or corruption fails a step.
+            every checkpoint&apos;s Walrus blob and recomputes its SHA-256,
+            comparing it to the hash stored at write time. A match is a{" "}
+            <span className="text-flame">PASS</span>; a tampered or corrupt blob
+            is a <span className="text-rose-300">FAIL</span>.
           </p>
         </div>
         <button onClick={run} disabled={loading} className="btn-primary shrink-0">

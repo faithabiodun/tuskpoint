@@ -18,7 +18,7 @@ export const DOC_NAV: DocGroup[] = [
   {
     title: "Reference",
     links: [
-      { href: "/docs/tools", label: "The eight tools" },
+      { href: "/docs/tools", label: "The eleven tools" },
       { href: "/docs/clients", label: "Connect a client" },
     ],
   },
@@ -29,10 +29,6 @@ export const DOC_NAV: DocGroup[] = [
       { href: "/docs/audit", label: "Audit trail" },
       { href: "/docs/mainnet", label: "Walrus mainnet" },
     ],
-  },
-  {
-    title: "Project",
-    links: [{ href: "/docs/roadmap", label: "Roadmap" }],
   },
 ];
 

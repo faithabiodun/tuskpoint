@@ -20,10 +20,14 @@ HTTP responses match the MCP tool outputs exactly.
 | POST | `/search` `{query}` | `checkpoint_search` |
 | POST | `/thread/{id}/save` `{state}` | `checkpoint_save` *(token-gated)* |
 | POST | `/fork` `{source_thread_id,source_checkpoint_id,new_thread_id}` | `checkpoint_fork` *(token-gated)* |
+| POST | `/thread/{id}/rollback` `{checkpoint_id}` | `checkpoint_rollback` *(token-gated)* |
+| POST | `/thread/{id}/handoff` `{checkpoint_id,to_agent?}` | `handoff_checkpoint` *(token-gated)* |
+| POST | `/adopt` `{handoff,new_thread_id}` | `adopt_checkpoint` *(token-gated)* |
 | GET  | `/thread/{id}/verify` | `verify_trail` |
 
-Mutating routes (`/save`, `/fork`) require header `x-tuskpoint-token` matching
-`TUSKPOINT_API_TOKEN`. If that env var is unset, the gate is open (local dev).
+Mutating routes (`/save`, `/fork`, `/rollback`, `/handoff`, `/adopt`) require
+header `x-tuskpoint-token` matching `TUSKPOINT_API_TOKEN`. If that env var is
+unset, the gate is open (local dev).
 
 ## Run locally
 

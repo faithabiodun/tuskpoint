@@ -31,7 +31,7 @@ export default function ClientsPage() {
         intro={
           <>
             TuskPoint speaks the Model Context Protocol over stdio, so any
-            MCP-capable client can use all eight tools. Pick your client below —
+            MCP-capable client can use all eleven tools. Pick your client below —
             the config is the same shape everywhere; only the file location
             changes.
           </>

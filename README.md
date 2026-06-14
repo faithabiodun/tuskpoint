@@ -21,13 +21,19 @@ any agent (Claude, Cursor, Windsurf, …) can do all of this with a tool call.
   continues. The only thing kept locally is a blob pointer.
 - **Git for agent runs.** `checkpoint_fork` branches any checkpoint into a new
   thread so you can replay a different path without touching the original.
-- **Tamper-evident.** `verify_trail` re-fetches every blob in a thread; because
-  blob IDs are derived from content, corruption or tampering shows up as a
-  failed step.
+- **Cryptographically tamper-evident.** Every blob is SHA-256–hashed at write
+  time; `verify_trail` re-fetches each blob, recomputes its hash, and compares —
+  so a swapped or corrupted blob is a `FAIL`, not just a failed download.
+- **Durable rollback.** `checkpoint_rollback` re-writes an earlier state as a new
+  head of the same thread. Append-only: nothing is deleted, so the audit trail
+  stays intact and still verifies.
+- **Cross-agent hand-off.** `handoff_checkpoint` emits a tiny descriptor (blob id
+  + SHA-256); `adopt_checkpoint` re-fetches the blob, verifies the hash, and
+  adopts it as a new thread — a tampered blob is rejected before it becomes state.
 - **Searchable in plain English.** An optional MemWal layer writes a one-line
   summary per checkpoint, so an agent can recall its own past — pointers it then
   loads *exactly*.
-- **All-in-one MCP server.** Eight tools over stdio, plus `tuskpoint_info` which
+- **All-in-one MCP server.** Eleven tools over stdio, plus `tuskpoint_info` which
   returns ready-to-paste client config.
 
 ## Summary of MCP tools
@@ -42,7 +48,10 @@ The server (`mcp_server/server.py`) exposes these over stdio:
 | `checkpoint_list(thread_id)` | Read | List a thread's checkpoints, newest first, with lineage. |
 | `checkpoint_resume(thread_id)` | Read | Return the latest state so an agent can continue. |
 | `checkpoint_diff(thread_id, id_a, id_b)` | Read | Human-readable diff between two checkpoints. |
-| `verify_trail(thread_id)` | Read | Audit a thread's blob chain for tamper-evident integrity. |
+| `checkpoint_rollback(thread_id, checkpoint_id)` | Write | Durable, append-only undo: re-write an earlier state as a new head. |
+| `handoff_checkpoint(thread_id, checkpoint_id, to_agent?)` | Write | Emit a portable, hash-stamped descriptor for another agent. |
+| `adopt_checkpoint(handoff_json, new_thread_id)` | Write | Re-fetch + hash-verify a handoff and adopt it as a new thread. |
+| `verify_trail(thread_id)` | Read | Re-hash every blob and compare to the stored SHA-256 (PASS/FAIL/UNVERIFIED). |
 | `checkpoint_search(query)` | Discover | Semantic recall over checkpoint summaries (MemWal). |
 | `tuskpoint_info()` | Meta | Describe the server and emit copy-paste client config. |
 
@@ -88,11 +97,13 @@ starts a brand-new process that reads only the manifest blob ID from
 `.walrus_threads.json`, pulls the checkpoint back from Walrus, and resumes to
 completion.
 
-### 5. Try fork & audit
+### 5. Try fork, audit, rollback & hand-off
 
 ```bash
-python demo/run_demo.py --fork    # branch a checkpoint into a new thread
-python demo/run_demo.py --audit   # verify_trail over a thread's blob chain
+python demo/run_demo.py --fork      # branch a checkpoint into a new thread
+python demo/run_demo.py --audit     # verify_trail (SHA-256) over a thread
+python demo/run_demo.py --rollback  # append-only undo to an earlier checkpoint
+python demo/run_demo.py --handoff   # Agent A hands a checkpoint to Agent B
 ```
 
 ### 6. Start the MCP server
@@ -167,11 +178,11 @@ python -m pytest -m integration         # live Walrus round-trip + resume
 ```
 src/langgraph_checkpoint_walrus/
   walrus_client.py   BlobStore protocol, InMemoryWalrusClient, real WalrusClient
-  manifest.py        ThreadManifest / CheckpointEntry (id -> blob_id, lineage, forked_from)
-  saver.py           WalrusSaver: gzip envelope per checkpoint, fork(), verify_trail()
+  manifest.py        ThreadManifest / CheckpointEntry (id -> blob_id, lineage, blob_sha256)
+  saver.py           WalrusSaver: gzip envelope per checkpoint, fork/rollback/handoff/verify_trail
   memwal_layer.py    MemWalLayer: build_summary + summarize_and_remember + search
-mcp_server/server.py All-in-one MCP server: 8 checkpoint tools + tuskpoint_info (FastMCP)
-demo/                researcher→writer agent + crash/resume/fork/audit/semantic demos
+mcp_server/server.py All-in-one MCP server: 11 checkpoint tools + tuskpoint_info (FastMCP)
+demo/                researcher→writer agent + crash/resume/fork/audit/rollback/handoff/semantic demos
 scripts/             check_walrus.py, check_memwal.py (standalone proofs)
 web/                 Next.js site + docs (https://tuskpoint.vercel.app)
 tests/               unit (no network) + integration (live Walrus) suites
