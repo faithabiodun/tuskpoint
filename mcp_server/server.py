@@ -314,6 +314,33 @@ def checkpoint_fork(
 
 
 @mcp.tool()
+def checkpoint_rollback(thread_id: str, checkpoint_id: str) -> str:
+    """Roll a thread back to an earlier checkpoint (durable, auditable undo).
+
+    Restores the exact state at ``checkpoint_id`` as a brand-new checkpoint at
+    the head of the SAME thread. Unlike a fork, this stays on the thread so the
+    next ``checkpoint_resume`` continues from the restored state. It is
+    append-only: the intervening (e.g. bad) checkpoints are never deleted, so
+    the rollback is itself a visible, verifiable step and history stays intact.
+
+    Args:
+        thread_id: The thread to roll back.
+        checkpoint_id: The earlier checkpoint whose state to restore.
+
+    Returns:
+        A JSON string ``{"thread_id", "checkpoint_id" (the new head),
+        "restored_from", "blob_id", "rolled_back_from"}``.
+    """
+    try:
+        result = _saver.rollback_to(
+            thread_id=thread_id, checkpoint_id=checkpoint_id
+        )
+    except KeyError as exc:
+        return json.dumps({"error": f"checkpoint not found: {exc}"})
+    return json.dumps(result)
+
+
+@mcp.tool()
 def verify_trail(thread_id: str) -> str:
     """Cryptographically verify a thread's checkpoint chain (tamper-evident).
 
@@ -364,6 +391,7 @@ def tuskpoint_info() -> str:
         {"name": "checkpoint_diff", "summary": "Human-readable diff between two checkpoints."},
         {"name": "checkpoint_search", "summary": "Semantic recall over checkpoint summaries (MemWal)."},
         {"name": "checkpoint_fork", "summary": "Branch a checkpoint into a new thread to replay a different path."},
+        {"name": "checkpoint_rollback", "summary": "Restore an earlier checkpoint as the new head of the same thread (auditable undo)."},
         {"name": "verify_trail", "summary": "Audit a thread's blob chain for tamper-evident integrity."},
         {"name": "tuskpoint_info", "summary": "This tool: describe the server and emit client setup."},
     ]

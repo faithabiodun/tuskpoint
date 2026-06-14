@@ -36,6 +36,10 @@ class CheckpointEntry:
             write time. ``verify_trail`` re-fetches the blob and recomputes this
             to prove the stored bytes are unchanged. ``None`` for checkpoints
             written before integrity hashing existed (reported as UNVERIFIED).
+        rolled_back_from: When this checkpoint is the head produced by a
+            rollback, the ``checkpoint_id`` whose state it restored; ``None`` for
+            normal checkpoints. Rollback is append-only, so this records the undo
+            as an auditable event without erasing the intervening history.
     """
 
     blob_id: str
@@ -45,6 +49,7 @@ class CheckpointEntry:
     checkpoint_ns: str = ""
     forked_from: str | None = None
     blob_sha256: str | None = None
+    rolled_back_from: str | None = None
 
 
 @dataclass

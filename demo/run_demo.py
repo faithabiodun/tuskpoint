@@ -25,8 +25,10 @@ Usage:
                                              # into a new thread ("git for runs")
     python demo/run_demo.py --audit          # fake: run, then verify_trail the
                                              # thread's blob chain end-to-end
+    python demo/run_demo.py --rollback       # fake: run, then roll the thread
+                                             # back to its first checkpoint
 
-    Add --real to --fork / --audit to run them against live Walrus.
+    Add --real to --fork / --audit / --rollback to run them against live Walrus.
 """
 
 from __future__ import annotations
@@ -243,12 +245,61 @@ def run_audit(real: bool) -> None:
     report = saver.verify_trail(thread_id)
     print(
         f"[audit] Verified {report['verified']}/{report['checkpoint_count']} "
-        f"checkpoints. ok={report['ok']}"
+        f"checkpoints, {report['tampered_count']} tampered. ok={report['ok']}"
     )
     for step in report["steps"]:
-        mark = "OK " if step["ok"] else "BAD"
-        print(f"   [{mark}] {step['checkpoint_id']}  blob={step['blob_id']}")
+        print(
+            f"   [{step['status']:<10}] {step['checkpoint_id']}  "
+            f"blob={step['blob_id']}"
+        )
     print("[audit] Audit trail SUCCESS.\n" if report["ok"] else "[audit] FAILED.\n")
+
+
+def run_rollback(real: bool) -> None:
+    """Run the agent, then roll the thread back to its first checkpoint.
+
+    Rollback is a durable, auditable "undo": the early checkpoint's state is
+    written back as a new head of the SAME thread. The intervening checkpoints
+    are never deleted, so the thread's verifiable trail stays intact and the
+    rollback is itself a recorded step. After it, ``resume`` returns the
+    restored state.
+    """
+    client = _make_client(real)
+    saver = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
+    agent = build_agent(saver)
+
+    backend = "REAL Walrus network" if real else "in-memory fake"
+    thread_id = f"rollback-{os.getpid()}"
+    config = {"configurable": {"thread_id": thread_id}}
+    print(f"[rollback] Backend: {backend}")
+    print(f"[rollback] Running agent (thread={thread_id})...")
+    agent.invoke({"topic": TOPIC}, config)
+
+    before = saver._load_manifest(thread_id).ordered_ids(newest_first=False)
+    # Roll back to the checkpoint right after the researcher ran (sources
+    # gathered, report not yet written) — a meaningful mid-run state, not the
+    # empty genesis.
+    early_id = before[1] if len(before) > 1 else before[0]
+    print(f"[rollback] Thread has {len(before)} checkpoints.")
+    print(f"[rollback] Rolling back to an earlier checkpoint: {early_id}")
+
+    result = saver.rollback_to(thread_id, early_id)
+    after = saver._load_manifest(thread_id).ordered_ids(newest_first=False)
+    print(f"[rollback]   new head:         {result['checkpoint_id']}")
+    print(f"[rollback]   restored_from:    {result['restored_from']}")
+    print(f"[rollback]   blob id:          {result['blob_id']}")
+    print(
+        f"[rollback] History preserved: {len(before)} -> {len(after)} "
+        "checkpoints (append-only)."
+    )
+
+    snap = agent.get_state(config)
+    print(f"[rollback] Live head is now the restored state: {snap.values}")
+    report = saver.verify_trail(thread_id)
+    print(
+        f"[rollback] verify_trail ok={report['ok']} "
+        f"({report['verified']}/{report['checkpoint_count']} PASS).\n"
+    )
 
 
 def main() -> int:
@@ -261,6 +312,8 @@ def main() -> int:
         run_fork(real)
     elif "--audit" in args:
         run_audit(real)
+    elif "--rollback" in args:
+        run_rollback(real)
     elif "--part1" in args:
         run_part1(real)
     elif "--part2" in args:
