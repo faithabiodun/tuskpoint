@@ -22,6 +22,25 @@ const baseConfig = `{
   }
 }`;
 
+// VS Code (GitHub Copilot agent mode) uses a top-level "servers" key with an
+// explicit transport type, not "mcpServers".
+const vscodeConfig = `{
+  "servers": {
+    "tuskpoint": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["mcp_server/server.py"],
+      "cwd": "/absolute/path/to/tuskpoint"
+    }
+  }
+}`;
+
+// OpenAI Codex CLI is configured in TOML, not JSON.
+const codexConfig = `[mcp_servers.tuskpoint]
+command = "python"
+args = ["mcp_server/server.py"]
+cwd = "/absolute/path/to/tuskpoint"`;
+
 export default function ClientsPage() {
   return (
     <>
@@ -38,10 +57,11 @@ export default function ClientsPage() {
         }
       />
 
-      <Callout title="One config, four clients">
-        Every client uses the same{" "}
-        <Code>{`{ "mcpServers": { "tuskpoint": { … } } }`}</Code> block. Set{" "}
-        <Code>cwd</Code> to the absolute path of your cloned repo so{" "}
+      <Callout title="One block, every client">
+        Most clients use the same{" "}
+        <Code>{`{ "mcpServers": { "tuskpoint": { … } } }`}</Code> block (VS Code
+        uses <Code>servers</Code>, and Codex CLI uses TOML — both shown below).
+        Set <Code>cwd</Code> to the absolute path of your cloned repo so{" "}
         <Code>mcp_server/server.py</Code> resolves. Or just call the{" "}
         <Code>tuskpoint_info</Code> tool and let the agent emit the right snippet
         for you.
@@ -98,6 +118,26 @@ export default function ClientsPage() {
           lang="json"
           code={baseConfig}
         />
+      </div>
+
+      <H2 id="vscode">VS Code (GitHub Copilot)</H2>
+      <P>
+        In Copilot agent mode, create <Code>.vscode/mcp.json</Code> in your
+        workspace. VS Code uses a top-level <Code>servers</Code> key with an
+        explicit <Code>type</Code>.
+      </P>
+      <div className="mt-4">
+        <CodeBlock label=".vscode/mcp.json" lang="json" code={vscodeConfig} />
+      </div>
+
+      <H2 id="codex">OpenAI Codex CLI</H2>
+      <P>
+        Codex CLI is configured in TOML. Add a{" "}
+        <Code>[mcp_servers.tuskpoint]</Code> table to{" "}
+        <Code>~/.codex/config.toml</Code>.
+      </P>
+      <div className="mt-4">
+        <CodeBlock label="~/.codex/config.toml" lang="toml" code={codexConfig} />
       </div>
 
       <H2 id="generic">Any other MCP client</H2>

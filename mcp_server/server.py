@@ -436,10 +436,10 @@ def verify_trail(thread_id: str) -> str:
 def tuskpoint_info() -> str:
     """Describe this server and return ready-to-paste client setup.
 
-    Returns the full tool list plus copy-paste MCP configuration for the common
-    clients (Claude Desktop, Claude Code, Cursor, Windsurf, and the generic
-    ``.mcp.json`` form), so an agent or user can connect TuskPoint without
-    leaving the chat.
+    Returns the full tool list plus copy-paste MCP configuration for every common
+    client (Claude Desktop, Claude Code, Cursor, Windsurf, VS Code / Copilot,
+    OpenAI Codex CLI, and the generic ``.mcp.json`` form), so an agent or user can
+    connect TuskPoint without leaving the chat.
 
     Returns:
         A JSON string ``{"name", "transport", "tools", "connect", "notes"}``.
@@ -477,6 +477,20 @@ def tuskpoint_info() -> str:
         "windsurf": {
             "file": "~/.codeium/windsurf/mcp_config.json",
             "config": {"mcpServers": {"tuskpoint": server_cmd}},
+        },
+        "vscode": {
+            # VS Code (GitHub Copilot agent mode) uses a "servers" key.
+            "file": ".vscode/mcp.json",
+            "config": {"servers": {"tuskpoint": {**server_cmd, "type": "stdio"}}},
+        },
+        "codex_cli": {
+            # OpenAI Codex CLI uses TOML, not JSON.
+            "file": "~/.codex/config.toml",
+            "config_toml": (
+                "[mcp_servers.tuskpoint]\n"
+                'command = "python"\n'
+                'args = ["mcp_server/server.py"]\n'
+            ),
         },
         "generic": {
             "file": ".mcp.json",
