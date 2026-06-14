@@ -47,7 +47,7 @@ export function ToolDirectory() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search the eight checkpoint tools…"
+            placeholder="Search the eleven checkpoint tools…"
             className="w-full rounded-full border border-line bg-ink-900/70 py-2.5 pl-10 pr-4 text-sm text-cream placeholder:text-slate-500 outline-none transition focus:border-flame/50 focus:ring-2 focus:ring-flame/20"
           />
         </div>

@@ -26,11 +26,19 @@ export default function AuditPage() {
 
       <H2 id="why">Why it works</H2>
       <P>
-        Walrus blob IDs are derived from content. If a single byte of a
-        checkpoint changed, its blob ID would change too — so a stored ID can
-        only ever return the exact bytes it was minted from. Verifying a trail is
-        therefore a matter of re-fetching every blob in the manifest and
-        confirming each one still fetches and unpacks cleanly.
+        Every checkpoint blob is hashed with SHA-256 at write time, and that hash
+        is recorded in the per-thread manifest. To verify a trail, TuskPoint
+        re-fetches each blob, recomputes its SHA-256, and compares it to the
+        stored hash. A match proves the bytes are byte-for-byte what was written;
+        any mismatch is a <Code>FAIL</Code>. This is a cryptographic check, not
+        merely a successful fetch — a blob that was swapped or corrupted in place
+        is caught even if it still downloads.
+      </P>
+      <P>
+        Each step is reported as <Code>PASS</Code> (hash matches),{" "}
+        <Code>FAIL</Code> (hash differs — tampered), or <Code>UNVERIFIED</Code>{" "}
+        (the checkpoint predates integrity proofs and carries no stored hash, so
+        it can&apos;t be cryptographically confirmed).
       </P>
 
       <H2 id="run">Run it</H2>
@@ -47,25 +55,26 @@ export default function AuditPage() {
   "ok": true,
   "checkpoint_count": 4,
   "verified": 4,
+  "tampered_count": 0,
   "steps": [
     {
       "checkpoint_id": "1f164eb8-…",
       "blob_id": "WL4TgZgqRE9Pwq1…",
-      "parent": null,
-      "forked_from": null,
-      "ok": true,
-      "error": null
+      "stored_hash": "9e1c…",
+      "recomputed_hash": "9e1c…",
+      "status": "PASS"
     }
   ]
 }`}
         />
       </div>
 
-      <Callout title="ok only when every step passes">
-        The top-level <Code>ok</Code> is <Code>true</Code> only when there is at
-        least one checkpoint and <Code>verified === checkpoint_count</Code>. A
-        single unreadable or corrupt blob flips it to <Code>false</Code> and
-        marks the offending step with its <Code>error</Code>.
+      <Callout title="ok only when every step passes and none are tampered">
+        The top-level <Code>ok</Code> is <Code>true</Code> only when at least one
+        checkpoint was hash-verified and <Code>tampered_count === 0</Code>. A
+        single mismatched hash flips it to <Code>false</Code> and marks the
+        offending step <Code>FAIL</Code> with its recomputed hash so you can see
+        exactly what changed.
       </Callout>
 
       <H2 id="python">Via the Python API</H2>

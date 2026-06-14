@@ -16,8 +16,8 @@ const CARDS = [
   },
   {
     href: "/docs/tools",
-    title: "The eight tools",
-    body: "Save, load, list, resume, diff, search, fork, and verify_trail.",
+    title: "The eleven tools",
+    body: "Save, load, list, resume, diff, search, fork, rollback, handoff, adopt, and verify_trail.",
   },
   {
     href: "/docs/clients",
@@ -71,7 +71,7 @@ export default function DocsOverviewPage() {
         API; TuskPoint serializes and gzips the state, stores it on Walrus, and
         records the blob in a per-thread manifest. MemWal adds a one-line
         natural-language summary so you can recall checkpoints in plain English.
-        An MCP server exposes the whole thing as eight tools any agent can call.
+        An MCP server exposes the whole thing as eleven tools any agent can call.
       </P>
 
       <ul className="mt-4 space-y-2 text-slate-400">

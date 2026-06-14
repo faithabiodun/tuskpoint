@@ -3,14 +3,14 @@ import { TOOLS } from "@/lib/data";
 import { DocTitle, H2, P, Code } from "../ui";
 
 export const metadata: Metadata = {
-  title: "The eight tools",
+  title: "The eleven tools",
   description:
     "Full reference for the TuskPoint MCP toolbelt: signatures, returns, and examples.",
 };
 
 const ORDER = ["Write", "Read", "Discover"] as const;
 const GROUP_BLURB: Record<string, string> = {
-  Write: "Persist new state or branch a run.",
+  Write: "Persist, branch, roll back, or hand off a run.",
   Read: "Deterministic, content-addressed reads from Walrus.",
   Discover: "Find the right checkpoint in plain English.",
 };
@@ -20,11 +20,11 @@ export default function ToolsPage() {
     <>
       <DocTitle
         eyebrow="Reference"
-        title="The eight tools"
+        title="The eleven tools"
         intro={
           <>
             Exposed over stdio by{" "}
-            <Code>mcp_server/server.py</Code>. Plus a ninth helper,{" "}
+            <Code>mcp_server/server.py</Code>. Plus a twelfth helper,{" "}
             <Code>tuskpoint_info</Code>, that returns ready-to-paste client
             configuration so an agent can wire itself up.
           </>
