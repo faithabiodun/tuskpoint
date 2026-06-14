@@ -15,8 +15,8 @@ const baseConfig = `{
       "args": ["mcp_server/server.py"],
       "cwd": "/absolute/path/to/tuskpoint",
       "env": {
-        "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-mainnet.walrus.space",
-        "WALRUS_PUBLISHER_URL": "https://walrus-mainnet-publisher-1.staketab.org:443"
+        "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-testnet.walrus.space",
+        "WALRUS_PUBLISHER_URL": "https://publisher.walrus-testnet.walrus.space"
       }
     }
   }
@@ -159,14 +159,15 @@ export default function ClientsPage() {
 MEMWAL_ACCOUNT_ID=your_walrus_memory_account_object_id`}
         />
       </div>
-      <Callout tone="amber" title="Writes need a publisher">
-        Reads work out of the box. To <Code>checkpoint_save</Code> or{" "}
-        <Code>checkpoint_fork</Code> on mainnet you need a publisher with a
-        funded key — see{" "}
+      <Callout tone="amber" title="Free on testnet, funded on mainnet">
+        The default is Walrus <Code>testnet</Code>, where{" "}
+        <Code>checkpoint_save</Code> and <Code>checkpoint_fork</Code> work out of
+        the box for free. To run on mainnet you need a publisher with a funded
+        key — see{" "}
         <a href="/docs/mainnet" className="text-amber-300 underline-offset-4 hover:underline">
-          Walrus mainnet
+          the network guide
         </a>{" "}
-        for the options.
+        for the switch.
       </Callout>
     </>
   );

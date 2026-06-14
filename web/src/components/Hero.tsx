@@ -31,10 +31,11 @@ export function Hero() {
           </h1>
 
           <p className="animate-fade-up mt-7 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">
-            TuskPoint is a drop-in LangGraph checkpointer. Every step becomes an
-            immutable <span className="text-cream">Walrus</span> blob — so you can
-            survive a crash, rewind to any moment, and{" "}
-            <span className="text-flame">search your run in plain English.</span>
+            TuskPoint is a drop-in LangGraph checkpointer. Every step is saved as
+            a verifiable <span className="text-cream">Walrus</span> blob, so your
+            agents survive a crash, roll back to any moment, hand a run to another
+            agent, and{" "}
+            <span className="text-flame">search their own history in plain English.</span>
           </p>
 
           {/* Terminal install — the centerpiece */}
@@ -69,7 +70,7 @@ export function Hero() {
               </svg>
             </Link>
             <Link href="/#tools" className="btn-ghost w-full sm:w-auto">
-              Browse the 8 tools
+              Browse the 11 tools
             </Link>
           </div>
 
@@ -87,7 +88,7 @@ export function Hero() {
         {/* Stat strip */}
         <div className="animate-fade-up mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
           {[
-            { k: "8", v: "MCP tools" },
+            { k: "11", v: "MCP tools" },
             { k: "2", v: "storage layers" },
             { k: "100%", v: "byte-exact reads" },
             { k: "0", v: "secrets on-site" },

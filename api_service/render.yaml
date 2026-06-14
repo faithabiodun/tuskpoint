@@ -23,7 +23,7 @@ services:
         value: prod
       - key: MEMWAL_NAMESPACE
         value: tuskpoint
-      # --- Secrets: set these in the Render dashboard (never commit) ---
+      # Secrets: set these in the Render dashboard (never commit)
       - key: MEMWAL_PRIVATE_KEY
         sync: false
       - key: MEMWAL_ACCOUNT_ID

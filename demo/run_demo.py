@@ -4,7 +4,8 @@ Two backends:
 
 * **fake** (default): in-memory Walrus stand-in. For the two-part flow, the
   fake's blobs are pickled between runs so a separate process can restore them.
-* **--real**: the live Walrus HTTP client (mainnet by default). Here the two-part flow needs
+* **--real**: the live Walrus HTTP client (testnet by default; set WALRUS_*_URL
+  for mainnet). Here the two-part flow needs
   no pickling at all — checkpoints live on Walrus and the latest manifest blob
   ID is cached in the threads file, so ``--part2`` in a genuinely fresh process
   rehydrates state straight from the network. This is the real "survive a
@@ -315,7 +316,7 @@ def run_handoff(real: bool) -> None:
     client = _make_client(real)
     backend = "REAL Walrus network" if real else "in-memory fake"
 
-    # --- Agent A: run and reach a checkpoint worth handing off ---
+    # Agent A: run and reach a checkpoint worth handing off
     saver_a = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
     thread_a = f"handoff-A-{os.getpid()}"
     config_a = {"configurable": {"thread_id": thread_a}}
@@ -330,7 +331,7 @@ def run_handoff(real: bool) -> None:
     print(f"[handoff]   blob id:     {descriptor['blob_id']}")
     print(f"[handoff]   blob sha256: {descriptor['blob_sha256']}")
 
-    # --- Agent B: a separate saver over the SAME Walrus store ---
+    # Agent B: a separate saver over the SAME Walrus store
     saver_b = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
     thread_b = f"handoff-B-{os.getpid()}"
     print(f"[handoff] Agent B adopting into thread={thread_b}...")

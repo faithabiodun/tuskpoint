@@ -27,7 +27,7 @@ export function WritePanel({
   onOpenThread: (id: string) => void;
   network?: string;
 }) {
-  // --- Save ---
+  // Save
   const [stateText, setStateText] = useState(SAMPLE_STATE);
   const [saving, setSaving] = useState(false);
   const [saveErr, setSaveErr] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export function WritePanel({
     }
   }
 
-  // --- Fork ---
+  // Fork
   const [srcCid, setSrcCid] = useState(items[0]?.id ?? "");
   const [newThread, setNewThread] = useState(
     `fork-${Math.random().toString(36).slice(2, 8)}`,

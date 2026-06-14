@@ -134,8 +134,8 @@ every client; only the file location changes.
       "args": ["mcp_server/server.py"],
       "cwd": "/absolute/path/to/tuskpoint",
       "env": {
-        "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-mainnet.walrus.space",
-        "WALRUS_PUBLISHER_URL": "https://walrus-mainnet-publisher-1.staketab.org:443"
+        "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-testnet.walrus.space",
+        "WALRUS_PUBLISHER_URL": "https://publisher.walrus-testnet.walrus.space"
       }
     }
   }
@@ -166,13 +166,23 @@ TuskPoint is **not** a MemWal MCP clone. MemWal manages free-form memories;
 TuskPoint manages durable, exactly-addressable checkpoints you resume a graph
 from. The only overlap, search, is scoped to *our* checkpoint summaries.
 
-## Walrus mainnet
+## Network: testnet by default, mainnet when you're ready
 
-TuskPoint defaults to Walrus **mainnet**. Reads are public and free via any
-aggregator. Writes cost SUI (gas) + WAL (storage), so there is no public,
-unauthenticated publisher — use a community publisher, run your own, or use the
-upload relay with a funded key. Both URLs are env-overridable; point them at the
-testnet endpoints to experiment for free. See
+TuskPoint defaults to Walrus **testnet** — writes are free via a public
+publisher, so you can try everything with zero setup or funds. Reads are public
+and free on either network.
+
+When you want durable, paid storage, switch to **mainnet** by setting both
+environment variables (these take precedence over the defaults):
+
+```bash
+export WALRUS_PUBLISHER_URL=https://walrus-mainnet-publisher-1.staketab.org:443
+export WALRUS_AGGREGATOR_URL=https://aggregator.walrus-mainnet.walrus.space
+```
+
+Mainnet writes cost SUI (gas) + WAL (storage), so there is no public,
+unauthenticated mainnet publisher — use a community publisher, run your own, or
+use the upload relay with a funded key. See
 https://tuskpoint.vercel.app/docs/mainnet.
 
 ## Tests

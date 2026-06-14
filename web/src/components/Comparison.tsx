@@ -26,6 +26,12 @@ const ROWS = [
     vectorOnly: false,
   },
   {
+    capability: "Hand a run to another agent",
+    inMemory: false,
+    mutableDb: false,
+    vectorOnly: false,
+  },
+  {
     capability: "Plain-English recall over history",
     inMemory: false,
     mutableDb: false,

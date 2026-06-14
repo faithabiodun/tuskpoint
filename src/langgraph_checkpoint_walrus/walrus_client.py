@@ -76,22 +76,25 @@ class InMemoryWalrusClient:
         return len(self._blobs)
 
 
-# Walrus **mainnet** endpoints. Env vars (WALRUS_PUBLISHER_URL /
+# Walrus **testnet** endpoints — the default. Env vars (WALRUS_PUBLISHER_URL /
 # WALRUS_AGGREGATOR_URL) take precedence; the lists below provide one retry's
 # worth of resilience against a flaky public node.
 #
-# Reads are public and free: any mainnet aggregator serves a content-addressed
-# blob to anyone. Writes are NOT free — mainnet has no public, unauthenticated
-# publisher, because storing a blob costs SUI (gas) + WAL (storage). The default
-# below points at a community publisher (Staketab); for production you run your
-# own publisher or use the upload relay with a funded key. See .env.example.
+# Why testnet by default: testnet has a public, unauthenticated publisher, so
+# writes are FREE and anyone can try TuskPoint with zero setup or funds. Reads
+# are public and free on either network.
+#
+# To run on **mainnet** instead (durable, paid storage), set both env vars:
+#   WALRUS_PUBLISHER_URL=https://walrus-mainnet-publisher-1.staketab.org:443
+#   WALRUS_AGGREGATOR_URL=https://aggregator.walrus-mainnet.walrus.space
+# Mainnet writes cost SUI (gas) + WAL (storage), so there is no public mainnet
+# publisher — use a community publisher, run your own, or use the upload relay
+# with a funded key. See .env.example and https://tuskpoint.vercel.app/docs/mainnet.
 DEFAULT_PUBLISHERS = [
-    "https://walrus-mainnet-publisher-1.staketab.org:443",
+    "https://publisher.walrus-testnet.walrus.space",
 ]
 DEFAULT_AGGREGATORS = [
-    "https://aggregator.walrus-mainnet.walrus.space",
-    "https://walrus.globalstake.io",
-    "https://walrus-mainnet-aggregator.nodes.guru",
+    "https://aggregator.walrus-testnet.walrus.space",
 ]
 
 

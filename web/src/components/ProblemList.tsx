@@ -34,7 +34,9 @@ export function ProblemList() {
             </h2>
             <p className="mt-5 max-w-md text-slate-400">
               Four failures stand between a demo agent and one you can actually
-              operate. TuskPoint closes all four.
+              run in production: no durable history, no way to rewind, state you
+              can&apos;t trust, and memory you can&apos;t query. TuskPoint closes
+              all four.
             </p>
           </Reveal>
 
