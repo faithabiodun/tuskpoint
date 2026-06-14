@@ -106,6 +106,15 @@ python demo/run_demo.py --rollback  # append-only undo to an earlier checkpoint
 python demo/run_demo.py --handoff   # Agent A hands a checkpoint to Agent B
 ```
 
+> **On timing:** TuskPoint's own operations are effectively instant — a
+> checkpoint save/load is a single gzip + Walrus round-trip, and reads are
+> pooled and fetched in parallel. When a demo or MCP call *feels* slow, the
+> wall-time is almost always one of two things outside the checkpointer:
+> (1) the optional DeepSeek LLM the sample agent calls per node, and
+> (2) the one-off `import` of `langchain_core`, a required LangGraph
+> dependency. Neither is TuskPoint doing work; the checkpoint engine itself
+> adds no measurable latency.
+
 ### 6. Start the MCP server
 
 ```bash
