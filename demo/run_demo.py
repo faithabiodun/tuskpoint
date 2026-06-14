@@ -27,8 +27,10 @@ Usage:
                                              # thread's blob chain end-to-end
     python demo/run_demo.py --rollback       # fake: run, then roll the thread
                                              # back to its first checkpoint
+    python demo/run_demo.py --handoff        # fake: Agent A hands a checkpoint
+                                             # to Agent B, which adopts + verifies
 
-    Add --real to --fork / --audit / --rollback to run them against live Walrus.
+    Add --real to --fork / --audit / --rollback / --handoff for live Walrus.
 """
 
 from __future__ import annotations
@@ -302,6 +304,50 @@ def run_rollback(real: bool) -> None:
     )
 
 
+def run_handoff(real: bool) -> None:
+    """Agent A runs, hands a checkpoint to Agent B, which adopts and continues.
+
+    Two savers share one Walrus store — modelling two independent agents over the
+    same network. A exports a small descriptor (blob id + hash); B re-fetches the
+    blob, verifies the hash, and adopts the state as its own thread. The shared
+    state never leaves Walrus and crosses the boundary tamper-evidently.
+    """
+    client = _make_client(real)
+    backend = "REAL Walrus network" if real else "in-memory fake"
+
+    # --- Agent A: run and reach a checkpoint worth handing off ---
+    saver_a = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
+    thread_a = f"handoff-A-{os.getpid()}"
+    config_a = {"configurable": {"thread_id": thread_a}}
+    print(f"[handoff] Backend: {backend}")
+    print(f"[handoff] Agent A running (thread={thread_a})...")
+    build_agent(saver_a).invoke({"topic": TOPIC}, config_a)
+    latest = saver_a._load_manifest(thread_a).latest_id()
+
+    descriptor = saver_a.handoff_checkpoint(thread_a, latest, to_agent="Agent-B")
+    print("[handoff] Agent A exported a handoff descriptor:")
+    print(f"[handoff]   source:      {descriptor['source']}")
+    print(f"[handoff]   blob id:     {descriptor['blob_id']}")
+    print(f"[handoff]   blob sha256: {descriptor['blob_sha256']}")
+
+    # --- Agent B: a separate saver over the SAME Walrus store ---
+    saver_b = WalrusSaver(client, threads_cache_path=THREADS_CACHE)
+    thread_b = f"handoff-B-{os.getpid()}"
+    print(f"[handoff] Agent B adopting into thread={thread_b}...")
+    result = saver_b.adopt_checkpoint(descriptor, thread_b)
+    print(f"[handoff]   adopted_from:   {result['adopted_from']}")
+    print(f"[handoff]   new checkpoint: {result['checkpoint_id']}")
+    print(f"[handoff]   hash verified:  {result['verified']}")
+
+    head = saver_b.get_tuple({"configurable": {"thread_id": thread_b}})
+    print(
+        f"[handoff] Agent B now holds A's state: "
+        f"{head.checkpoint['channel_values']}"
+    )
+    report = saver_b.verify_trail(thread_b)
+    print(f"[handoff] Agent B's adopted thread verifies: ok={report['ok']}.\n")
+
+
 def main() -> int:
     """Dispatch based on flags. ``--real`` selects the live Walrus backend."""
     args = sys.argv[1:]
@@ -314,6 +360,8 @@ def main() -> int:
         run_audit(real)
     elif "--rollback" in args:
         run_rollback(real)
+    elif "--handoff" in args:
+        run_handoff(real)
     elif "--part1" in args:
         run_part1(real)
     elif "--part2" in args:

@@ -40,6 +40,10 @@ class CheckpointEntry:
             rollback, the ``checkpoint_id`` whose state it restored; ``None`` for
             normal checkpoints. Rollback is append-only, so this records the undo
             as an auditable event without erasing the intervening history.
+        adopted_from: When this checkpoint is the genesis of a thread adopted via
+            a cross-agent handoff, the ``"{thread_id}:{checkpoint_id}"`` it was
+            handed off from; ``None`` otherwise. Lets a thread record that its
+            state originated with a different agent.
     """
 
     blob_id: str
@@ -50,6 +54,7 @@ class CheckpointEntry:
     forked_from: str | None = None
     blob_sha256: str | None = None
     rolled_back_from: str | None = None
+    adopted_from: str | None = None
 
 
 @dataclass

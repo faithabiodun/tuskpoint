@@ -714,6 +714,165 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         }
 
     # ------------------------------------------------------------------
+    # Cross-agent handoff — pass a checkpoint between agents/processes
+    # ------------------------------------------------------------------
+
+    def handoff_checkpoint(
+        self,
+        thread_id: str,
+        checkpoint_id: str,
+        *,
+        to_agent: str | None = None,
+    ) -> dict[str, Any]:
+        """Export a checkpoint as a portable handoff descriptor for another agent.
+
+        Because every checkpoint already lives on Walrus as a content-addressed
+        blob, "handing off" doesn't copy any state — it just emits a small,
+        serializable descriptor (the blob ID, its SHA-256, and provenance) that a
+        *different* agent or process can adopt with :meth:`adopt_checkpoint`. The
+        receiver re-fetches the same blob from Walrus and verifies the hash, so
+        the state crosses the boundary tamper-evidently with nothing trusted in
+        between. No keys, no Sui gating — just the public blob plus an integrity
+        hash.
+
+        Args:
+            thread_id: The thread holding the checkpoint to hand off.
+            checkpoint_id: The exact checkpoint to hand off.
+            to_agent: Optional label for the intended recipient agent (recorded
+                in the descriptor for auditing; does not restrict who can adopt).
+
+        Returns:
+            A descriptor ``{"source", "thread_id", "checkpoint_id", "blob_id",
+            "blob_sha256", "to_agent", "summary"}``. Pass it as-is to
+            :meth:`adopt_checkpoint`.
+
+        Raises:
+            KeyError: if the checkpoint is not found in the thread.
+        """
+        manifest = self._load_manifest(thread_id)
+        entry = manifest.get(checkpoint_id)
+        if entry is None:
+            raise KeyError(f"checkpoint not found: {thread_id}:{checkpoint_id}")
+
+        return {
+            "source": f"{thread_id}:{checkpoint_id}",
+            "thread_id": thread_id,
+            "checkpoint_id": checkpoint_id,
+            "blob_id": entry.blob_id,
+            "blob_sha256": entry.blob_sha256,
+            "to_agent": to_agent,
+            "summary": entry.summary,
+        }
+
+    def adopt_checkpoint(
+        self,
+        handoff: dict[str, Any],
+        new_thread_id: str,
+    ) -> dict[str, Any]:
+        """Adopt a handed-off checkpoint as the genesis of a new local thread.
+
+        Re-fetches the blob named in ``handoff`` straight from Walrus, verifies
+        its SHA-256 against the hash the sender recorded (so a corrupted or
+        substituted blob is rejected before it ever becomes state), then writes
+        it as the first checkpoint of ``new_thread_id`` with an ``adopted_from``
+        lineage link. The adopting agent then resumes from this state as if it
+        were its own.
+
+        Args:
+            handoff: The descriptor produced by :meth:`handoff_checkpoint`.
+            new_thread_id: Thread ID the receiver adopts into. Must be empty.
+
+        Returns:
+            ``{"adopted_from", "new_thread_id", "checkpoint_id", "blob_id",
+            "verified"}`` where ``verified`` is True when the re-fetched blob's
+            hash matched the sender's (or no hash was provided to check).
+
+        Raises:
+            ValueError: if ``new_thread_id`` already has checkpoints, or the
+                re-fetched blob fails the sender's integrity hash.
+            KeyError: if the handed-off blob cannot be read from Walrus.
+        """
+        existing = self._load_manifest(new_thread_id)
+        if existing.entries:
+            raise ValueError(
+                f"thread already exists: {new_thread_id} "
+                f"({len(existing.entries)} checkpoint(s)). Adopt into a fresh id."
+            )
+
+        source = handoff["source"]
+        blob_id = handoff["blob_id"]
+        expected_hash = handoff.get("blob_sha256")
+
+        raw = self.client.read(blob_id)  # KeyError if missing
+
+        # Integrity gate: the byte-level proof that what we adopt is exactly what
+        # was handed off. A mismatch means the blob was tampered with in transit.
+        verified = True
+        if expected_hash is not None:
+            actual = _sha256(raw)
+            if actual != expected_hash:
+                raise ValueError(
+                    f"handoff integrity check FAILED for {source}: "
+                    f"expected {expected_hash}, got {actual}"
+                )
+
+        # Unpack the handed-off state and write it under a fresh identity.
+        env = self._unpack_envelope(raw)
+        source_tuple = self._envelope_to_tuple(
+            handoff["thread_id"], "", handoff["checkpoint_id"], env
+        )
+
+        new_checkpoint_id = str(uuid6(clock_seq=-2))
+        ts = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
+        checkpoint: Checkpoint = {
+            **source_tuple.checkpoint,
+            "id": new_checkpoint_id,
+            "ts": ts,
+        }
+        metadata: CheckpointMetadata = {
+            **(source_tuple.metadata or {}),
+            "source": "adopt",
+            "adopted_from": source,
+            "step": 0,
+        }
+
+        blob = self._pack_envelope(checkpoint, metadata, None, "")
+        blob_sha256 = _sha256(blob)
+        new_blob_id = self.client.store(blob)
+
+        summary = ""
+        if self.memwal_layer is not None:
+            summary = self.memwal_layer.summarize_and_remember(
+                thread_id=new_thread_id,
+                checkpoint_id=new_checkpoint_id,
+                checkpoint=checkpoint,
+                metadata=metadata,
+            )
+
+        manifest = self._load_manifest(new_thread_id)
+        manifest.add(
+            new_checkpoint_id,
+            CheckpointEntry(
+                blob_id=new_blob_id,
+                parent_checkpoint_id=None,
+                timestamp=ts,
+                summary=summary,
+                checkpoint_ns="",
+                adopted_from=source,
+                blob_sha256=blob_sha256,
+            ),
+        )
+        self._store_manifest(manifest)
+
+        return {
+            "adopted_from": source,
+            "new_thread_id": new_thread_id,
+            "checkpoint_id": new_checkpoint_id,
+            "blob_id": new_blob_id,
+            "verified": verified,
+        }
+
+    # ------------------------------------------------------------------
     # Verifiable audit trail — "flight recorder" for agent runs
     # ------------------------------------------------------------------
 
