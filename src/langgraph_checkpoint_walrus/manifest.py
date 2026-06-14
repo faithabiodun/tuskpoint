@@ -32,6 +32,10 @@ class CheckpointEntry:
             ``"{thread_id}:{checkpoint_id}"`` it was branched from; ``None`` for
             normal checkpoints. Lets the manifest describe a tree of runs, not
             just a single line.
+        blob_sha256: Hex SHA-256 of the exact gzipped blob bytes, computed at
+            write time. ``verify_trail`` re-fetches the blob and recomputes this
+            to prove the stored bytes are unchanged. ``None`` for checkpoints
+            written before integrity hashing existed (reported as UNVERIFIED).
     """
 
     blob_id: str
@@ -40,6 +44,7 @@ class CheckpointEntry:
     summary: str = ""
     checkpoint_ns: str = ""
     forked_from: str | None = None
+    blob_sha256: str | None = None
 
 
 @dataclass
