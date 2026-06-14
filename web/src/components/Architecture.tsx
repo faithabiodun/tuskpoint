@@ -68,28 +68,75 @@ export function Architecture() {
           ))}
         </div>
 
-        {/* ASCII-style diagram */}
+        {/* Data-flow diagram */}
         <Reveal className="mt-8 overflow-hidden rounded-2xl border border-line bg-ink-950/80">
-          <div className="border-b border-line bg-ink-900/60 px-4 py-2.5">
+          <div className="flex items-center gap-2 border-b border-line bg-ink-900/60 px-4 py-2.5">
+            <span className="status-dot" />
             <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500">
               data flow
             </span>
           </div>
-          <pre className="overflow-x-auto px-5 py-5 text-[13px] leading-relaxed text-slate-400">
-{`   LangGraph agent ──▶ WalrusSaver.put()
-                          │
-        ┌─────────────────┼──────────────────┐
-        ▼                                     ▼
-  serialize+gzip+PUT                   build 1-line summary
-        │                                     │
-        ▼                                     ▼
-  ┌──────────────┐                     ┌──────────────┐
-  │ Walrus blob  │  ◀── exact reads    │   MemWal     │  ◀── English search
-  │ (the truth)  │      by blob id     │ (the index)  │      → returns ids
-  └──────────────┘                     └──────────────┘
-        ▲
-        └── manifest blob id cached locally in .walrus_threads.json`}
-          </pre>
+
+          <div className="px-5 py-8 sm:px-8 sm:py-10">
+            {/* Source node */}
+            <div className="flex justify-center">
+              <FlowNode tone="slate" kicker="source" title="LangGraph agent">
+                advances one step
+              </FlowNode>
+            </div>
+
+            {/* connector down into the interceptor */}
+            <Connector />
+
+            <div className="flex justify-center">
+              <FlowNode tone="flame" kicker="intercept" title="WalrusSaver.put()" mono>
+                no agent code changes
+              </FlowNode>
+            </div>
+
+            {/* split into two parallel lanes */}
+            <div className="relative mx-auto mt-2 h-8 w-px bg-line sm:h-10">
+              <span className="absolute left-1/2 top-full hidden h-px w-[min(38rem,70vw)] -translate-x-1/2 bg-line sm:block" />
+            </div>
+
+            <div className="mt-0 grid gap-8 sm:mt-8 sm:grid-cols-2 sm:gap-6">
+              {/* Exact lane */}
+              <div className="flex flex-col items-center">
+                <LaneLabel>serialize · gzip · PUT</LaneLabel>
+                <Connector short />
+                <FlowNode
+                  tone="teal"
+                  kicker="the truth"
+                  title="Walrus blob"
+                  className="w-full"
+                >
+                  immutable, content-addressed
+                </FlowNode>
+                <ReadHint>← exact reads by blob id</ReadHint>
+              </div>
+
+              {/* Semantic lane */}
+              <div className="flex flex-col items-center">
+                <LaneLabel>build 1-line summary</LaneLabel>
+                <Connector short />
+                <FlowNode
+                  tone="flame"
+                  kicker="the index"
+                  title="MemWal"
+                  className="w-full"
+                >
+                  semantic recall layer
+                </FlowNode>
+                <ReadHint>← search in English → returns ids</ReadHint>
+              </div>
+            </div>
+
+            {/* footnote */}
+            <p className="mt-9 text-center font-mono text-[11px] leading-relaxed text-slate-600">
+              manifest blob id cached locally in{" "}
+              <span className="text-slate-400">.walrus_threads.json</span>
+            </p>
+          </div>
         </Reveal>
 
         {/* Stack */}
@@ -103,5 +150,88 @@ export function Architecture() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ── Data-flow diagram primitives ───────────────────────────────────── */
+
+type Tone = "slate" | "flame" | "teal";
+
+const TONE: Record<Tone, { ring: string; kicker: string; dot: string }> = {
+  slate: {
+    ring: "border-line bg-ink-900/80",
+    kicker: "text-slate-500",
+    dot: "bg-slate-500",
+  },
+  flame: {
+    ring: "border-flame/30 bg-flame/[0.06]",
+    kicker: "text-flame",
+    dot: "bg-flame",
+  },
+  teal: {
+    ring: "border-teal/30 bg-teal/[0.06]",
+    kicker: "text-teal",
+    dot: "bg-teal",
+  },
+};
+
+function FlowNode({
+  tone,
+  kicker,
+  title,
+  mono,
+  className = "",
+  children,
+}: {
+  tone: Tone;
+  kicker: string;
+  title: string;
+  mono?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  const t = TONE[tone];
+  return (
+    <div
+      className={`max-w-xs rounded-xl border px-5 py-4 text-center shadow-card ${t.ring} ${className}`}
+    >
+      <span
+        className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] ${t.kicker}`}
+      >
+        <span className={`h-1.5 w-1.5 rounded-full ${t.dot}`} />
+        {kicker}
+      </span>
+      <p
+        className={`mt-2 font-bold text-cream ${mono ? "font-mono text-sm" : "text-base"}`}
+      >
+        {title}
+      </p>
+      {children ? (
+        <p className="mt-1 text-xs text-slate-400">{children}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function Connector({ short }: { short?: boolean }) {
+  return (
+    <div
+      className={`mx-auto w-px bg-line ${short ? "h-6" : "h-8 sm:h-10"}`}
+      aria-hidden
+    />
+  );
+}
+
+function LaneLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-slate-500">
+      {children}
+    </span>
+  );
+}
+
+function ReadHint({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mt-3 font-mono text-[11px] text-slate-500">{children}</p>
   );
 }

@@ -28,7 +28,7 @@ export function RollbackPanel({
   onChanged: () => void;
   onOpenThread: (id: string) => void;
 }) {
-  // --- Rollback ---
+  // Rollback
   const [rbCid, setRbCid] = useState(items[1]?.id ?? items[0]?.id ?? "");
   const [rolling, setRolling] = useState(false);
   const [rbErr, setRbErr] = useState<string | null>(null);
@@ -58,7 +58,7 @@ export function RollbackPanel({
     }
   }
 
-  // --- Handoff + adopt ---
+  // Handoff + adopt
   const [hoCid, setHoCid] = useState(items[0]?.id ?? "");
   const [toAgent, setToAgent] = useState("agent-b");
   const [descriptor, setDescriptor] = useState<HandoffDescriptor | null>(null);

@@ -8,11 +8,12 @@ It generates random bytes, ``PUT``s them to a *publisher*, extracts the returned
 blob ID, ``GET``s the blob back from an *aggregator*, and asserts the
 round-tripped bytes are byte-identical to what we sent. Publisher/aggregator
 base URLs come from the environment (``WALRUS_PUBLISHER_URL`` /
-``WALRUS_AGGREGATOR_URL``) with mainnet defaults, and each request is retried
+``WALRUS_AGGREGATOR_URL``) with testnet defaults, and each request is retried
 once against an alternate node on failure.
 
-Note: mainnet writes need a funded publisher (see ``.env.example``). To run this
-for free, point the env vars at the public testnet endpoints.
+Note: the testnet default has a free public publisher, so this runs with no
+setup. For mainnet, set the env vars to the mainnet endpoints — mainnet writes
+need a funded publisher (see ``.env.example``).
 """
 
 from __future__ import annotations

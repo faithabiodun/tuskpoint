@@ -3,9 +3,9 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { DocTitle, H2, P, Callout, Code } from "../ui";
 
 export const metadata: Metadata = {
-  title: "Walrus mainnet",
+  title: "Network: testnet & mainnet",
   description:
-    "How TuskPoint reads and writes on Walrus mainnet, and the publisher options for writes.",
+    "TuskPoint runs on Walrus testnet by default (free writes). How to switch to mainnet for durable, paid storage.",
 };
 
 export default function MainnetPage() {
@@ -13,30 +13,47 @@ export default function MainnetPage() {
     <>
       <DocTitle
         eyebrow="Guides"
-        title="Walrus mainnet"
+        title="Network: testnet &amp; mainnet"
         intro={
           <>
-            TuskPoint defaults to Walrus <span className="text-cream">mainnet</span>.
-            Reads are public and free; writes cost gas and need a publisher.
-            Here is exactly what to set.
+            TuskPoint defaults to Walrus <span className="text-cream">testnet</span>,
+            where writes are free and need no setup. Switch to{" "}
+            <span className="text-cream">mainnet</span> for durable, paid storage
+            whenever you are ready. Reads are public and free on either network.
           </>
         }
       />
 
-      <H2 id="reads">Reads — public and free</H2>
+      <H2 id="default">The default — testnet, free writes</H2>
       <P>
-        Any mainnet aggregator serves a content-addressed blob to anyone. The
-        default aggregator is below; the engine falls back to community
-        aggregators if it is unreachable.
+        Out of the box TuskPoint points at the public Walrus testnet endpoints.
+        Testnet has a public, unauthenticated publisher, so you can save, fork,
+        roll back, and hand off checkpoints without any wallet or tokens. These
+        are the built-in defaults — you do not need to set anything:
       </P>
       <div className="mt-4">
         <CodeBlock
-          label="env"
-          code={`WALRUS_AGGREGATOR_URL=https://aggregator.walrus-mainnet.walrus.space`}
+          label="env (testnet — the default)"
+          code={`WALRUS_AGGREGATOR_URL=https://aggregator.walrus-testnet.walrus.space
+WALRUS_PUBLISHER_URL=https://publisher.walrus-testnet.walrus.space`}
         />
       </div>
 
-      <H2 id="writes">Writes — need a publisher</H2>
+      <H2 id="switch">Switching to mainnet</H2>
+      <P>
+        When you want durable, paid storage, set both environment variables to
+        the mainnet endpoints. They always take precedence over the testnet
+        defaults:
+      </P>
+      <div className="mt-4">
+        <CodeBlock
+          label="env (mainnet)"
+          code={`WALRUS_AGGREGATOR_URL=https://aggregator.walrus-mainnet.walrus.space
+WALRUS_PUBLISHER_URL=https://walrus-mainnet-publisher-1.staketab.org:443`}
+        />
+      </div>
+
+      <H2 id="writes">Mainnet writes — need a publisher</H2>
       <P>
         Storing a blob on mainnet costs <Code>SUI</Code> (gas) plus{" "}
         <Code>WAL</Code> (storage), so there is{" "}
@@ -84,23 +101,10 @@ export default function MainnetPage() {
       <Callout title="Everything is env-overridable">
         <Code>WALRUS_PUBLISHER_URL</Code> and{" "}
         <Code>WALRUS_AGGREGATOR_URL</Code> always take precedence over the
-        built-in defaults. Reads work without any of the above — only writes (
-        <Code>checkpoint_save</Code>, <Code>checkpoint_fork</Code>) need a
-        publisher.
+        built-in testnet defaults. Reads work without any of the above — only
+        writes (<Code>checkpoint_save</Code>, <Code>checkpoint_fork</Code>) need
+        a publisher.
       </Callout>
-
-      <H2 id="testnet">Falling back to testnet</H2>
-      <P>
-        To experiment without spending mainnet tokens, point both URLs at the
-        public testnet endpoints:
-      </P>
-      <div className="mt-4">
-        <CodeBlock
-          label="env (testnet)"
-          code={`WALRUS_AGGREGATOR_URL=https://aggregator.walrus-testnet.walrus.space
-WALRUS_PUBLISHER_URL=https://publisher.walrus-testnet.walrus.space`}
-        />
-      </div>
     </>
   );
 }

@@ -32,7 +32,7 @@ export default function HomePage() {
                 MCP server · stdio
               </p>
               <h2 className="display-sm mt-5 text-display-sm font-extrabold tracking-tight text-cream">
-                Eight tools, any agent can call.
+                Eleven tools, any agent can call.
               </h2>
               <p className="mt-5 text-slate-400">
                 A complete checkpoint API over the Model Context Protocol — it

@@ -499,7 +499,7 @@ def tuskpoint_info() -> str:
     }
     notes = [
         "Transport is stdio; run from the repo root so 'mcp_server/server.py' resolves.",
-        "Reads are public on Walrus mainnet; writes need a publisher (see .env.example).",
+        "Defaults to Walrus testnet (free writes); set WALRUS_*_URL to mainnet for paid durable storage (see .env.example).",
         "Set MEMWAL_PRIVATE_KEY / MEMWAL_ACCOUNT_ID to enable checkpoint_search.",
     ]
     return json.dumps(
