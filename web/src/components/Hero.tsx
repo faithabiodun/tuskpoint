@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CopyButton } from "./CopyButton";
+import { TerminalCarousel } from "./TerminalCarousel";
 import { LogoMark } from "./Logo";
 import { RUN_META } from "@/lib/data";
 
@@ -38,26 +38,8 @@ export function Hero() {
             <span className="text-flame">search their own history in plain English.</span>
           </p>
 
-          {/* Terminal install — the centerpiece */}
-          <div className="animate-fade-up mt-9 w-full max-w-xl">
-            <div className="overflow-hidden rounded-2xl border border-line bg-ink-950/80 shadow-card backdrop-blur-sm">
-              <div className="flex items-center gap-2 border-b border-line px-4 py-2.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-flame/70" />
-                <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-                <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-                <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                  install
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-3 px-4 py-4">
-                <code className="truncate font-mono text-sm text-slate-200 sm:text-[15px]">
-                  <span className="text-flame">$ </span>
-                  pip install -e &quot;.[all]&quot;
-                </code>
-                <CopyButton text={'pip install -e ".[all]"'} />
-              </div>
-            </div>
-          </div>
+          {/* Terminal carousel — the centerpiece, auto + manual swipe */}
+          <TerminalCarousel />
 
           <div className="animate-fade-up mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center">
             <Link href="/dashboard" className="btn-primary w-full sm:w-auto">
