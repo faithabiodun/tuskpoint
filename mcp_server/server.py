@@ -315,21 +315,23 @@ def checkpoint_fork(
 
 @mcp.tool()
 def verify_trail(thread_id: str) -> str:
-    """Audit a thread's checkpoint chain end-to-end (tamper-evident flight recorder).
+    """Cryptographically verify a thread's checkpoint chain (tamper-evident).
 
-    Walks every checkpoint in the thread in order and re-fetches its
-    content-addressed Walrus blob, confirming each one still fetches and unpacks
-    cleanly. Because blob IDs are derived from content, any silent corruption or
-    tampering shows up as a failed step.
+    Walks every checkpoint in order, re-fetches its Walrus blob, recomputes the
+    blob's SHA-256, and compares it to the hash recorded in the manifest at write
+    time. Any silent corruption or tampering changes the recomputed hash and the
+    step is reported as ``FAIL``. Checkpoints written before integrity hashing
+    have no stored hash and are reported honestly as ``UNVERIFIED`` (never a pass).
 
     Args:
         thread_id: The thread whose blob chain should be verified.
 
     Returns:
-        A JSON string
-        ``{"thread_id", "ok", "checkpoint_count", "verified", "steps"}`` where
-        each step is ``{"checkpoint_id", "blob_id", "parent", "forked_from",
-        "ok", "error"}``.
+        A JSON string ``{"thread_id", "ok", "checkpoint_count", "verified",
+        "tampered_count", "steps"}`` where each step is ``{"checkpoint_id",
+        "blob_id", "stored_hash", "recomputed_hash", "status"}`` and ``status``
+        is ``PASS`` | ``FAIL`` | ``UNVERIFIED``. ``ok`` is true only when at
+        least one checkpoint PASSed and none FAILed.
     """
     return json.dumps(_saver.verify_trail(thread_id))
 

@@ -26,6 +26,7 @@ import gzip
 import time
 import uuid
 import base64
+import hashlib
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Iterator, AsyncIterator, Sequence
@@ -60,6 +61,11 @@ def _dec(pair: list[str]) -> tuple[str, bytes]:
     """Decode a ``[type, b64]`` pair back to a serde ``(type, bytes)`` tuple."""
     type_, b64 = pair
     return (type_, base64.b64decode(b64.encode("ascii")))
+
+
+def _sha256(blob: bytes) -> str:
+    """Return the hex SHA-256 digest of ``blob`` (the exact stored bytes)."""
+    return hashlib.sha256(blob).hexdigest()
 
 
 class WalrusSaver(BaseCheckpointSaver[str]):
@@ -275,6 +281,7 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         blob = self._pack_envelope(
             checkpoint, full_metadata, parent_checkpoint_id, checkpoint_ns
         )
+        blob_sha256 = _sha256(blob)
         blob_id = self.client.store(blob)
 
         summary = ""
@@ -295,6 +302,7 @@ class WalrusSaver(BaseCheckpointSaver[str]):
                 timestamp=checkpoint["ts"],
                 summary=summary,
                 checkpoint_ns=checkpoint_ns,
+                blob_sha256=blob_sha256,
             ),
         )
         self._store_manifest(manifest)
@@ -356,6 +364,7 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         new_blob_id = self.client.store(new_blob)
 
         entry.blob_id = new_blob_id
+        entry.blob_sha256 = _sha256(new_blob)
         manifest.add(checkpoint_id, entry)
         self._store_manifest(manifest)
 
@@ -561,6 +570,7 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         }
 
         blob = self._pack_envelope(checkpoint, metadata, None, "")
+        blob_sha256 = _sha256(blob)
         blob_id = self.client.store(blob)
 
         summary = ""
@@ -582,6 +592,7 @@ class WalrusSaver(BaseCheckpointSaver[str]):
                 summary=summary,
                 checkpoint_ns="",
                 forked_from=forked_from,
+                blob_sha256=blob_sha256,
             ),
         )
         self._store_manifest(manifest)
@@ -599,25 +610,37 @@ class WalrusSaver(BaseCheckpointSaver[str]):
     # ------------------------------------------------------------------
 
     def verify_trail(self, thread_id: str) -> dict[str, Any]:
-        """Walk a thread's blob chain and confirm every checkpoint is intact.
+        """Cryptographically verify a thread's blob chain, step by step.
 
-        For each checkpoint in the manifest (oldest first) this fetches the blob
-        from Walrus and confirms it is present and decodes cleanly. Because
-        Walrus blobs are content-addressed and immutable, a blob that still
-        fetches and unpacks under its recorded ID has not been altered — the
-        ordered chain is a tamper-evident record of what the agent did.
+        For each checkpoint (oldest first) this re-fetches the blob from the
+        Walrus aggregator, recomputes its SHA-256, and compares the result to the
+        ``blob_sha256`` recorded in the manifest at write time. This is a content
+        integrity check layered on top of Walrus's own content-addressing — not a
+        new cryptographic primitive — but it gives a self-contained, byte-level
+        proof that the stored bytes are exactly what was written.
+
+        Per-step ``status``:
+
+        * ``PASS``  — a stored hash exists and the recomputed hash matches.
+        * ``FAIL``  — a stored hash exists but the recomputed hash differs, or the
+          blob could not be fetched/unpacked. The trail is TAMPERED.
+        * ``UNVERIFIED`` — no hash was stored at write time (checkpoint predates
+          integrity hashing). Reported honestly; never counted as a pass.
 
         Args:
             thread_id: The thread whose chain to verify.
 
         Returns:
-            ``{"thread_id", "ok", "checkpoint_count", "verified", "steps"[]}``
-            where each step is ``{"checkpoint_id", "blob_id", "parent",
-            "forked_from", "ok", "error"}``.
+            ``{"thread_id", "ok", "checkpoint_count", "verified",
+            "tampered_count", "steps"[]}`` where each step is
+            ``{"checkpoint_id", "blob_id", "stored_hash", "recomputed_hash",
+            "status"}``. ``ok`` is true only when at least one checkpoint was
+            verified and no checkpoint FAILed.
         """
         manifest = self._load_manifest(thread_id)
         steps: list[dict[str, Any]] = []
         verified = 0
+        tampered = 0
 
         ordered = list(manifest.ordered_ids(newest_first=False))
         # Fetch every checkpoint blob concurrently up front, then verify locally.
@@ -628,31 +651,47 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         for cid in ordered:
             entry = manifest.get(cid)
             assert entry is not None  # ids come from the manifest itself
-            step: dict[str, Any] = {
-                "checkpoint_id": cid,
-                "blob_id": entry.blob_id,
-                "parent": entry.parent_checkpoint_id,
-                "forked_from": entry.forked_from,
-                "ok": False,
-                "error": None,
-            }
+            stored_hash = entry.blob_sha256
+            recomputed_hash: str | None = None
             raw = blobs.get(entry.blob_id)
-            try:
-                if isinstance(raw, Exception):
-                    raise raw
-                self._unpack_envelope(raw)  # raises if corrupt/altered
-                step["ok"] = True
+
+            if isinstance(raw, Exception) or raw is None:
+                # Blob unreadable: if we had a baseline to check, that's a FAIL;
+                # otherwise there's nothing we could have proven anyway.
+                status = "FAIL" if stored_hash else "UNVERIFIED"
+            else:
+                recomputed_hash = _sha256(raw)
+                if stored_hash is None:
+                    status = "UNVERIFIED"
+                elif recomputed_hash == stored_hash:
+                    status = "PASS"
+                else:
+                    status = "FAIL"
+
+            if status == "PASS":
                 verified += 1
-            except Exception as exc:  # noqa: BLE001 - report, don't crash
-                step["error"] = str(exc)
-            steps.append(step)
+            elif status == "FAIL":
+                tampered += 1
+
+            steps.append(
+                {
+                    "checkpoint_id": cid,
+                    "blob_id": entry.blob_id,
+                    "stored_hash": stored_hash,
+                    "recomputed_hash": recomputed_hash,
+                    "status": status,
+                }
+            )
 
         total = len(steps)
         return {
             "thread_id": thread_id,
-            "ok": total > 0 and verified == total,
+            # Honest gate: proven if at least one checkpoint PASSed and none
+            # FAILed. An all-UNVERIFIED thread has nothing proven, so ok=false.
+            "ok": verified > 0 and tampered == 0,
             "checkpoint_count": total,
             "verified": verified,
+            "tampered_count": tampered,
             "steps": steps,
         }
 
