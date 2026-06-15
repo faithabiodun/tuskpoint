@@ -82,11 +82,13 @@ export default function ConceptsPage() {
         recall is an index into the exact store, never the source of truth.
       </P>
 
-      <Callout title="Not a MemWal MCP clone">
-        MemWal ships an MCP for free-form memories (remember / recall / …).
-        TuskPoint manages durable, exactly-addressable checkpoints you can resume
-        a graph from. The only overlap, search, is scoped to <em>our</em>{" "}
-        checkpoint summaries.
+      <Callout title="How TuskPoint uses MemWal">
+        MemWal is the semantic memory layer TuskPoint builds on. TuskPoint writes
+        a one-line summary of each checkpoint to MemWal, then{" "}
+        <Code>checkpoint_search</Code> uses MemWal&apos;s recall to find the right
+        moment. The result is a pointer you load exactly from Walrus, so semantic
+        recall handles discovery and the content-addressed blob is still the
+        source of truth.
       </Callout>
     </>
   );

@@ -166,9 +166,11 @@ Full per-client instructions: https://tuskpoint.xyz/docs/clients
   nearest summaries, pointers carrying checkpoint IDs you then load exactly.
   Vector recall indexes the exact store; it is never the source of truth.
 
-TuskPoint is **not** a MemWal MCP clone. MemWal manages free-form memories;
-TuskPoint manages durable, exactly-addressable checkpoints you resume a graph
-from. The only overlap, search, is scoped to *our* checkpoint summaries.
+MemWal is the semantic memory layer TuskPoint builds on. TuskPoint writes a
+one-line summary of each checkpoint to MemWal, and `checkpoint_search` uses
+MemWal's recall to find the right moment, then hands you a pointer you load
+exactly from Walrus. Semantic recall handles discovery; the content-addressed
+blob stays the source of truth.
 
 ## Network: testnet by default, mainnet when you're ready
 
