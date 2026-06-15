@@ -139,9 +139,14 @@ export function TerminalCarousel() {
       >
         {/* Title bar */}
         <div className="flex items-center gap-2 border-b border-line px-4 py-2.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-flame/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-          <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+          {[0, 1, 2].map((d) => (
+            <span
+              key={d}
+              className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                d === index % 3 ? "bg-flame" : "bg-white/15"
+              }`}
+            />
+          ))}
           <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500">
             {STEPS[index].tag}
           </span>

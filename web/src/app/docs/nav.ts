@@ -26,6 +26,8 @@ export const DOC_NAV: DocGroup[] = [
     title: "Guides",
     links: [
       { href: "/docs/fork", label: "Fork & replay" },
+      { href: "/docs/rollback", label: "Rollback" },
+      { href: "/docs/handoff", label: "Cross-agent handoff" },
       { href: "/docs/audit", label: "Audit trail" },
       { href: "/docs/mainnet", label: "Network: testnet & mainnet" },
     ],
