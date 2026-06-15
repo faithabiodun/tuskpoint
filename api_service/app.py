@@ -53,15 +53,24 @@ _SEED_THREADS = Path(__file__).with_name("seed_threads.json")
 
 
 def _seed_manifest_cache(saver: WalrusSaver) -> None:
-    """Merge committed demo manifest IDs into the saver's cache if missing."""
+    """Make the committed demo manifest IDs authoritative in the saver's cache.
+
+    ``seed_threads.json`` is the source of truth for the demo threads. We
+    OVERWRITE any cached pointer for a seeded thread (not just fill missing
+    ones), so updating the committed seed always takes effect even when an
+    ephemeral host (e.g. Render's scale-to-zero disk) still has a stale pointer
+    for the same thread id left over from an earlier deploy or a dashboard
+    write. Non-seeded threads in the cache are left untouched.
+    """
     try:
         seed = json.loads(_SEED_THREADS.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return
     changed = False
     for thread_id, blob_id in seed.items():
-        if thread_id not in saver._manifest_ids:  # noqa: SLF001 - internal cache
-            saver._manifest_ids[str(thread_id)] = str(blob_id)  # noqa: SLF001
+        tid, bid = str(thread_id), str(blob_id)
+        if saver._manifest_ids.get(tid) != bid:  # noqa: SLF001 - internal cache
+            saver._manifest_ids[tid] = bid  # noqa: SLF001
             changed = True
     if changed:
         try:

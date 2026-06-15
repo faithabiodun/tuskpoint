@@ -115,9 +115,9 @@ export function Dashboard() {
           The checkpoint run, end to end.
         </h1>
         <p className="mt-5 text-sm text-slate-400 sm:text-base">
-          This dashboard calls the real TuskPoint engine over HTTP, every
+          This is a demo. It calls the real TuskPoint engine over HTTP, every
           checkpoint, diff, search, save, fork, and audit below hits live Walrus
-          storage. Nothing here is mocked.
+          storage.
         </p>
       </div>
 
