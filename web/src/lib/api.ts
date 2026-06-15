@@ -1,5 +1,5 @@
 // Typed client for the live TuskPoint engine, via same-origin /api/* routes.
-// Every call hits the real Walrus-backed service — no mock data.
+// Every call hits the real Walrus-backed service, no mock data.
 
 export type Health = {
   ok: boolean;

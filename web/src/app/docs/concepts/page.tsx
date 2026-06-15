@@ -23,7 +23,7 @@ export default function ConceptsPage() {
 
       <H2 id="checkpoint">Checkpoint</H2>
       <P>
-        A snapshot of an agent&apos;s state at one moment — the LangGraph channel
+        A snapshot of an agent&apos;s state at one moment, the LangGraph channel
         values plus metadata and lineage. TuskPoint serializes a checkpoint,
         gzips it, and stores the result as a single Walrus blob.
       </P>
@@ -48,13 +48,13 @@ export default function ConceptsPage() {
       <Callout title="Why lexical sort = chronological order">
         LangGraph checkpoint IDs are time-ordered UUIDv6 strings, so the lexical
         maximum of the IDs is the chronologically latest checkpoint. TuskPoint
-        relies on that for &quot;latest&quot; lookups — no extra timestamp index
+        relies on that for &quot;latest&quot; lookups, no extra timestamp index
         needed.
       </Callout>
 
       <H2 id="thread">Thread</H2>
       <P>
-        A single line (or tree) of checkpoints — one agent run. A thread is
+        A single line (or tree) of checkpoints, one agent run. A thread is
         identified by a <Code>thread_id</Code> and indexed by exactly one
         manifest. Resuming a thread loads its latest checkpoint.
       </P>
@@ -64,7 +64,7 @@ export default function ConceptsPage() {
         A new thread whose genesis checkpoint is copied from another
         thread&apos;s checkpoint, with a <Code>forked_from</Code> lineage record.
         Forking lets you replay from a known-good point and try a different path
-        without disturbing the original — the manifest can describe a{" "}
+        without disturbing the original, the manifest can describe a{" "}
         <span className="text-cream">tree of runs</span>, not just a line.
       </P>
 
@@ -77,7 +77,7 @@ export default function ConceptsPage() {
       </P>
       <H3>Semantic search is for discovery</H3>
       <P>
-        <Code>checkpoint_search</Code> asks MemWal for the nearest summaries —
+        <Code>checkpoint_search</Code> asks MemWal for the nearest summaries,
         pointers that carry checkpoint IDs, which you then load exactly. Vector
         recall is an index into the exact store, never the source of truth.
       </P>

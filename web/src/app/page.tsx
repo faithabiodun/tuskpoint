@@ -35,7 +35,7 @@ export default function HomePage() {
                 Eleven tools, any agent can call.
               </h2>
               <p className="mt-5 text-slate-400">
-                A complete checkpoint API over the Model Context Protocol — it
+                A complete checkpoint API over the Model Context Protocol, it
                 complements, and never duplicates, MemWal&apos;s own MCP.
               </p>
             </div>

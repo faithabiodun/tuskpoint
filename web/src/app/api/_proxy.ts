@@ -17,7 +17,7 @@ export type ProxyInit = {
 /**
  * Forward a request to the FastAPI engine and return its JSON as a Next response.
  * On any failure (missing config, network, upstream error) returns a clear JSON
- * error — never fabricated data.
+ * error, never fabricated data.
  */
 export async function proxy(path: string, init: ProxyInit = {}) {
   if (!API_URL) {

@@ -158,7 +158,7 @@ export function WritePanel({
           Fork into a new thread
         </h2>
         <p className="mt-1 text-xs text-slate-500">
-          Live <code className="text-slate-400">checkpoint_fork</code> — branch
+          Live <code className="text-slate-400">checkpoint_fork</code>, branch
           any checkpoint into a brand-new thread, preserving lineage.
         </p>
 

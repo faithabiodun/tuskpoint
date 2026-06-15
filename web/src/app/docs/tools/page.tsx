@@ -71,7 +71,7 @@ export default function ToolsPage() {
         <P>
           Calling <Code>tuskpoint_info</Code> returns the full tool list plus
           copy-paste MCP config for Claude Desktop, Claude Code, Cursor,
-          Windsurf, and the generic <Code>.mcp.json</Code> form — so an agent can
+          Windsurf, and the generic <Code>.mcp.json</Code> form, so an agent can
           discover how to connect without leaving the chat.
         </P>
       </section>

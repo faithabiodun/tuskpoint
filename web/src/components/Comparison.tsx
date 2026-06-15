@@ -76,7 +76,7 @@ export function Comparison() {
           <p className="mt-5 text-slate-400">
             Other approaches give you one or the other. TuskPoint keeps an
             immutable Walrus blob as the source of truth and treats vector recall
-            as an index into it — never a replacement.
+            as an index into it, never a replacement.
           </p>
         </Reveal>
 

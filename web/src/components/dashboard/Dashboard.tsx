@@ -115,7 +115,7 @@ export function Dashboard() {
           The checkpoint run, end to end.
         </h1>
         <p className="mt-5 text-sm text-slate-400 sm:text-base">
-          This dashboard calls the real TuskPoint engine over HTTP — every
+          This dashboard calls the real TuskPoint engine over HTTP, every
           checkpoint, diff, search, save, fork, and audit below hits live Walrus
           storage. Nothing here is mocked.
         </p>
@@ -138,7 +138,7 @@ export function Dashboard() {
         ))}
       </div>
 
-      {/* Honest network notice — testnet vs mainnet */}
+      {/* Honest network notice - testnet vs mainnet */}
       {health && (
         <div className="mb-6 flex flex-col gap-1 rounded-xl border border-line bg-ink-900/60 px-4 py-3 text-xs text-slate-400 sm:flex-row sm:items-center sm:gap-2">
           <span
@@ -153,14 +153,14 @@ export function Dashboard() {
           </span>
           {health.network === "mainnet" ? (
             <span>
-              Live on <strong className="text-cream">Walrus mainnet</strong> —
+              Live on <strong className="text-cream">Walrus mainnet</strong>,
               saves and forks are real, paid blob writes.
             </span>
           ) : (
             <span>
               Live on <strong className="text-cream">Walrus testnet</strong> so
               the Save / Fork buttons make <strong className="text-cream">free</strong>{" "}
-              writes — visitors can&apos;t spend real funds. Operators can run the
+              writes, visitors can&apos;t spend real funds. Operators can run the
               exact same engine on mainnet by pointing{" "}
               <code className="text-slate-300">WALRUS_PUBLISHER_URL</code> /{" "}
               <code className="text-slate-300">WALRUS_AGGREGATOR_URL</code> at

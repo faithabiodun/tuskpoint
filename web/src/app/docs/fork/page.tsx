@@ -5,7 +5,7 @@ import { DocTitle, H2, P, Callout, Code } from "../ui";
 export const metadata: Metadata = {
   title: "Fork & replay",
   description:
-    "Branch any checkpoint into a new thread to explore a different path — git for agent runs.",
+    "Branch any checkpoint into a new thread to explore a different path, git for agent runs.",
 };
 
 export default function ForkPage() {
@@ -18,7 +18,7 @@ export default function ForkPage() {
           <>
             <Code>checkpoint_fork</Code> is the &quot;git branch&quot; for agent
             runs. Copy any checkpoint into a brand-new thread, then run a
-            different path from there — the original thread is never touched.
+            different path from there, the original thread is never touched.
           </>
         }
       />
@@ -27,8 +27,8 @@ export default function ForkPage() {
       <P>
         Agents make irreversible choices: a tool call, a model, a prompt
         strategy. When you want to compare two paths from the same starting
-        point — A/B a planner, retry after a bad branch, or hand a known-good
-        state to a different agent — you fork. Because every checkpoint is a
+        point - A/B a planner, retry after a bad branch, or hand a known-good
+        state to a different agent - you fork. Because every checkpoint is a
         content-addressed blob, forking is nearly free: it writes one new genesis
         checkpoint that points back at where it came from.
       </P>
@@ -45,7 +45,7 @@ export default function ForkPage() {
       <Callout title="Genesis, not a copy of history">
         A fork creates a new thread whose <em>first</em> checkpoint equals the
         source state. It does not duplicate the source thread&apos;s entire
-        history — the lineage pointer is enough to trace where it branched from.
+        history, the lineage pointer is enough to trace where it branched from.
       </Callout>
 
       <H2 id="mcp">Via the MCP tool</H2>
@@ -92,7 +92,7 @@ print(result["forked_from"])  # run-42:0c3b84d1-…`}
       </div>
 
       <Callout tone="amber" title="The target thread must be empty">
-        Fork refuses to write into a thread that already has checkpoints — that
+        Fork refuses to write into a thread that already has checkpoints, that
         would overwrite real history. Pick a fresh <Code>new_thread_id</Code>.
         Loading a missing source checkpoint raises a clear error too.
       </Callout>

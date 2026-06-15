@@ -21,13 +21,13 @@ export function RunEvidence() {
           </h2>
           <p className="mt-5 text-slate-400">
             These are real checkpoints from one researcher&nbsp;→&nbsp;writer run.
-            Each blob ID below resolves to the exact bytes that were written —
+            Each blob ID below resolves to the exact bytes that were written,
             click any to verify on the public aggregator.
           </p>
           <p className="mt-3 text-xs text-slate-500">
             This run, and the live dashboard, run on the Walrus testnet (free
             writes), so blob links resolve on the testnet aggregator. The same
-            engine runs unchanged on mainnet — point{" "}
+            engine runs unchanged on mainnet, point{" "}
             <code className="text-slate-400">WALRUS_PUBLISHER_URL</code> /{" "}
             <code className="text-slate-400">WALRUS_AGGREGATOR_URL</code> at
             mainnet for paid, production writes.

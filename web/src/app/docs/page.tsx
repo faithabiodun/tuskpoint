@@ -27,7 +27,7 @@ const CARDS = [
   {
     href: "/docs/fork",
     title: "Fork & replay",
-    body: "Branch any checkpoint into a new thread — git for agent runs.",
+    body: "Branch any checkpoint into a new thread, git for agent runs.",
   },
 ];
 
@@ -43,8 +43,8 @@ export default function DocsOverviewPage() {
             <span className="text-cream">LangGraph checkpointer</span> that
             stores every step of an agent run as an immutable{" "}
             <span className="text-cream">Walrus</span> blob. When a process
-            crashes, you resume from exactly where it stopped — not from the
-            beginning — and you can fork, diff, search, and audit the entire
+            crashes, you resume from exactly where it stopped, not from the
+            beginning, and you can fork, diff, search, and audit the entire
             history.
           </>
         }
@@ -53,15 +53,15 @@ export default function DocsOverviewPage() {
       <H2>The problem</H2>
       <P>
         Long-running and multi-agent workflows accumulate state: research notes,
-        intermediate artifacts, tool outputs, decisions. When the process dies —
-        a timeout, an OOM, a redeploy — that state usually dies with it, and the
+        intermediate artifacts, tool outputs, decisions. When the process dies -
+        a timeout, an OOM, a redeploy - that state usually dies with it, and the
         agent restarts from zero. Keeping it in a local file or a single
         database row makes it fragile and hard to inspect.
       </P>
       <P>
         TuskPoint persists each checkpoint to Walrus, a decentralized blob store
         where every blob is content-addressed. A read returns the exact bytes
-        you wrote, verifiably, from any aggregator — no central server to trust
+        you wrote, verifiably, from any aggregator, no central server to trust
         and nothing to lose on a crash.
       </P>
 
@@ -76,21 +76,21 @@ export default function DocsOverviewPage() {
 
       <ul className="mt-4 space-y-2 text-slate-400">
         <li>
-          <span className="font-semibold text-cream">WalrusSaver</span> — the
+          <span className="font-semibold text-cream">WalrusSaver</span> - the
           exact, byte-for-byte layer. The source of truth you rewind to.
         </li>
         <li>
-          <span className="font-semibold text-cream">MemWal</span> — the
+          <span className="font-semibold text-cream">MemWal</span> - the
           semantic index. Pointers into the exact store, never the truth itself.
         </li>
         <li>
-          <span className="font-semibold text-cream">MCP server</span> — the
+          <span className="font-semibold text-cream">MCP server</span> - the
           all-in-one toolbelt: <Code>checkpoint_save</Code>,{" "}
           <Code>checkpoint_fork</Code>, <Code>verify_trail</Code>, and more.
         </li>
       </ul>
 
-      <Callout title="Exact vs. semantic — both, on purpose">
+      <Callout title="Exact vs. semantic - both, on purpose">
         Lookups by ID are deterministic and content-addressed. Semantic search
         is only for discovery: it returns summaries carrying checkpoint IDs you
         then load exactly. Vector recall indexes the exact store; it is never the

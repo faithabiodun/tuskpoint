@@ -31,12 +31,12 @@ export default function AuditPage() {
         re-fetches each blob, recomputes its SHA-256, and compares it to the
         stored hash. A match proves the bytes are byte-for-byte what was written;
         any mismatch is a <Code>FAIL</Code>. This is a cryptographic check, not
-        merely a successful fetch — a blob that was swapped or corrupted in place
+        merely a successful fetch, a blob that was swapped or corrupted in place
         is caught even if it still downloads.
       </P>
       <P>
         Each step is reported as <Code>PASS</Code> (hash matches),{" "}
-        <Code>FAIL</Code> (hash differs — tampered), or <Code>UNVERIFIED</Code>{" "}
+        <Code>FAIL</Code> (hash differs, tampered), or <Code>UNVERIFIED</Code>{" "}
         (the checkpoint predates integrity proofs and carries no stored hash, so
         it can&apos;t be cryptographically confirmed).
       </P>
@@ -92,17 +92,17 @@ assert report["ok"], "trail failed verification!"`}
       <H2 id="uses">What it&apos;s good for</H2>
       <ul className="mt-4 space-y-2 text-slate-400">
         <li>
-          <span className="font-semibold text-cream">Compliance</span> — produce
+          <span className="font-semibold text-cream">Compliance</span> - produce
           a verifiable record that an agent&apos;s decisions were not altered
           after the fact.
         </li>
         <li>
-          <span className="font-semibold text-cream">Debugging</span> — catch a
+          <span className="font-semibold text-cream">Debugging</span> - catch a
           corrupt or missing checkpoint before it surfaces as a confusing resume
           failure.
         </li>
         <li>
-          <span className="font-semibold text-cream">Hand-off</span> — let one
+          <span className="font-semibold text-cream">Hand-off</span> - let one
           agent verify another&apos;s trail before continuing from it.
         </li>
       </ul>

@@ -6,7 +6,7 @@ const FLOW = [
     step: "01",
     label: "Intercept",
     title: "Agent takes a step",
-    body: "Your LangGraph agent advances. WalrusSaver.put() intercepts the new checkpoint — no agent code changes required.",
+    body: "Your LangGraph agent advances. WalrusSaver.put() intercepts the new checkpoint, no agent code changes required.",
   },
   {
     step: "02",
@@ -39,12 +39,12 @@ export function Architecture() {
           </h2>
           <p className="mt-5 text-slate-400">
             Exact for trust. Semantic for discovery. Walrus for durability.
-            Vector recall is only ever an index <em>into</em> the exact store —
+            Vector recall is only ever an index <em>into</em> the exact store,
             never the source of truth.
           </p>
         </Reveal>
 
-        {/* Flow steps — numbered editorial rows */}
+        {/* Flow steps - numbered editorial rows */}
         <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-4">
           {FLOW.map((f, i) => (
             <Reveal

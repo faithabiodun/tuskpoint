@@ -30,7 +30,7 @@ export function StateViewer({
   const [error, setError] = useState<string | null>(null);
 
   // Load the exact checkpoint state live from the engine whenever the
-  // selection changes. No baked snapshot — this is a real Walrus read.
+  // selection changes. No baked snapshot, this is a real Walrus read.
   useEffect(() => {
     if (!threadId || !checkpointId) return;
     let cancelled = false;
@@ -87,7 +87,7 @@ export function StateViewer({
           {[
             ["node", item.node],
             ["step", String(item.step)],
-            ["parent", item.parent ? item.shortId : "— (root)"],
+            ["parent", item.parent ? item.shortId : "- (root)"],
             ["thread", threadId],
           ].map(([k, v]) => (
             <div

@@ -3,8 +3,8 @@
 // The checkpoint history, blob IDs, summaries, report, and semantic-search
 // results below are REAL: they were produced by running the actual engine
 // (WalrusSaver + MemWal + a live LangGraph agent) against Walrus and exported to
-// `snapshot.json` via `scripts/export_snapshot.py`. No secrets ship to the site
-// — only this exported record of one genuine run.
+// `snapshot.json` via `scripts/export_snapshot.py`. No secrets ship to the site,
+// only this exported record of one genuine run.
 
 import snapshot from "./snapshot.json";
 
@@ -74,7 +74,7 @@ export const TOOLS: Tool[] = [
     name: "checkpoint_search",
     signature: "checkpoint_search(query)",
     summary:
-      "Ask a question in plain English. MemWal returns the nearest checkpoint summaries — pointers you then load exactly.",
+      "Ask a question in plain English. MemWal returns the nearest checkpoint summaries, pointers you then load exactly.",
     category: "Discover",
     glyph: "FIND",
     returns: "{ results: [{ text, distance }] }",
@@ -84,7 +84,7 @@ export const TOOLS: Tool[] = [
     name: "checkpoint_fork",
     signature: "checkpoint_fork(source_thread, source_id, new_thread)",
     summary:
-      "Git-branch an agent run. Copy any checkpoint into a new thread to replay a different path — the original stays untouched.",
+      "Git-branch an agent run. Copy any checkpoint into a new thread to replay a different path, the original stays untouched.",
     category: "Write",
     glyph: "FORK",
     returns: "{ new_thread_id, checkpoint_id, blob_id, forked_from }",
@@ -94,7 +94,7 @@ export const TOOLS: Tool[] = [
     name: "checkpoint_rollback",
     signature: "checkpoint_rollback(thread_id, checkpoint_id)",
     summary:
-      "Durable, auditable undo. Re-writes an earlier checkpoint's state as a new head of the same thread — append-only, so history (and the audit trail) stays intact.",
+      "Durable, auditable undo. Re-writes an earlier checkpoint's state as a new head of the same thread, append-only, so history (and the audit trail) stays intact.",
     category: "Write",
     glyph: "UNDO",
     returns: "{ checkpoint_id, restored_from, blob_id, rolled_back_from }",
@@ -104,7 +104,7 @@ export const TOOLS: Tool[] = [
     name: "handoff_checkpoint",
     signature: "handoff_checkpoint(thread_id, checkpoint_id, to_agent?)",
     summary:
-      "Emit a tiny portable descriptor (blob id + SHA-256 + provenance) so another agent can adopt this exact state. No state is copied — only the Walrus pointer and its hash cross the boundary.",
+      "Emit a tiny portable descriptor (blob id + SHA-256 + provenance) so another agent can adopt this exact state. No state is copied, only the Walrus pointer and its hash cross the boundary.",
     category: "Write",
     glyph: "HAND",
     returns: "{ source, blob_id, blob_sha256, to_agent }",
@@ -124,7 +124,7 @@ export const TOOLS: Tool[] = [
     name: "verify_trail",
     signature: "verify_trail(thread_id)",
     summary:
-      "Audit a thread end-to-end. Re-fetches every content-addressed blob and recomputes its SHA-256, so tampering or corruption shows up as a FAIL step — cryptographic, not just a successful fetch.",
+      "Audit a thread end-to-end. Re-fetches every content-addressed blob and recomputes its SHA-256, so tampering or corruption shows up as a FAIL step, cryptographic, not just a successful fetch.",
     category: "Read",
     glyph: "AUDIT",
     returns: "{ ok, checkpoint_count, verified, tampered_count, steps[] }",
@@ -190,25 +190,25 @@ export const RUN_META = {
 export const STACK = [
   {
     name: "LangGraph",
-    role: "Agent framework — TuskPoint plugs into its checkpoint API.",
+    role: "Agent framework - TuskPoint plugs into its checkpoint API.",
   },
   {
     name: "Walrus",
-    role: "Decentralized blob storage — the durable source of truth.",
+    role: "Decentralized blob storage - the durable source of truth.",
   },
   {
     name: "MemWal",
-    role: "Semantic memory — natural-language recall over history.",
+    role: "Semantic memory - natural-language recall over history.",
   },
   {
     name: "MCP",
-    role: "Model Context Protocol — eleven tools any agent can call.",
+    role: "Model Context Protocol - eleven tools any agent can call.",
   },
 ];
 
 export const REPO_URL = "https://github.com/faithabiodun/tuskpoint";
 
-// Mainnet aggregator — used when an operator runs the engine on mainnet.
+// Mainnet aggregator - used when an operator runs the engine on mainnet.
 export const WALRUS_AGGREGATOR =
   "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/";
 

@@ -4,7 +4,7 @@ const STEPS = [
   {
     n: "01",
     title: "Wrap your graph",
-    body: "Pass WalrusSaver to compile() like any LangGraph checkpointer. No new APIs to learn — your nodes don't change.",
+    body: "Pass WalrusSaver to compile() like any LangGraph checkpointer. No new APIs to learn, your nodes don't change.",
     code: "graph.compile(checkpointer=WalrusSaver())",
   },
   {

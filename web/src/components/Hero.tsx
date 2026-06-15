@@ -38,7 +38,7 @@ export function Hero() {
             <span className="text-flame">search their own history in plain English.</span>
           </p>
 
-          {/* Terminal carousel — the centerpiece, auto + manual swipe */}
+          {/* Terminal carousel - the centerpiece, auto + manual swipe */}
           <TerminalCarousel />
 
           <div className="animate-fade-up mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center">
@@ -56,7 +56,7 @@ export function Hero() {
             </Link>
           </div>
 
-          {/* Status line — aeroplane motif */}
+          {/* Status line - aeroplane motif */}
           <div className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[12px] text-slate-500">
             {STATUS.map((s) => (
               <span key={s} className="inline-flex items-center gap-2">

@@ -7,8 +7,8 @@ exactly where it stopped — not from the beginning — and you can **fork**, di
 search, and **audit** the entire history. It ships an all-in-one MCP server so
 any agent (Claude, Cursor, Windsurf, …) can do all of this with a tool call.
 
-- **Docs:** https://tuskpoint.vercel.app/docs
-- **Live run dashboard:** https://tuskpoint.vercel.app/dashboard
+- **Docs:** https://tuskpoint.xyz/docs
+- **Live run dashboard:** https://tuskpoint.xyz/dashboard
 
 ## What is TuskPoint?
 
@@ -147,7 +147,7 @@ every client; only the file location changes.
 - **Cursor:** `.cursor/mcp.json`
 - **Windsurf:** `~/.codeium/windsurf/mcp_config.json`
 
-Full per-client instructions: https://tuskpoint.vercel.app/docs/clients
+Full per-client instructions: https://tuskpoint.xyz/docs/clients
 
 > **Note:** `checkpoint_search` returns an explanatory message instead of
 > failing when no MemWal credentials are present, so the server runs fine
@@ -183,7 +183,7 @@ export WALRUS_AGGREGATOR_URL=https://aggregator.walrus-mainnet.walrus.space
 Mainnet writes cost SUI (gas) + WAL (storage), so there is no public,
 unauthenticated mainnet publisher — use a community publisher, run your own, or
 use the upload relay with a funded key. See
-https://tuskpoint.vercel.app/docs/mainnet.
+https://tuskpoint.xyz/docs/mainnet.
 
 ## Tests
 
@@ -203,7 +203,7 @@ src/langgraph_checkpoint_walrus/
 mcp_server/server.py All-in-one MCP server: 11 checkpoint tools + tuskpoint_info (FastMCP)
 demo/                researcher→writer agent + crash/resume/fork/audit/rollback/handoff/semantic demos
 scripts/             check_walrus.py, check_memwal.py (standalone proofs)
-web/                 Next.js site + docs (https://tuskpoint.vercel.app)
+web/                 Next.js site + docs (https://tuskpoint.xyz)
 tests/               unit (no network) + integration (live Walrus) suites
 ```
 

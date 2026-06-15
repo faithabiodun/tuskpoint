@@ -13,7 +13,7 @@ import { CopyButton } from "../CopyButton";
 // Rollback + cross-agent handoff, both live. Rollback is append-only (it writes
 // an earlier state as a *new* head, never deleting history), so the verifiable
 // trail stays intact. Handoff emits a portable, hash-stamped descriptor that a
-// second agent adopts into a fresh thread — the blob is re-fetched and its
+// second agent adopts into a fresh thread, the blob is re-fetched and its
 // SHA-256 checked before it becomes state, so a tampered blob is rejected.
 export function RollbackPanel({
   threadId,
@@ -122,7 +122,7 @@ export function RollbackPanel({
           Roll back to an earlier checkpoint
         </h2>
         <p className="mt-1 text-xs text-slate-500">
-          Live <code className="text-slate-400">checkpoint_rollback</code> —
+          Live <code className="text-slate-400">checkpoint_rollback</code>,
           re-writes an earlier state as a <strong>new head</strong> of{" "}
           <span className="font-mono text-slate-400">{threadId}</span>.
           Append-only: nothing is deleted, so the audit trail stays intact and
@@ -192,7 +192,7 @@ export function RollbackPanel({
           Live <code className="text-slate-400">handoff_checkpoint</code> →{" "}
           <code className="text-slate-400">adopt_checkpoint</code>. The handoff
           is a tiny descriptor (blob id + SHA-256). A second agent re-fetches the
-          blob and verifies the hash before it becomes state — a tampered blob is
+          blob and verifies the hash before it becomes state, a tampered blob is
           rejected.
         </p>
 
@@ -241,7 +241,7 @@ export function RollbackPanel({
               blob {descriptor.blob_id}
             </p>
             <p className="mt-1 break-all font-mono text-slate-500">
-              sha256 {descriptor.blob_sha256 ?? "—"}
+              sha256 {descriptor.blob_sha256 ?? "-"}
             </p>
 
             <div className="mt-4 border-t border-line pt-3">
@@ -272,7 +272,7 @@ export function RollbackPanel({
         {adopted && (
           <div className="mt-4 rounded-xl border border-flame/20 bg-flame/5 px-4 py-3 text-xs">
             <p className="font-semibold text-flame">
-              Adopted live{adopted.verified ? " — hash verified ✓" : ""}.
+              Adopted live{adopted.verified ? " - hash verified ✓" : ""}.
             </p>
             <p className="mt-1 break-all font-mono text-slate-400">
               thread {adopted.new_thread_id}

@@ -36,7 +36,7 @@ const STEPS: Step[] = [
     title: "Survive a process kill",
     command: "python demo/run_demo.py --real --part2",
     output: [
-      { text: "fresh process — no state in memory", tone: "muted" },
+      { text: "fresh process - no state in memory", tone: "muted" },
       { text: "resumed from Walrus → run completed ✓", tone: "flame" },
     ],
   },
@@ -55,7 +55,7 @@ const STEPS: Step[] = [
     command: "python demo/run_demo.py --handoff",
     output: [
       { text: "Agent A → descriptor (blob + sha256)", tone: "muted" },
-      { text: "Agent B adopted — hash verified ✓", tone: "flame" },
+      { text: "Agent B adopted - hash verified ✓", tone: "flame" },
     ],
   },
   {

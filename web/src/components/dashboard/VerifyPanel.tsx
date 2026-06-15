@@ -30,7 +30,7 @@ export function VerifyPanel({ threadId }: { threadId: string }) {
             Verify the blob trail
           </h2>
           <p className="mt-1 max-w-xl text-xs text-slate-500">
-            Live <code className="text-slate-400">verify_trail</code> — re-fetches
+            Live <code className="text-slate-400">verify_trail</code>, re-fetches
             every checkpoint&apos;s Walrus blob and recomputes its SHA-256,
             comparing it to the hash stored at write time. A match is a{" "}
             <span className="text-flame">PASS</span>; a tampered or corrupt blob
@@ -74,10 +74,10 @@ export function VerifyPanel({ threadId }: { threadId: string }) {
               }`}
             />
             {result.ok
-              ? `Trail intact — ${result.verified}/${result.checkpoint_count} blobs hash-verified, 0 tampered.`
+              ? `Trail intact - ${result.verified}/${result.checkpoint_count} blobs hash-verified, 0 tampered.`
               : result.tampered_count > 0
-                ? `Trail FAILED — ${result.tampered_count} blob(s) tampered of ${result.checkpoint_count}.`
-                : `Unverifiable — ${result.verified}/${result.checkpoint_count} carry a stored hash.`}
+                ? `Trail FAILED - ${result.tampered_count} blob(s) tampered of ${result.checkpoint_count}.`
+                : `Unverifiable - ${result.verified}/${result.checkpoint_count} carry a stored hash.`}
           </div>
 
           <ol className="mt-4 space-y-2">
@@ -117,7 +117,7 @@ export function VerifyPanel({ threadId }: { threadId: string }) {
                   </p>
                   {s.stored_hash ? (
                     <p className="mt-1 break-all font-mono text-[10px] text-slate-600">
-                      sha256 {s.recomputed_hash ?? "—"}
+                      sha256 {s.recomputed_hash ?? "-"}
                       {s.status === "PASS" ? " ✓ matches stored" : ""}
                     </p>
                   ) : (
@@ -127,7 +127,7 @@ export function VerifyPanel({ threadId }: { threadId: string }) {
                   )}
                   {s.status === "FAIL" && (
                     <p className="mt-1 text-xs text-rose-300">
-                      recomputed hash does not match stored — blob changed.
+                      recomputed hash does not match stored, blob changed.
                     </p>
                   )}
                 </div>

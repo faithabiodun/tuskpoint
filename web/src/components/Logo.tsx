@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 /**
- * The TuskPoint tusk mark — a curved ivory tusk resolving into a glowing
+ * The TuskPoint tusk mark, a curved ivory tusk resolving into a glowing
  * checkpoint at its tip. Rendered inline so it scales crisply and gets a
  * unique gradient-id prefix per instance (avoids clashes when used twice).
  */

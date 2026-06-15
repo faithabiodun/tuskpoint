@@ -4,8 +4,8 @@ import { DocsPager } from "./DocsPager";
 
 export const metadata: Metadata = {
   title: {
-    default: "Docs — TuskPoint",
-    template: "%s — TuskPoint Docs",
+    default: "Docs - TuskPoint",
+    template: "%s - TuskPoint Docs",
   },
   description:
     "Documentation for TuskPoint: a Walrus-backed LangGraph checkpointer with semantic recall, fork & replay, audit trails, and an all-in-one MCP server.",

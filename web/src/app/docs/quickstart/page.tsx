@@ -17,7 +17,7 @@ export default function QuickStartPage() {
         intro={
           <>
             Get from zero to a real crash-and-resume in a few commands. Every
-            secret comes from environment variables — nothing is hard-coded.
+            secret comes from environment variables, nothing is hard-coded.
           </>
         }
       />
@@ -43,7 +43,7 @@ python -m pip install -e ".[all]"`}
         Reads from Walrus are public and free. Only writes (
         <Code>checkpoint_save</Code>, <Code>checkpoint_fork</Code>) need a
         publisher, and semantic search (<Code>checkpoint_search</Code>) needs
-        MemWal credentials. The server runs without either — those tools return a
+        MemWal credentials. The server runs without either, those tools return a
         clear message instead of failing.
       </Callout>
 
@@ -60,16 +60,16 @@ python -m pip install -e ".[all]"`}
       <P>
         The demo runs a small LangGraph research agent, persists each step to
         Walrus, then <span className="text-cream">exits the process</span>. A
-        second, fresh process resumes from the last checkpoint — proving the
+        second, fresh process resumes from the last checkpoint, proving the
         state survived outside any single run.
       </P>
       <div className="mt-4 space-y-3">
         <CodeBlock
-          label="part 1 — run, persist, EXIT"
+          label="part 1 - run, persist, EXIT"
           code={`python demo/run_demo.py --real --part1`}
         />
         <CodeBlock
-          label="part 2 — fresh process resumes from Walrus"
+          label="part 2 - fresh process resumes from Walrus"
           code={`python demo/run_demo.py --real --part2`}
         />
       </div>

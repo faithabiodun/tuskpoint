@@ -50,7 +50,7 @@ export default function ClientsPage() {
         intro={
           <>
             TuskPoint speaks the Model Context Protocol over stdio, so any
-            MCP-capable client can use all eleven tools. Pick your client below —
+            MCP-capable client can use all eleven tools. Pick your client below,
             the config is the same shape everywhere; only the file location
             changes.
           </>
@@ -60,7 +60,7 @@ export default function ClientsPage() {
       <Callout title="One block, every client">
         Most clients use the same{" "}
         <Code>{`{ "mcpServers": { "tuskpoint": { … } } }`}</Code> block (VS Code
-        uses <Code>servers</Code>, and Codex CLI uses TOML — both shown below).
+        uses <Code>servers</Code>, and Codex CLI uses TOML, both shown below).
         Set <Code>cwd</Code> to the absolute path of your cloned repo so{" "}
         <Code>mcp_server/server.py</Code> resolves. Or just call the{" "}
         <Code>tuskpoint_info</Code> tool and let the agent emit the right snippet
@@ -82,7 +82,7 @@ export default function ClientsPage() {
 
       <H2 id="claude-code">Claude Code</H2>
       <P>
-        Register it from the CLI in your repo root — no JSON editing required.
+        Register it from the CLI in your repo root, no JSON editing required.
       </P>
       <div className="mt-4">
         <CodeBlock
@@ -163,7 +163,7 @@ MEMWAL_ACCOUNT_ID=your_walrus_memory_account_object_id`}
         The default is Walrus <Code>testnet</Code>, where{" "}
         <Code>checkpoint_save</Code> and <Code>checkpoint_fork</Code> work out of
         the box for free. To run on mainnet you need a publisher with a funded
-        key — see{" "}
+        key, see{" "}
         <a href="/docs/mainnet" className="text-amber-300 underline-offset-4 hover:underline">
           the network guide
         </a>{" "}
