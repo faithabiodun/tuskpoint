@@ -140,7 +140,11 @@ class WalrusSaver(BaseCheckpointSaver[str]):
         try:
             raw = self.client.read(manifest_blob_id)
             return ThreadManifest.from_json_bytes(raw)
-        except KeyError:
+        except Exception:  # noqa: BLE001
+            # A cached pointer that can't be read (missing, malformed, or left
+            # over from a different backend) must not crash the run. Treat the
+            # thread as fresh; the next put writes a valid manifest and repairs
+            # the cache. This keeps a stale cache self-healing rather than fatal.
             return ThreadManifest(thread_id=thread_id)
 
     def _store_manifest(self, manifest: ThreadManifest) -> str:
