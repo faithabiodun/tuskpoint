@@ -10,6 +10,11 @@ verify the bytes by hash, **fork** a checkpoint into a new thread, and **diff**,
 so any agent (Claude, Cursor, Windsurf, and more) can do all of this with a tool
 call through 11 checkpoint tools.
 
+Plain-English search is powered by [MemWal](https://memory.walrus.xyz), the
+semantic memory layer for Walrus. TuskPoint writes a one-line summary of each
+checkpoint to MemWal and uses its recall to find the right moment, then loads the
+exact state from Walrus.
+
 - **Docs:** https://tuskpoint.xyz/docs
 - **Live run dashboard:** https://tuskpoint.xyz/dashboard
 
