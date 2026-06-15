@@ -1,11 +1,14 @@
 # TuskPoint: Verifiable LangGraph checkpoints on Walrus
 
 TuskPoint is a drop-in [LangGraph](https://langchain-ai.github.io/langgraph/)
-checkpointer that stores every step of an agent run as an immutable
+checkpointer that saves every step of an agent run as a verifiable
 [Walrus](https://docs.wal.app) blob. When a process crashes, you resume from
-exactly where it stopped — not from the beginning — and you can **fork**, diff,
-search, and **audit** the entire history. It ships an all-in-one MCP server so
-any agent (Claude, Cursor, Windsurf, …) can do all of this with a tool call.
+exactly where it stopped, not from the beginning. From there you can **roll
+back** to any earlier moment, **hand a run off** to another agent and have it
+verify the bytes by hash, **fork** a checkpoint into a new thread, and **diff**,
+**search**, and **audit** the whole history. It ships an all-in-one MCP server,
+so any agent (Claude, Cursor, Windsurf, and more) can do all of this with a tool
+call through 11 checkpoint tools.
 
 - **Docs:** https://tuskpoint.xyz/docs
 - **Live run dashboard:** https://tuskpoint.xyz/dashboard
@@ -14,24 +17,25 @@ any agent (Claude, Cursor, Windsurf, …) can do all of this with a tool call.
 
 - **A checkpointer, not a database.** `WalrusSaver` is a standard LangGraph
   `BaseCheckpointSaver`. Drop it into your graph and every checkpoint is
-  serialized, gzipped, and stored as a content-addressed Walrus blob — the
+  serialized, gzipped, and stored as a content-addressed Walrus blob, the
   *exact* layer you rewind to.
 - **Crash-proof by construction.** State lives on a decentralized network, not
   in your process. A fresh process rehydrates the latest checkpoint and
   continues. The only thing kept locally is a blob pointer.
 - **Git for agent runs.** `checkpoint_fork` branches any checkpoint into a new
   thread so you can replay a different path without touching the original.
-- **Cryptographically tamper-evident.** Every blob is SHA-256–hashed at write
-  time; `verify_trail` re-fetches each blob, recomputes its hash, and compares —
+- **Cryptographically tamper-evident.** Every blob is SHA-256 hashed at write
+  time; `verify_trail` re-fetches each blob, recomputes its hash, and compares,
   so a swapped or corrupted blob is a `FAIL`, not just a failed download.
 - **Durable rollback.** `checkpoint_rollback` re-writes an earlier state as a new
   head of the same thread. Append-only: nothing is deleted, so the audit trail
   stays intact and still verifies.
 - **Cross-agent hand-off.** `handoff_checkpoint` emits a tiny descriptor (blob id
   + SHA-256); `adopt_checkpoint` re-fetches the blob, verifies the hash, and
-  adopts it as a new thread — a tampered blob is rejected before it becomes state.
+  adopts it as a new thread, so a tampered blob is rejected before it becomes
+  state.
 - **Searchable in plain English.** An optional MemWal layer writes a one-line
-  summary per checkpoint, so an agent can recall its own past — pointers it then
+  summary per checkpoint, so an agent can recall its own past, pointers it then
   loads *exactly*.
 - **All-in-one MCP server.** Eleven tools over stdio, plus `tuskpoint_info` which
   returns ready-to-paste client config.
@@ -72,7 +76,7 @@ cp .env.example .env   # then fill in your keys
 ```
 
 All secrets come from environment variables (loaded from `.env`).
-**Never commit your real `.env`** — it is git-ignored. Reads from Walrus are
+**Never commit your real `.env`**, it is git-ignored. Reads from Walrus are
 public and free; only writes need a publisher and semantic search needs MemWal
 credentials (see `.env.example`).
 
@@ -83,7 +87,7 @@ python scripts/check_walrus.py
 ```
 
 Writes a random blob to a publisher, reads it back from an aggregator, and
-asserts the bytes are identical — printing the blob ID.
+asserts the bytes are identical, printing the blob ID.
 
 ### 4. Run the crash / resume demo (the headline)
 
@@ -106,7 +110,7 @@ python demo/run_demo.py --rollback  # append-only undo to an earlier checkpoint
 python demo/run_demo.py --handoff   # Agent A hands a checkpoint to Agent B
 ```
 
-> **On timing:** TuskPoint's own operations are effectively instant — a
+> **On timing:** TuskPoint's own operations are effectively instant: a
 > checkpoint save/load is a single gzip + Walrus round-trip, and reads are
 > pooled and fetched in parallel. When a demo or MCP call *feels* slow, the
 > wall-time is almost always one of two things outside the checkpointer:
@@ -153,13 +157,13 @@ Full per-client instructions: https://tuskpoint.xyz/docs/clients
 > failing when no MemWal credentials are present, so the server runs fine
 > without them.
 
-## Exact vs. semantic — why both?
+## Exact vs. semantic: why both?
 
 - **Exact lookups are by ID, never fuzzy.** `checkpoint_load` resolves the
   manifest entry → blob ID → Walrus GET → de-gzip → de-serialize. The blob you
   read is byte-for-byte the blob you wrote. This is the part you rewind to.
 - **Semantic search is for discovery.** `checkpoint_search` asks MemWal for the
-  nearest summaries — pointers carrying checkpoint IDs you then load exactly.
+  nearest summaries, pointers carrying checkpoint IDs you then load exactly.
   Vector recall indexes the exact store; it is never the source of truth.
 
 TuskPoint is **not** a MemWal MCP clone. MemWal manages free-form memories;
@@ -168,7 +172,7 @@ from. The only overlap, search, is scoped to *our* checkpoint summaries.
 
 ## Network: testnet by default, mainnet when you're ready
 
-TuskPoint defaults to Walrus **testnet** — writes are free via a public
+TuskPoint defaults to Walrus **testnet**, writes are free via a public
 publisher, so you can try everything with zero setup or funds. Reads are public
 and free on either network.
 
@@ -181,7 +185,7 @@ export WALRUS_AGGREGATOR_URL=https://aggregator.walrus-mainnet.walrus.space
 ```
 
 Mainnet writes cost SUI (gas) + WAL (storage), so there is no public,
-unauthenticated mainnet publisher — use a community publisher, run your own, or
+unauthenticated mainnet publisher; use a community publisher, run your own, or
 use the upload relay with a funded key. See
 https://tuskpoint.xyz/docs/mainnet.
 
@@ -209,4 +213,4 @@ tests/               unit (no network) + integration (live Walrus) suites
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
