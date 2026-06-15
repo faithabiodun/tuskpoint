@@ -40,6 +40,62 @@ body::before {
   color: #03100f;
 }
 
+/* Intro splash: rendered in the server HTML and visible from the very first
+   paint, so it covers the screen BEFORE the landing page appears. It auto-fades
+   via CSS (no JS needed to show it); an inline head script adds
+   `html.tp-splash-seen` to skip it after the first visit in a session. */
+#tp-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #05100f;
+  animation: tp-splash-out 0.5s ease 1.8s forwards;
+}
+#tp-splash > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  animation: tp-splash-rise 0.7s ease-out both;
+}
+#tp-splash .tp-splash-word {
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+#tp-splash .tp-splash-word span {
+  color: #2fd4c0;
+}
+@keyframes tp-splash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes tp-splash-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+/* Already seen this session, or reduced-motion: never show it. */
+html.tp-splash-seen #tp-splash {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  #tp-splash {
+    display: none;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
