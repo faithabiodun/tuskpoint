@@ -40,11 +40,12 @@ python -m pip install -e ".[all]"`}
         />
       </div>
       <Callout title="What needs keys, and what doesn't">
-        Reads from Walrus are public and free. Only writes (
+        Reads from Walrus are public and free. Writes (
         <Code>checkpoint_save</Code>, <Code>checkpoint_fork</Code>) need a
-        publisher, and semantic search (<Code>checkpoint_search</Code>) needs
-        MemWal credentials. The server runs without either, those tools return a
-        clear message instead of failing.
+        publisher, and plain-English recall (<Code>checkpoint_search</Code>) runs
+        on MemWal, so add your MemWal credentials to unlock it. Until you do, the
+        server still starts and those tools return a clear message instead of
+        failing.
       </Callout>
 
       <H2 id="prove">2. Prove the Walrus round-trip</H2>

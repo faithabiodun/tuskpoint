@@ -36,9 +36,9 @@ Plain-English search is powered by [MemWal](https://memory.walrus.xyz).
   + SHA-256); `adopt_checkpoint` re-fetches the blob, verifies the hash, and
   adopts it as a new thread, so a tampered blob is rejected before it becomes
   state.
-- **Searchable in plain English.** An optional MemWal layer writes a one-line
-  summary per checkpoint, so an agent can recall its own past, pointers it then
-  loads *exactly*.
+- **Searchable in plain English.** A core part of TuskPoint: the MemWal layer
+  writes a one-line summary per checkpoint, so an agent can recall its own past
+  in plain language, pointers it then loads *exactly*.
 - **All-in-one MCP server.** Eleven tools over stdio, plus `tuskpoint_info` which
   returns ready-to-paste client config.
 

@@ -12,7 +12,8 @@ exactly-addressable *checkpoints* — agent state you can rewind to. The one
 overlap, ``checkpoint_search``, is scoped to *our* checkpoint summaries.
 
 Transport: stdio (``mcp.run(transport="stdio")``). Configuration is read from the
-environment / ``.env`` (Walrus URLs + optional MemWal credentials).
+environment / ``.env`` (Walrus URLs + MemWal credentials, which power the
+plain-English ``checkpoint_search`` recall).
 
 Run directly:
     python mcp_server/server.py

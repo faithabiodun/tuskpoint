@@ -147,10 +147,11 @@ export default function ClientsPage() {
         command is always <Code>python mcp_server/server.py</Code>.
       </P>
 
-      <H3>Optional: enable semantic search</H3>
+      <H3>Enable semantic search with MemWal</H3>
       <P>
-        To turn on <Code>checkpoint_search</Code>, add your MemWal credentials to
-        the <Code>env</Code> block (or your <Code>.env</Code>):
+        Plain-English recall is a core part of TuskPoint. To power{" "}
+        <Code>checkpoint_search</Code>, add your MemWal credentials to the{" "}
+        <Code>env</Code> block (or your <Code>.env</Code>):
       </P>
       <div className="mt-4">
         <CodeBlock
