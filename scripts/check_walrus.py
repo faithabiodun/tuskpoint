@@ -27,16 +27,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Walrus mainnet endpoints (the env vars take precedence if set). Reads are
-# public; writes require a publisher with a funded key (mainnet has no free
-# public publisher — see .env.example).
+# Walrus testnet endpoints by default (the env vars take precedence if set).
+# Testnet has a free public publisher, so this proof runs with no setup. For
+# mainnet, set WALRUS_PUBLISHER_URL / WALRUS_AGGREGATOR_URL to the mainnet
+# endpoints; mainnet writes need a funded publisher (see .env.example).
 DEFAULT_PUBLISHERS = [
-    "https://walrus-mainnet-publisher-1.staketab.org:443",
+    "https://publisher.walrus-testnet.walrus.space",
 ]
 DEFAULT_AGGREGATORS = [
-    "https://aggregator.walrus-mainnet.walrus.space",
-    "https://walrus.globalstake.io",
-    "https://walrus-mainnet-aggregator.nodes.guru",
+    "https://aggregator.walrus-testnet.walrus.space",
 ]
 
 # Store the blob for a few epochs so the aggregator has time to serve it.
