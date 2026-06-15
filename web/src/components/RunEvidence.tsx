@@ -69,18 +69,8 @@ export function RunEvidence() {
               </p>
 
               <div className="mt-4 flex items-center gap-2 border-t border-line pt-3">
-                <span className="flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-flame">
-                  <svg
-                    viewBox="0 0 20 20"
-                    className="h-3.5 w-3.5"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 1.5 3 4.5v4.7c0 4.1 2.8 7.6 7 8.8 4.2-1.2 7-4.7 7-8.8V4.5l-7-3Zm3.3 6.2-4 4a1 1 0 0 1-1.4 0l-2-2a1 1 0 1 1 1.4-1.4l1.3 1.3 3.3-3.3a1 1 0 0 1 1.4 1.4Z"
-                    />
-                  </svg>
-                  verified
+                <span className="font-mono text-[11px] uppercase tracking-wider text-slate-500">
+                  blob
                 </span>
                 <a
                   href={`${EVIDENCE_AGGREGATOR}${c.blobId}`}
