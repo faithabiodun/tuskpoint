@@ -7,7 +7,6 @@ import { RunEvidence } from "@/components/RunEvidence";
 import { ToolDirectory } from "@/components/ToolDirectory";
 import { Architecture } from "@/components/Architecture";
 import { Comparison } from "@/components/Comparison";
-import { LiveDashboard } from "@/components/LiveDashboard";
 import { Reveal } from "@/components/Reveal";
 
 export default function HomePage() {
@@ -50,8 +49,6 @@ export default function HomePage() {
       </section>
 
       <Architecture />
-
-      <LiveDashboard />
 
       <Comparison />
 
