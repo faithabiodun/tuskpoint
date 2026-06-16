@@ -25,11 +25,13 @@ export function Hero() {
             className="h-20 w-20 animate-float drop-shadow-[0_8px_30px_rgba(47,212,192,0.35)]"
           />
 
-          <h1 className="display animate-fade-up mt-10 text-cream">
+          <h1 className="display-sm animate-fade-up mt-10 text-balance text-cream">
             Save agent state to a{" "}
-            <span className="gradient-text">network that remembers every step.</span>{" "}
-            Rewind, verify, and search any of them.
+            <span className="gradient-text">network that remembers every step.</span>
           </h1>
+          <p className="animate-fade-up mt-4 text-xl font-semibold tracking-tight text-cream sm:text-2xl">
+            Rewind, verify, and search any of them.
+          </p>
 
           <p className="animate-fade-up mt-7 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">
             TuskPoint is a drop-in LangGraph checkpointer. Every step is saved as
