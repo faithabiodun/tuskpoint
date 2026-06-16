@@ -4,7 +4,7 @@ import { Logo } from "./Logo";
 
 const NAV = [
   { href: "/#tools", label: "Tools" },
-  { href: "/#architecture", label: "How it works" },
+  { href: "https://www.tuskpoint.xyz/skills/setup", label: "Install", external: true },
   { href: "/dashboard", label: "Run" },
   { href: "/docs", label: "Docs" },
 ];
@@ -16,15 +16,27 @@ export function SiteHeader() {
         <Logo idPrefix="hdr" markClassName="h-9 w-9" />
 
         <nav className="hidden items-center gap-1 md:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-full px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-slate-400 transition hover:text-cream"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {NAV.map((item) =>
+            item.external ? (
+              <a
+                key={item.href}
+                href={item.href}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-slate-400 transition hover:text-cream"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-full px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-slate-400 transition hover:text-cream"
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
 
         <a

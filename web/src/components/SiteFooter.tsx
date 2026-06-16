@@ -21,15 +21,17 @@ export function SiteFooter() {
           </div>
 
           <nav className="grid grid-cols-2 gap-x-12 gap-y-2.5 font-mono text-[12px] uppercase tracking-[0.14em] sm:grid-cols-3">
-            <Link href="/#problem" className="link-muted">
-              Problem
-            </Link>
             <Link href="/#tools" className="link-muted">
               Tools
             </Link>
-            <Link href="/#architecture" className="link-muted">
-              How it works
-            </Link>
+            <a
+              href="https://www.tuskpoint.xyz/skills/setup"
+              target="_blank"
+              rel="noreferrer"
+              className="link-muted"
+            >
+              Install
+            </a>
             <Link href="/dashboard" className="link-muted">
               The run
             </Link>
