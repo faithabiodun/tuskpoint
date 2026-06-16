@@ -27,7 +27,8 @@ export function Hero() {
 
           <h1 className="display animate-fade-up mt-10 text-cream">
             Save agent state to a{" "}
-            <span className="gradient-text">network that remembers.</span>
+            <span className="gradient-text">network that remembers every step.</span>{" "}
+            Rewind, verify, and search any of them.
           </h1>
 
           <p className="animate-fade-up mt-7 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">

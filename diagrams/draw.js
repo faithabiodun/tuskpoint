@@ -118,11 +118,11 @@ function svg(w, h, body, title, subtitle) {
   </defs>
   <rect width="${w}" height="${h}" fill="${C.paper}"/>
   <rect width="${w}" height="${h}" filter="url(#paper)"/>
-  ${module.exports.tuskMark ? module.exports.tuskMark(70, 52, 1.25) : ""}
-  ${title ? text(108, 64, title, { size: 38, anchor: "start", weight: "bold", fill: C.ink }) : ""}
-  ${subtitle ? text(110, 98, subtitle, { size: 21, anchor: "start", fill: C.sub, italic: true }) : ""}
+  ${module.exports._noMarks ? "" : (module.exports.tuskMark ? module.exports.tuskMark(70, 52, 1.25) : "")}
+  ${title ? text(module.exports._noMarks ? 60 : 108, 64, title, { size: 38, anchor: "start", weight: "bold", fill: C.ink }) : ""}
+  ${subtitle ? text(module.exports._noMarks ? 62 : 110, 98, subtitle, { size: 21, anchor: "start", fill: C.sub, italic: true }) : ""}
   ${body}
-  ${module.exports.tuskMark ? module.exports.tuskMark(w - 232, h - 22, 0.85) : ""}
+  ${module.exports._noMarks ? "" : (module.exports.tuskMark ? module.exports.tuskMark(w - 232, h - 22, 0.85) : "")}
   ${text(w - 40, h - 26, "TuskPoint", { size: 20, anchor: "end", fill: C.flame, weight: "bold" })}
   ${text(w - 40, h - 6, "verifiable LangGraph checkpoints on Walrus", { size: 13, anchor: "end", fill: C.sub })}
 </svg>`;
@@ -441,11 +441,162 @@ function d4() {
       "Each blob is SHA-256 hashed at write time; verify re-hashes and compares, byte for byte."));
 }
 
+// ===== Diagram 5: the whole story on one canvas =====
+function d5() {
+  let b = "";
+  const W = 1680, H = 1180;
+
+  // ---- (1) WRITE PATH: agent -> WalrusSaver -> Walrus, + pointer ----
+  b += D.roughRect(70, 180, 250, 120, { fill: D.C.grayFill });
+  b += D.lines(195, 230, [
+    { t: "LangGraph agent", weight: "bold", size: 22 },
+    { t: "state · writes · metadata", size: 15, fill: D.C.sub },
+  ]);
+
+  b += D.roughRect(400, 165, 300, 150, { fill: D.C.flameFill, stroke: D.C.flame });
+  b += D.lines(550, 218, [
+    { t: "TuskPoint", weight: "bold", size: 26, fill: D.C.flame },
+    { t: "WalrusSaver — drop-in", size: 16, fill: D.C.sub },
+    { t: "serialize → gzip → SHA-256", size: 15, fill: D.C.sub },
+  ]);
+
+  b += D.roughRect(780, 150, 320, 200, { fill: D.C.tealFill, stroke: D.C.teal });
+  b += D.text(940, 188, "Walrus", { size: 25, weight: "bold", fill: D.C.teal });
+  b += D.text(940, 211, "decentralized blobs", { size: 13, fill: D.C.sub });
+  b += blob(845, 268, 22, "#eafaf6", D.C.teal);
+  b += blob(915, 274, 20, "#eafaf6", D.C.teal);
+  b += blob(985, 268, 22, "#eafaf6", D.C.teal);
+  b += D.text(940, 312, "erasure-coded across nodes,", { size: 13, fill: D.C.sub });
+  b += D.text(940, 334, "availability anchored on Sui", { size: 13, fill: D.C.sub });
+
+  b += D.roughRect(400, 360, 300, 90, { fill: D.C.yellowFill, stroke: D.C.yellow });
+  b += D.lines(550, 396, [
+    { t: "local cache", weight: "bold", size: 19 },
+    { t: "ONLY a blob pointer — no state on disk", size: 14, fill: D.C.sub },
+  ]);
+
+  b += D.arrow(320, 240, 398, 240, { stroke: D.C.flame });
+  b += D.tag(360, 224, "checkpoint");
+  b += D.arrow(700, 235, 778, 235, { stroke: D.C.teal });
+  b += D.tag(740, 219, "store");
+  b += D.arrow(550, 315, 550, 358, { stroke: D.C.yellow });
+
+  // ---- (2) CRASH / RESUME ----
+  b += `<path d="M 1230 175 L 1213 225 L 1237 225 L 1217 280" fill="none" stroke="${D.C.red}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  b += D.text(1222, 160, "CRASH", { size: 19, weight: "bold", fill: D.C.red });
+  b += D.roughRect(1170, 300, 430, 130, { fill: D.C.greenFill, stroke: D.C.green });
+  b += D.lines(1385, 345, [
+    { t: "crash · evict · migrate", weight: "bold", size: 20, fill: D.C.green },
+    { t: "a fresh process rehydrates from the", size: 15, fill: D.C.sub },
+    { t: "last verified checkpoint, not from zero", size: 15, fill: D.C.sub },
+  ]);
+  b += D.arrow(1110, 250, 1168, 340, { stroke: D.C.green });
+  b += D.tag(1140, 295, "resume");
+
+  // section divider
+  b += D.roughLine(60, 480, 1620, 480, D.C.sub, 1.4);
+
+  // ---- (3) VERSION-CONTROL DAG: diff / fork / rollback ----
+  b += D.text(70, 540, "Git for agent memory", { size: 22, weight: "bold", anchor: "start", fill: D.C.flame });
+  const mY = 600;
+  const xs = [120, 250, 380, 510];
+  xs.forEach((x, i) => {
+    b += blob(x, mY, 26, D.C.flameFill, D.C.flame);
+    b += D.text(x, mY + 5, "c" + i, { size: 14, fill: D.C.flame });
+    if (i) b += D.arrow(xs[i - 1] + 26, mY, x - 26, mY, { stroke: D.C.flame });
+  });
+  // diff
+  b += `<path d="M 250 ${mY - 26} Q 315 ${mY - 70} 380 ${mY - 26}" fill="none" stroke="${D.C.ink}" stroke-width="2" stroke-dasharray="3 5"/>`;
+  b += D.tag(315, mY - 70, "diff", D.C.paper);
+  // fork
+  b += D.arrow(250, mY + 26, 250, mY + 120, { stroke: D.C.blue });
+  b += D.tag(250, mY + 78, "fork (branch)", D.C.paper);
+  [250, 380, 510].forEach((x, i) => {
+    b += blob(x, mY + 150, 22, D.C.blueFill, D.C.blue);
+    b += D.text(x, mY + 155, "f" + i, { size: 13, fill: D.C.blue });
+    if (i) b += D.arrow([250, 380][i - 1] + 22, mY + 150, x - 22, mY + 150, { stroke: D.C.blue });
+  });
+  // rollback
+  b += blob(640, mY, 26, D.C.yellowFill, D.C.yellow);
+  b += D.text(640, mY + 5, "c4", { size: 14, fill: D.C.yellow });
+  b += D.arrow(536, mY, 614, mY, { stroke: D.C.flame });
+  b += `<path d="M 250 ${mY - 26} Q 445 ${mY - 110} 640 ${mY - 26}" fill="none" stroke="${D.C.yellow}" stroke-width="2.2" stroke-dasharray="3 7"/>`;
+  b += D.tag(445, mY - 110, "rollback: re-write earlier state as new head", D.C.paper);
+  b += D.text(640, mY + 60, "append-only · nothing deleted", { size: 13, fill: D.C.sub });
+
+  // ---- (4) HANDOFF / ADOPT ----
+  b += D.roughRect(820, 560, 330, 130, { fill: D.C.paper, stroke: D.C.line });
+  b += D.lines(985, 605, [
+    { t: "handoff_checkpoint", weight: "bold", size: 19 },
+    { t: "tiny descriptor: blob id + SHA-256", size: 14, mono: true, fill: D.C.sub },
+    { t: "(portable, no state copy)", size: 13, fill: D.C.sub },
+  ]);
+  b += D.roughRect(1230, 560, 370, 130, { fill: D.C.greenFill, stroke: D.C.green });
+  b += D.lines(1415, 600, [
+    { t: "adopt_checkpoint", weight: "bold", size: 19, fill: D.C.green },
+    { t: "re-fetch blob, re-verify SHA-256,", size: 14, fill: D.C.sub },
+    { t: "adopt as a new thread", size: 14, fill: D.C.sub },
+    { t: "tampered → rejected before it is state", size: 13, fill: D.C.red },
+  ]);
+  b += D.arrow(666, mY, 818, 615, { stroke: D.C.green });
+  b += D.arrow(1150, 625, 1228, 625, { stroke: D.C.green });
+  b += D.tag(1190, 609, "no shared FS");
+
+  // section divider
+  b += D.roughLine(60, 740, 1620, 740, D.C.sub, 1.4);
+
+  // ---- (5) VERIFY TRAIL ----
+  b += D.text(70, 800, "Tamper-evident audit", { size: 22, weight: "bold", anchor: "start", fill: D.C.flame });
+  const vr = [["PASS", true], ["PASS", true], ["FAIL", false], ["UNVERIFIED", null]];
+  vr.forEach(([s, ok], i) => {
+    const y = 840 + i * 56;
+    const col = ok === true ? D.C.green : ok === false ? D.C.red : D.C.amber;
+    const fill = ok === true ? D.C.greenFill : ok === false ? D.C.redFill : D.C.amberFill;
+    b += D.roughRect(70, y - 22, 430, 46, { fill, stroke: col });
+    b += D.text(92, y + 6, "c" + i + "  recompute → " + (ok === true ? "matches" : ok === false ? "differs" : "no stored hash"), { size: 15, fill: D.C.sub, anchor: "start" });
+    b += `<rect x="380" y="${y - 16}" width="112" height="34" rx="9" fill="${col}"/>`;
+    b += D.text(436, y + 7, s, { size: 14, weight: "bold", fill: "#fff" });
+  });
+  b += D.text(70, 1088, "SHA-256 stored on write, re-hashed on read — silent change is impossible.", { size: 15, anchor: "start", fill: D.C.sub, italic: true });
+
+  // ---- (6) MEMWAL recall ----
+  b += D.roughRect(560, 800, 470, 150, { fill: D.C.blueFill, stroke: D.C.blue });
+  b += D.text(795, 845, "MemWal (core layer)", { size: 21, weight: "bold", fill: D.C.blue });
+  b += D.lines(795, 905, [
+    { t: "a one-line summary per checkpoint →", size: 15, fill: D.C.sub },
+    { t: "\u201cwhen did I last have a passing build?\u201d", size: 15, fill: D.C.ink, italic: true },
+    { t: "→ recall + load that exact state back", size: 15, fill: D.C.sub },
+  ]);
+  b += D.text(795, 975, "memory that is queryable, not just storable", { size: 14, anchor: "middle", fill: D.C.sub, italic: true });
+
+  // ---- (7) MCP + (8) surfaces ----
+  b += D.roughRect(1080, 800, 520, 100, { fill: D.C.flameFill, stroke: D.C.flame });
+  b += D.lines(1340, 838, [
+    { t: "all-in-one MCP server  ·  11 tools", weight: "bold", size: 19, fill: D.C.flame },
+    { t: "save load list resume diff fork rollback", size: 14, fill: D.C.sub },
+    { t: "handoff adopt verify search  + tuskpoint_info", size: 14, fill: D.C.sub },
+  ]);
+  b += D.text(1340, 928, "Claude · Cursor · Windsurf · VS Code · Codex", { size: 14, anchor: "middle", fill: D.C.sub });
+
+  b += D.roughRect(1080, 970, 520, 120, { fill: D.C.paper, stroke: D.C.line });
+  b += D.lines(1340, 1010, [
+    { t: "Four real surfaces", weight: "bold", size: 18 },
+    { t: "Python library · MCP server ·", size: 14, fill: D.C.sub },
+    { t: "live FastAPI on testnet · dashboard tuskpoint.xyz", size: 14, fill: D.C.sub },
+  ]);
+  b += D.text(1340, 1078, "every checkpoint, diff, search, fork, audit hits live Walrus — nothing mocked", { size: 13, anchor: "middle", fill: D.C.flame, weight: "bold" });
+
+  fs.writeFileSync(path.join(OUT, "05_overview.svg"),
+    D.svg(W, H, b, "TuskPoint at a glance",
+      "Verifiable, durable, version-controlled memory for AI agents on Walrus."));
+}
+
 d1(); d2(); d3(); d4();
+module.exports._noMarks = true; d5(); module.exports._noMarks = false;
 console.log("SVGs written.");
 
 // ---- render each SVG to PNG via headless Edge ----
-const files = ["01_architecture", "02_crash_resume", "03_lineage", "04_verify"];
+const files = ["01_architecture", "02_crash_resume", "03_lineage", "04_verify", "05_overview"];
 for (const f of files) {
   const svgPath = path.join(OUT, f + ".svg");
   const pngPath = path.join(OUT, f + ".png");
@@ -456,14 +607,15 @@ for (const f of files) {
   const htmlPath = path.join(OUT, "_tmp_" + f + ".html");
   fs.writeFileSync(htmlPath,
     `<!doctype html><html><head><meta charset="utf8"><style>html,body{margin:0;padding:0}</style></head><body>${svgData}</body></html>`);
+  const scale = f === "05_overview" ? 3 : 2;
   try {
     execFileSync(EDGE, [
       "--headless=new", "--disable-gpu", "--hide-scrollbars",
-      "--force-device-scale-factor=2",
+      `--force-device-scale-factor=${scale}`,
       `--window-size=${w},${h}`,
       `--screenshot=${pngPath}`,
       "file:///" + htmlPath.replace(/\\/g, "/"),
-    ], { stdio: "ignore", timeout: 60000 });
+    ], { stdio: "ignore", timeout: 90000 });
     console.log("rendered", pngPath);
   } catch (e) {
     console.error("render failed for", f, e.message);

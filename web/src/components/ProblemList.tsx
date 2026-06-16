@@ -18,8 +18,8 @@ const PROBLEMS = [
   },
   {
     n: "04",
-    title: "Memory you can't query",
-    body: "Vector stores recall fuzzy text, but they aren't the source of truth. You want to ask in English and still land on an exact, loadable checkpoint.",
+    title: "Storage and search don't agree",
+    body: "Raw blob storage keeps the real state but can't be searched; a vector store is searchable but only holds fuzzy text, not the state itself. So you can never go from a plain-English question to the exact run you actually need.",
   },
 ];
 
@@ -35,8 +35,8 @@ export function ProblemList() {
             <p className="mt-5 max-w-md text-slate-400">
               Four failures stand between a demo agent and one you can actually
               run in production: no durable history, no way to rewind, state you
-              can&apos;t trust, and memory you can&apos;t query. TuskPoint closes
-              all four.
+              can&apos;t trust, and a split between what you store and what you
+              can search. TuskPoint closes all four.
             </p>
           </Reveal>
 
