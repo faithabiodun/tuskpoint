@@ -2,9 +2,9 @@
 
 import { CopyButton } from "./CopyButton";
 
-// The one true, copy-and-run line: add TuskPoint as a plugin. No clone, no
-// config, works in any MCP client. Kept as a single static terminal card so the
-// hero shows exactly the command a first-time visitor can run.
+// The one copy-and-run line that adds TuskPoint as a plugin in any MCP client.
+// Kept as a single static terminal card so the hero shows exactly the command a
+// first-time visitor can run.
 const INSTALL = {
   tag: "install",
   command: "uvx tuskpoint-mcp",
