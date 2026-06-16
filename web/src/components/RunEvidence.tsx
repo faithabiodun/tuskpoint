@@ -15,8 +15,7 @@ export function RunEvidence() {
     <section className="border-t border-line py-20 sm:py-28">
       <div className="container-page">
         <Reveal className="max-w-2xl">
-          <p className="eyebrow">Real run · not a mockup</p>
-          <h2 className="display-sm mt-5 text-display-sm font-extrabold tracking-tight text-cream">
+          <h2 className="display-sm text-display-sm font-extrabold tracking-tight text-cream">
             Every step, an immutable receipt.
           </h2>
           <p className="mt-5 text-slate-400">
