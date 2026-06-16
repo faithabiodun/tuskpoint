@@ -42,11 +42,10 @@ export default function RollbackPage() {
         the chain: the history reads <Code>... bad state</Code> {"->"}{" "}
         <Code>(rollback)</Code> {"->"} <Code>restored good state</Code>.
       </P>
-      <Callout title="Append-only, not destructive">
-        Unlike a typical &quot;reset,&quot; rollback never deletes the checkpoints
-        it skips over. They stay on the thread, so the verifiable trail is intact
-        and the rollback itself shows up as a step you can audit. The undo is
-        durable, not a silent rewrite of history.
+      <Callout title="Append-only by design">
+        Rollback never deletes the checkpoints it skips over. They stay on the
+        thread, so the verifiable trail is intact and the rollback itself shows
+        up as a step you can audit. The undo is durable and stays on the record.
       </Callout>
 
       <H2 id="vs-fork">Rollback vs. fork</H2>
@@ -105,7 +104,7 @@ print(result["restored_from"])  # 0c3b84d1-…
       <Callout tone="amber" title="The checkpoint must exist on the thread">
         Rolling back to a <Code>checkpoint_id</Code> that isn&apos;t in the thread
         raises a clear error. The target is always an earlier checkpoint of the
-        same thread, not a different one.
+        same thread.
       </Callout>
     </>
   );

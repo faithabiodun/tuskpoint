@@ -64,12 +64,12 @@ export default function ConceptsPage() {
         A new thread whose genesis checkpoint is copied from another
         thread&apos;s checkpoint, with a <Code>forked_from</Code> lineage record.
         Forking lets you replay from a known-good point and try a different path
-        without disturbing the original, the manifest can describe a{" "}
-        <span className="text-cream">tree of runs</span>, not just a line.
+        without disturbing the original, so the manifest can describe a{" "}
+        <span className="text-cream">tree of runs</span>.
       </P>
 
       <H2 id="rule">The one rule: exact vs. semantic</H2>
-      <H3>Exact lookups are by ID, never fuzzy</H3>
+      <H3>Exact lookups are by ID</H3>
       <P>
         <Code>checkpoint_load</Code> resolves the manifest entry → blob ID →
         Walrus GET → de-gzip → de-serialize. The blob you read is byte-for-byte
@@ -79,7 +79,8 @@ export default function ConceptsPage() {
       <P>
         <Code>checkpoint_search</Code> asks MemWal for the nearest summaries,
         pointers that carry checkpoint IDs, which you then load exactly. Vector
-        recall is an index into the exact store, never the source of truth.
+        recall is an index into the exact store; the blob stays the source of
+        truth.
       </P>
 
       <Callout title="How TuskPoint uses MemWal">

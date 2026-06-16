@@ -79,7 +79,7 @@ export default function ClientsPage() {
 
       <H2 id="claude-code">Claude Code</H2>
       <P>
-        Register it from the CLI in one line, no JSON editing, no clone.
+        Register it from the CLI in one line.
       </P>
       <div className="mt-4">
         <CodeBlock

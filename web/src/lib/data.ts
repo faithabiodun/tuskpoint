@@ -124,7 +124,7 @@ export const TOOLS: Tool[] = [
     name: "verify_trail",
     signature: "verify_trail(thread_id)",
     summary:
-      "Audit a thread end-to-end. Re-fetches every content-addressed blob and recomputes its SHA-256, so tampering or corruption shows up as a FAIL step, cryptographic, not just a successful fetch.",
+      "Audit a thread end-to-end. Re-fetches every content-addressed blob and recomputes its SHA-256, so tampering or corruption shows up as a FAIL step rather than a silent pass.",
     category: "Read",
     glyph: "AUDIT",
     returns: "{ ok, checkpoint_count, verified, tampered_count, steps[] }",

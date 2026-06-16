@@ -18,18 +18,18 @@ Plain-English search is powered by [MemWal](https://memory.walrus.xyz).
 
 ## What is TuskPoint?
 
-- **A checkpointer, not a database.** `WalrusSaver` is a standard LangGraph
+- **A drop-in checkpointer.** `WalrusSaver` is a standard LangGraph
   `BaseCheckpointSaver`. Drop it into your graph and every checkpoint is
-  serialized, gzipped, and stored as a content-addressed Walrus blob, the
-  *exact* layer you rewind to.
-- **Crash-proof by construction.** State lives on a decentralized network, not
-  in your process. A fresh process rehydrates the latest checkpoint and
+  serialized, gzipped, and stored as a content-addressed Walrus blob, the exact
+  layer you rewind to.
+- **Crash-proof by construction.** State lives on a decentralized network rather
+  than in your process. A fresh process rehydrates the latest checkpoint and
   continues. The only thing kept locally is a blob pointer.
 - **Git for agent runs.** `checkpoint_fork` branches any checkpoint into a new
   thread so you can replay a different path without touching the original.
 - **Cryptographically tamper-evident.** Every blob is SHA-256 hashed at write
   time; `verify_trail` re-fetches each blob, recomputes its hash, and compares,
-  so a swapped or corrupted blob is a `FAIL`, not just a failed download.
+  so a swapped or corrupted blob surfaces as a `FAIL` step you can audit.
 - **Durable rollback.** `checkpoint_rollback` re-writes an earlier state as a new
   head of the same thread. Append-only: nothing is deleted, so the audit trail
   stays intact and still verifies.
@@ -132,12 +132,12 @@ shim around the packaged `tuskpoint-mcp` entry point), and
 
 ## Exact vs. semantic: why both?
 
-- **Exact lookups are by ID, never fuzzy.** `checkpoint_load` resolves the
-  manifest entry → blob ID → Walrus GET → de-gzip → de-serialize. The blob you
-  read is byte-for-byte the blob you wrote. This is the part you rewind to.
+- **Exact lookups are by ID.** `checkpoint_load` resolves the manifest entry →
+  blob ID → Walrus GET → de-gzip → de-serialize. The blob you read is
+  byte-for-byte the blob you wrote. This is the part you rewind to.
 - **Semantic search is for discovery.** `checkpoint_search` asks MemWal for the
   nearest summaries, pointers carrying checkpoint IDs you then load exactly.
-  Vector recall indexes the exact store; it is never the source of truth.
+  Vector recall indexes the exact store; the blob stays the source of truth.
 
 MemWal is the semantic memory layer TuskPoint builds on. TuskPoint writes a
 one-line summary of each checkpoint to MemWal, and `checkpoint_search` uses

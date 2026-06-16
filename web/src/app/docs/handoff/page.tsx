@@ -42,12 +42,12 @@ export default function HandoffPage() {
         blob straight from Walrus, recomputes the SHA-256, and compares it to the
         sender&apos;s hash. On a match it writes the state as the genesis
         checkpoint of a new thread with an <Code>adopted_from</Code> lineage
-        link. On a mismatch it refuses, the blob was tampered with in transit.
+        link. On a hash mismatch it refuses the adoption, since the blob was
+        altered in transit.
       </P>
-      <Callout title="Nothing trusted in between">
-        No keys, no shared database, no Sui gating, just the public blob plus an
-        integrity hash. The hash is the proof that what gets adopted is
-        byte-for-byte what was handed off.
+      <Callout title="The hash is the only thing trusted">
+        The handoff travels as a public blob plus an integrity hash. The hash is
+        the proof that what gets adopted is byte-for-byte what was handed off.
       </Callout>
 
       <H2 id="export">Step 1: export the handoff (sender)</H2>

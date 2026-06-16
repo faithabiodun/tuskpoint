@@ -5,7 +5,7 @@ import { DocTitle, H2, P, Callout, Code } from "../ui";
 export const metadata: Metadata = {
   title: "Quick start",
   description:
-    "Add TuskPoint to any MCP client with one line: uvx tuskpoint-mcp. No clone, no config.",
+    "Add TuskPoint to any MCP client with one line: uvx tuskpoint-mcp.",
 };
 
 export default function QuickStartPage() {
@@ -16,9 +16,8 @@ export default function QuickStartPage() {
         title="Quick start"
         intro={
           <>
-            TuskPoint is a drop-in MCP plugin. One line wires it into your agent,
-            no clone, no server to run, no paths to set, and all eleven tools
-            show up.
+            TuskPoint is a drop-in MCP plugin. One line wires it into your
+            agent, and all eleven tools show up.
           </>
         }
       />
@@ -101,7 +100,7 @@ export default function QuickStartPage() {
         <a href="/dashboard" className="text-flame underline-offset-4 hover:underline">
           live run dashboard
         </a>
-        , every panel is a real Walrus round-trip, nothing mocked.
+        , where every panel is a live Walrus round-trip.
       </P>
 
       <H2 id="source">Run from source (contributors)</H2>

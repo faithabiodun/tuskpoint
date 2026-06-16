@@ -8,17 +8,7 @@ import { CopyButton } from "./CopyButton";
 const INSTALL = {
   tag: "install",
   command: "uvx tuskpoint-mcp",
-  output: [
-    { text: "no clone, no config · works in any MCP client", tone: "muted" as const },
-    { text: "tuskpoint ready · 11 tools available ✓", tone: "flame" as const },
-  ],
 };
-
-function toneClass(tone?: "muted" | "flame" | "cream") {
-  if (tone === "flame") return "text-flame";
-  if (tone === "cream") return "text-cream";
-  return "text-slate-500";
-}
 
 export function TerminalCarousel() {
   return (
@@ -47,13 +37,6 @@ export function TerminalCarousel() {
               {INSTALL.command}
             </code>
             <CopyButton text={INSTALL.command} />
-          </div>
-          <div className="mt-3 space-y-1 font-mono text-[12px] leading-relaxed">
-            {INSTALL.output.map((o, j) => (
-              <p key={j} className={toneClass(o.tone)}>
-                {o.text}
-              </p>
-            ))}
           </div>
         </div>
       </div>

@@ -29,10 +29,10 @@ export function PlugsInto() {
             Plugs into the tools you&apos;re already building with.
           </h2>
           <p className="mt-5 text-slate-400">
-            One line wires TuskPoint into any MCP client. No clone, no server to
-            babysit, no paths to set. <code className="font-mono text-cream">uvx</code>{" "}
-            fetches and runs it, and all eleven tools show up in your agent. The
-            config is the same shape everywhere; only the file location changes.
+            One line wires TuskPoint into any MCP client.{" "}
+            <code className="font-mono text-cream">uvx</code> fetches and runs it
+            from PyPI, and all eleven tools show up in your agent. The config is
+            the same shape everywhere; only the file location changes.
           </p>
         </Reveal>
 

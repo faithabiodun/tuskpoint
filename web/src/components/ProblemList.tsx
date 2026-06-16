@@ -14,7 +14,7 @@ const PROBLEMS = [
   {
     n: "03",
     title: "State you can't trust",
-    body: "Mutable databases let history be quietly rewritten. You need the byte you wrote to be the byte you read back, content-addressed, not best-effort.",
+    body: "Mutable databases let history be quietly rewritten. You need the byte you wrote to be the byte you read back, content-addressed and verifiable.",
   },
   {
     n: "04",

@@ -12,7 +12,7 @@ const CARDS = [
   {
     href: "/docs/quickstart",
     title: "Quick start",
-    body: "One line wires TuskPoint into any MCP client: uvx tuskpoint-mcp. No clone, no config.",
+    body: "One line wires TuskPoint into any MCP client: uvx tuskpoint-mcp.",
   },
   {
     href: "/docs/tools",
@@ -81,7 +81,8 @@ export default function DocsOverviewPage() {
         </li>
         <li>
           <span className="font-semibold text-cream">MemWal</span> - the
-          semantic index. Pointers into the exact store, never the truth itself.
+          semantic index. Pointers into the exact store, which stays the source
+          of truth.
         </li>
         <li>
           <span className="font-semibold text-cream">MCP server</span> - the

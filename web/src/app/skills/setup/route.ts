@@ -9,14 +9,14 @@
 export const runtime = "nodejs";
 export const dynamic = "force-static";
 
-const SETUP = `# TuskPoint — MCP setup
+const SETUP = `# TuskPoint MCP setup
 # Verifiable LangGraph checkpoints on Walrus. 11 tools over stdio.
 # Docs: https://tuskpoint.xyz/docs   Dashboard: https://tuskpoint.xyz/dashboard
 
 ## One line (Claude Code)
 claude mcp add tuskpoint -- uvx tuskpoint-mcp
 
-## Any other MCP client — drop this into your client's MCP config
+## Any other MCP client: drop this into your client's MCP config
 ## (only the file location changes; see notes below)
 {
   "mcpServers": {

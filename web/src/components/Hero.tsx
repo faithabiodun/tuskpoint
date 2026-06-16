@@ -1,14 +1,6 @@
 import Link from "next/link";
 import { TerminalCarousel } from "./TerminalCarousel";
 import { LogoMark } from "./Logo";
-import { RUN_META } from "@/lib/data";
-
-const STATUS = [
-  "walrus.certified",
-  "checkpoint.saved",
-  "manifest.linked",
-  "recall.ready",
-];
 
 export function Hero() {
   return (
@@ -55,16 +47,6 @@ export function Hero() {
               Browse the 11 tools
             </Link>
           </div>
-
-          {/* Status line - aeroplane motif */}
-          <div className="animate-fade-up mt-9 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[12px] text-slate-500">
-            {STATUS.map((s) => (
-              <span key={s} className="inline-flex items-center gap-2">
-                <span className="status-dot" />
-                {s}
-              </span>
-            ))}
-          </div>
         </div>
 
         {/* Stat strip */}
@@ -84,19 +66,6 @@ export function Hero() {
               </p>
             </div>
           ))}
-        </div>
-
-        {/* Real-run proof line */}
-        <div className="animate-fade-up mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-center font-mono text-[11px] text-slate-600">
-          <span>
-            manifest{" "}
-            <span className="text-flame">
-              {RUN_META.manifestBlobId.slice(0, 12)}…
-            </span>
-          </span>
-          <span>
-            {RUN_META.checkpointCount} checkpoints · stored live on Walrus
-          </span>
         </div>
       </div>
     </section>
