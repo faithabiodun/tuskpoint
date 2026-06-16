@@ -16,10 +16,11 @@ type Step = {
 const STEPS: Step[] = [
   {
     tag: "install",
-    title: "Install the package",
-    command: 'pip install -e ".[all]"',
+    title: "Add TuskPoint as a plugin",
+    command: "uvx tuskpoint-mcp",
     output: [
-      { text: "Successfully installed langgraph-checkpoint-walrus", tone: "muted" },
+      { text: "no clone, no config · works in any MCP client", tone: "muted" },
+      { text: "tuskpoint ready · 11 tools available ✓", tone: "flame" },
     ],
   },
   {
@@ -59,11 +60,12 @@ const STEPS: Step[] = [
     ],
   },
   {
-    tag: "serve",
-    title: "Start the MCP server",
-    command: "python mcp_server/server.py",
+    tag: "verify trail",
+    title: "Audit the whole run",
+    command: "tuskpoint · verify_trail(thread)",
     output: [
-      { text: "tuskpoint · stdio · 11 tools ready", tone: "cream" },
+      { text: "re-hashing every blob against its stored SHA-256 …", tone: "muted" },
+      { text: "trail intact · 6/6 PASS · tamper-evident ✓", tone: "flame" },
     ],
   },
 ];

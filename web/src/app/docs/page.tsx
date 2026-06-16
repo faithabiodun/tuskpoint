@@ -12,7 +12,7 @@ const CARDS = [
   {
     href: "/docs/quickstart",
     title: "Quick start",
-    body: "Install, prove a Walrus round-trip, and run the crash/resume demo.",
+    body: "One line wires TuskPoint into any MCP client: uvx tuskpoint-mcp. No clone, no config.",
   },
   {
     href: "/docs/tools",

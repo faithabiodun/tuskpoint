@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head><meta charset="utf8"><style>html,body{margin:0;padding:0;background:#0a0f14}</style></head>
+<body>
+<canvas id="c" width="1200" height="1200"></canvas>
+<pre id="out"></pre>
+<script>
+const SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 540" width="680" height="540">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#48ddca" stop-opacity="0.5"/>
+      <stop offset="45%" stop-color="#0fb3a1" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#0fb3a1" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ivory" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdfaf2"/>
+      <stop offset="40%" stop-color="#e6dcc6"/>
+      <stop offset="78%" stop-color="#bcae8e"/>
+      <stop offset="100%" stop-color="#8a7a56"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#d4f7f1"/>
+      <stop offset="65%" stop-color="#2fd4c0"/>
+      <stop offset="100%" stop-color="#0fb3a1"/>
+    </radialGradient>
+    <linearGradient id="trail" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#48ddca" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#48ddca" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <circle cx="430" cy="330" r="200" fill="url(#halo)"/>
+  <g transform="translate(340,270)">
+    <ellipse cx="-40" cy="120" rx="150" ry="26" fill="#000000" opacity="0.18"/>
+    <path d="M -185 -30 C -150 -95, 30 -110, 120 -38 C 165 -2, 178 38, 184 66" fill="none" stroke="url(#ivory)" stroke-width="30" stroke-linecap="round"/>
+    <path d="M -185 -30 C -150 -95, 30 -110, 120 -38 C 165 -2, 178 38, 184 66" fill="none" stroke="url(#sheen)" stroke-width="11" stroke-linecap="round" transform="translate(-2,-5)"/>
+    <path d="M -150 -55 C -90 -88, 30 -92, 90 -52" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+    <g opacity="0.85">
+      <circle cx="-120" cy="-58" r="3" fill="#48ddca"/>
+      <circle cx="-40" cy="-78" r="3.4" fill="#48ddca"/>
+      <circle cx="55" cy="-62" r="3.8" fill="#48ddca"/>
+      <circle cx="125" cy="-22" r="4.4" fill="#48ddca"/>
+    </g>
+    <path d="M 90 -50 C 130 -14, 162 24, 184 66" fill="none" stroke="url(#trail)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 7"/>
+    <circle cx="184" cy="66" r="46" fill="url(#halo)"/>
+    <circle cx="184" cy="66" r="22" fill="#0fb3a1" opacity="0.25"/>
+    <circle cx="184" cy="66" r="13" fill="url(#core)"/>
+    <circle cx="180" cy="61" r="3.5" fill="#ffffff" opacity="0.95"/>
+    <g stroke="#48ddca" stroke-width="2" stroke-linecap="round" opacity="0.7">
+      <line x1="184" y1="38" x2="184" y2="28"/>
+      <line x1="184" y1="94" x2="184" y2="104"/>
+      <line x1="212" y1="66" x2="222" y2="66"/>
+      <line x1="156" y1="66" x2="146" y2="66"/>
+      <line x1="204" y1="46" x2="211" y2="39"/>
+      <line x1="164" y1="86" x2="157" y2="93"/>
+    </g>
+  </g>
+</svg>`;
+
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+// solid dark background (JPEG has no transparency)
+ctx.fillStyle = "#0a0f14";
+ctx.fillRect(0, 0, 1200, 1200);
+
+const img = new Image();
+const blob = new Blob([SVG], {type: "image/svg+xml"});
+const url = URL.createObjectURL(blob);
+img.onload = function () {
+  // center the 680x540 art into 1200x1200 with padding
+  const pad = 120;
+  const maxW = 1200 - pad * 2, maxH = 1200 - pad * 2;
+  const ar = 680 / 540;
+  let w = maxW, h = w / ar;
+  if (h > maxH) { h = maxH; w = h * ar; }
+  ctx.drawImage(img, (1200 - w) / 2, (1200 - h) / 2, w, h);
+  const data = canvas.toDataURL("image/jpeg", 0.95);
+  document.getElementById("out").textContent = data;
+  document.title = "READY";
+};
+img.src = url;
+</script>
+</body>
+</html>

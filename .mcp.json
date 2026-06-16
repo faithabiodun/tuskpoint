@@ -1,9 +1,8 @@
 {
   "mcpServers": {
     "tuskpoint": {
-      "command": "python",
-      "args": ["mcp_server/server.py"],
-      "cwd": ".",
+      "command": "uvx",
+      "args": ["tuskpoint-mcp"],
       "env": {
         "WALRUS_PUBLISHER_URL": "https://publisher.walrus-testnet.walrus.space",
         "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-testnet.walrus.space",

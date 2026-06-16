@@ -4,6 +4,7 @@ import { Ticker } from "@/components/Ticker";
 import { Steps } from "@/components/Steps";
 import { ProblemList } from "@/components/ProblemList";
 import { RunEvidence } from "@/components/RunEvidence";
+import { PlugsInto } from "@/components/PlugsInto";
 import { ToolDirectory } from "@/components/ToolDirectory";
 import { Architecture } from "@/components/Architecture";
 import { Comparison } from "@/components/Comparison";
@@ -21,6 +22,8 @@ export default function HomePage() {
       <Steps />
 
       <RunEvidence />
+
+      <PlugsInto />
 
       {/* Tool directory */}
       <section id="tools" className="border-t border-line py-20 sm:py-28">

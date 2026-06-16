@@ -11,9 +11,8 @@ export const metadata: Metadata = {
 const baseConfig = `{
   "mcpServers": {
     "tuskpoint": {
-      "command": "python",
-      "args": ["mcp_server/server.py"],
-      "cwd": "/absolute/path/to/tuskpoint",
+      "command": "uvx",
+      "args": ["tuskpoint-mcp"],
       "env": {
         "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-testnet.walrus.space",
         "WALRUS_PUBLISHER_URL": "https://publisher.walrus-testnet.walrus.space"
@@ -28,18 +27,16 @@ const vscodeConfig = `{
   "servers": {
     "tuskpoint": {
       "type": "stdio",
-      "command": "python",
-      "args": ["mcp_server/server.py"],
-      "cwd": "/absolute/path/to/tuskpoint"
+      "command": "uvx",
+      "args": ["tuskpoint-mcp"]
     }
   }
 }`;
 
 // OpenAI Codex CLI is configured in TOML, not JSON.
 const codexConfig = `[mcp_servers.tuskpoint]
-command = "python"
-args = ["mcp_server/server.py"]
-cwd = "/absolute/path/to/tuskpoint"`;
+command = "uvx"
+args = ["tuskpoint-mcp"]`;
 
 export default function ClientsPage() {
   return (
@@ -61,8 +58,8 @@ export default function ClientsPage() {
         Most clients use the same{" "}
         <Code>{`{ "mcpServers": { "tuskpoint": { … } } }`}</Code> block (VS Code
         uses <Code>servers</Code>, and Codex CLI uses TOML, both shown below).
-        Set <Code>cwd</Code> to the absolute path of your cloned repo so{" "}
-        <Code>mcp_server/server.py</Code> resolves. Or just call the{" "}
+        The launcher is always <Code>uvx tuskpoint-mcp</Code>, so there is no
+        repo to clone and no <Code>cwd</Code> to set. Or just call the{" "}
         <Code>tuskpoint_info</Code> tool and let the agent emit the right snippet
         for you.
       </Callout>
@@ -82,12 +79,12 @@ export default function ClientsPage() {
 
       <H2 id="claude-code">Claude Code</H2>
       <P>
-        Register it from the CLI in your repo root, no JSON editing required.
+        Register it from the CLI in one line, no JSON editing, no clone.
       </P>
       <div className="mt-4">
         <CodeBlock
           label="terminal"
-          code={`claude mcp add tuskpoint -- python mcp_server/server.py`}
+          code={`claude mcp add tuskpoint -- uvx tuskpoint-mcp`}
         />
       </div>
       <P>
@@ -144,8 +141,18 @@ export default function ClientsPage() {
       <P>
         A ready-to-use <Code>.mcp.json</Code> ships in the repo root. Point your
         client at it, or copy the block above. The transport is stdio and the
-        command is always <Code>python mcp_server/server.py</Code>.
+        command is always <Code>uvx tuskpoint-mcp</Code>.
       </P>
+      <P>
+        Every config on this page is also served as plain text at one URL, so you
+        or an agent can fetch the whole setup with a single command:
+      </P>
+      <div className="mt-4">
+        <CodeBlock
+          label="terminal"
+          code={`curl -sL https://tuskpoint.xyz/skills/setup`}
+        />
+      </div>
 
       <H3>Enable semantic search with MemWal</H3>
       <P>

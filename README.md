@@ -44,7 +44,7 @@ Plain-English search is powered by [MemWal](https://memory.walrus.xyz).
 
 ## Summary of MCP tools
 
-The server (`mcp_server/server.py`) exposes these over stdio:
+The server (`tuskpoint-mcp`) exposes these over stdio:
 
 | Tool | Category | What it does |
 | --- | --- | --- |
@@ -63,82 +63,21 @@ The server (`mcp_server/server.py`) exposes these over stdio:
 
 ## Quick Start
 
-### 1. Install
+TuskPoint is a drop-in MCP plugin. One line wires it into any MCP client, no
+clone, no server to run, no paths to set: `uvx` fetches and launches it and all
+eleven tools appear in your agent.
 
-```bash
-git clone https://github.com/faithabiodun/tuskpoint.git
-cd tuskpoint
-python -m pip install -e ".[all]"
-```
+### Add it to your client
 
-### 2. Configure environment
-
-```bash
-cp .env.example .env   # then fill in your keys
-```
-
-All secrets come from environment variables (loaded from `.env`).
-**Never commit your real `.env`**, it is git-ignored. Reads from Walrus are
-public and free; only writes need a publisher and semantic search needs MemWal
-credentials (see `.env.example`).
-
-### 3. Prove the Walrus round-trip
-
-```bash
-python scripts/check_walrus.py
-```
-
-Writes a random blob to a publisher, reads it back from an aggregator, and
-asserts the bytes are identical, printing the blob ID.
-
-### 4. Run the crash / resume demo (the headline)
-
-```bash
-python demo/run_demo.py --real --part1   # run, persist, EXIT
-python demo/run_demo.py --real --part2   # FRESH process resumes from Walrus
-```
-
-A researcher→writer agent is interrupted before the writer runs. `--part2`
-starts a brand-new process that reads only the manifest blob ID from
-`.walrus_threads.json`, pulls the checkpoint back from Walrus, and resumes to
-completion.
-
-### 5. Try fork, audit, rollback & hand-off
-
-```bash
-python demo/run_demo.py --fork      # branch a checkpoint into a new thread
-python demo/run_demo.py --audit     # verify_trail (SHA-256) over a thread
-python demo/run_demo.py --rollback  # append-only undo to an earlier checkpoint
-python demo/run_demo.py --handoff   # Agent A hands a checkpoint to Agent B
-```
-
-> **On timing:** TuskPoint's own operations are effectively instant: a
-> checkpoint save/load is a single gzip + Walrus round-trip, and reads are
-> pooled and fetched in parallel. When a demo or MCP call *feels* slow, the
-> wall-time is almost always one of two things outside the checkpointer:
-> (1) the optional DeepSeek LLM the sample agent calls per node, and
-> (2) the one-off `import` of `langchain_core`, a required LangGraph
-> dependency. Neither is TuskPoint doing work; the checkpoint engine itself
-> adds no measurable latency.
-
-### 6. Start the MCP server
-
-```bash
-python mcp_server/server.py
-```
-
-### 7. Register with an MCP client
-
-A ready-to-use [`.mcp.json`](.mcp.json) is included. The same block works for
-every client; only the file location changes.
+A ready-to-use [`.mcp.json`](.mcp.json) is included, and the same block works
+for every client; only the file location changes.
 
 ```json
 {
   "mcpServers": {
     "tuskpoint": {
-      "command": "python",
-      "args": ["mcp_server/server.py"],
-      "cwd": "/absolute/path/to/tuskpoint",
+      "command": "uvx",
+      "args": ["tuskpoint-mcp"],
       "env": {
         "WALRUS_AGGREGATOR_URL": "https://aggregator.walrus-testnet.walrus.space",
         "WALRUS_PUBLISHER_URL": "https://publisher.walrus-testnet.walrus.space"
@@ -148,16 +87,47 @@ every client; only the file location changes.
 }
 ```
 
+- **Claude Code:** `claude mcp add tuskpoint -- uvx tuskpoint-mcp`
 - **Claude Desktop:** add the block to `claude_desktop_config.json`.
-- **Claude Code:** `claude mcp add tuskpoint -- python mcp_server/server.py`
 - **Cursor:** `.cursor/mcp.json`
 - **Windsurf:** `~/.codeium/windsurf/mcp_config.json`
+- **VS Code (Copilot):** `.vscode/mcp.json` (uses a `servers` key).
+- **OpenAI Codex CLI:** `~/.codex/config.toml` (TOML).
 
-Full per-client instructions: https://tuskpoint.xyz/docs/clients
+Full per-client instructions: https://tuskpoint.xyz/docs/clients. Or, from any
+client, call the `tuskpoint_info` tool and let the agent emit the right snippet.
+
+Prefer the terminal? The same setup is served as plain text at one URL:
+
+```bash
+curl -sL https://tuskpoint.xyz/skills/setup
+```
+
+Reads from Walrus are public and free, so the plugin works out of the box on
+testnet. Only writes need a publisher and semantic search needs MemWal
+credentials, set them in the `env` block above or a `.env` (see `.env.example`).
 
 > **Note:** `checkpoint_search` returns an explanatory message instead of
 > failing when no MemWal credentials are present, so the server runs fine
 > without them.
+
+### See it live
+
+The fastest way to watch a crash-and-resume, a diff, a rollback, and
+plain-English search is the live dashboard: https://tuskpoint.xyz/dashboard.
+
+### Run from source (contributors)
+
+```bash
+git clone https://github.com/faithabiodun/tuskpoint.git
+cd tuskpoint
+python -m pip install -e ".[all]"
+cp .env.example .env   # then fill in your keys
+```
+
+From a checkout the server also runs with `python mcp_server/server.py` (a thin
+shim around the packaged `tuskpoint-mcp` entry point), and
+`python scripts/check_walrus.py` proves a live Walrus round-trip.
 
 ## Exact vs. semantic: why both?
 
@@ -208,7 +178,8 @@ src/langgraph_checkpoint_walrus/
   manifest.py        ThreadManifest / CheckpointEntry (id -> blob_id, lineage, blob_sha256)
   saver.py           WalrusSaver: gzip envelope per checkpoint, fork/rollback/handoff/verify_trail
   memwal_layer.py    MemWalLayer: build_summary + summarize_and_remember + search
-mcp_server/server.py All-in-one MCP server: 11 checkpoint tools + tuskpoint_info (FastMCP)
+  mcp_server.py      All-in-one MCP server: 11 checkpoint tools + tuskpoint_info (FastMCP), exposed as the `tuskpoint-mcp` command
+mcp_server/server.py Thin shim that runs the packaged server (for source checkouts)
 demo/                researcher→writer agent + crash/resume/fork/audit/rollback/handoff/semantic demos
 scripts/             check_walrus.py, check_memwal.py (standalone proofs)
 web/                 Next.js site + docs (https://tuskpoint.xyz)

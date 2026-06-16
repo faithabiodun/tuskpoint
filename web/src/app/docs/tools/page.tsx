@@ -23,10 +23,9 @@ export default function ToolsPage() {
         title="The eleven tools"
         intro={
           <>
-            Exposed over stdio by{" "}
-            <Code>mcp_server/server.py</Code>. Plus a twelfth helper,{" "}
-            <Code>tuskpoint_info</Code>, that returns ready-to-paste client
-            configuration so an agent can wire itself up.
+            Exposed over stdio by the <Code>tuskpoint-mcp</Code> server. Plus a
+            twelfth helper, <Code>tuskpoint_info</Code>, that returns
+            ready-to-paste client configuration so an agent can wire itself up.
           </>
         }
       />
