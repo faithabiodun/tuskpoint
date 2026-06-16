@@ -36,6 +36,17 @@ export default function QuickStartPage() {
         />
       </div>
       <P>
+        The package is published on{" "}
+        <a
+          href="https://pypi.org/project/tuskpoint-mcp"
+          className="text-flame underline-offset-4 hover:underline"
+        >
+          PyPI
+        </a>
+        , so <Code>uvx</Code> resolves it from a clean machine with nothing
+        cloned.
+      </P>
+      <P>
         For any other client, drop the same launcher into its MCP config (only
         the file location changes):
       </P>

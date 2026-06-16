@@ -12,6 +12,7 @@ call through 11 checkpoint tools.
 
 Plain-English search is powered by [MemWal](https://memory.walrus.xyz).
 
+- **PyPI:** https://pypi.org/project/tuskpoint-mcp
 - **Docs:** https://tuskpoint.xyz/docs
 - **Live run dashboard:** https://tuskpoint.xyz/dashboard
 
