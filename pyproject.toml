@@ -41,6 +41,19 @@ Repository = "https://github.com/faithabiodun/tuskpoint"
 [tool.hatch.build.targets.wheel]
 packages = ["src/langgraph_checkpoint_walrus"]
 
+# Keep the sdist lean: ship the package, the thin server shim, and project
+# metadata only. The repo's diagrams/ (14 MB of PNGs) and web/ tree are not
+# part of the distribution and would otherwise bloat the upload.
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/langgraph_checkpoint_walrus",
+    "mcp_server",
+    "tests",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 markers = [
