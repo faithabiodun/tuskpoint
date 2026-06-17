@@ -80,11 +80,11 @@ export function Comparison() {
           </p>
         </Reveal>
 
-        <Reveal className="mt-10 overflow-x-auto">
-          <table className="w-full min-w-[640px] border-collapse text-left">
+        <Reveal className="mt-10 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+          <table className="w-full min-w-[560px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line">
-                <th className="py-4 pr-4 font-mono text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                <th className="py-4 pr-3 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-500 sm:pr-4 sm:text-[11px] sm:tracking-[0.16em]">
                   Capability
                 </th>
                 <th className="px-3 py-4 text-center font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">

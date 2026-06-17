@@ -12,6 +12,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Guard against any single wide child (marquees, tables, code blocks) turning
+   the whole page horizontally scrollable, which shows up as empty gutters on
+   the sides on small screens. Vertical scrolling is untouched. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   @apply bg-ink-950 antialiased;
   color: var(--cream);
