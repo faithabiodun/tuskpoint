@@ -25,6 +25,7 @@ or register it with an MCP client via the ``.mcp.json`` snippet in the README.
 from __future__ import annotations
 
 import os
+import sys
 import json
 import time
 import uuid
@@ -54,7 +55,15 @@ def _build_saver() -> WalrusSaver:
             from langgraph_checkpoint_walrus import MemWalLayer
 
             memwal_layer = MemWalLayer.from_env()
-        except Exception:  # noqa: BLE001 - degrade gracefully without MemWal
+        except Exception as exc:  # noqa: BLE001 - degrade gracefully without MemWal
+            # Credentials are present but the layer failed to initialize. Surface
+            # the reason on stderr instead of silently pretending it's missing,
+            # then keep running so the exact (Walrus) layer still works.
+            print(
+                f"[tuskpoint] MemWal credentials set but init failed: {exc!r}. "
+                "Semantic search (checkpoint_search) is disabled.",
+                file=sys.stderr,
+            )
             memwal_layer = None
     return WalrusSaver(
         WalrusClient(), threads_cache_path=_THREADS_CACHE, memwal_layer=memwal_layer

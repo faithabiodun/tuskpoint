@@ -4,7 +4,7 @@ from .saver import WalrusSaver
 from .walrus_client import BlobStore, InMemoryWalrusClient, WalrusClient
 from .manifest import CheckpointEntry, ThreadManifest
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "__version__",
