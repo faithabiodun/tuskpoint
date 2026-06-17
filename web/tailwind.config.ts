@@ -69,12 +69,24 @@ const config: Config = {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        // Tile swap for the rotating client grid: the outgoing label drops out
+        // and the incoming one rises in, so each cell cycles through clients.
+        "tile-out": {
+          "0%": { opacity: "1", transform: "translateY(0) scale(1)" },
+          "100%": { opacity: "0", transform: "translateY(-10px) scale(0.92)" },
+        },
+        "tile-in": {
+          "0%": { opacity: "0", transform: "translateY(10px) scale(0.92)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s ease-out both",
         shimmer: "shimmer 2s infinite",
         float: "float 6s ease-in-out infinite",
         marquee: "marquee 32s linear infinite",
+        "tile-in": "tile-in 0.45s cubic-bezier(0.16,1,0.3,1) both",
+        "tile-out": "tile-out 0.45s cubic-bezier(0.16,1,0.3,1) both",
       },
       fontSize: {
         display: ["clamp(2.75rem, 8vw, 7rem)", { lineHeight: "0.92", letterSpacing: "-0.03em" }],

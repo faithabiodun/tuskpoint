@@ -1,20 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "./Reveal";
 import { CopyButton } from "./CopyButton";
-
-// Clients that can drive TuskPoint. Every entry maps to a real config in the
-// `tuskpoint_info` tool and the /docs/clients page, so nothing here is
-// aspirational. The same stdio launcher (`uvx tuskpoint-mcp`) backs every
-// client; only the config file location changes.
-const CLIENTS: { label: string; note: string }[] = [
-  { label: "Claude Code", note: "claude mcp add" },
-  { label: "Claude Desktop", note: "claude_desktop_config.json" },
-  { label: "Cursor", note: ".cursor/mcp.json" },
-  { label: "Windsurf", note: "mcp_config.json" },
-  { label: "VS Code (Copilot)", note: ".vscode/mcp.json" },
-  { label: "OpenAI Codex CLI", note: "~/.codex/config.toml" },
-  { label: "Any MCP client", note: ".mcp.json (native support)" },
-];
+import { LogoGrid } from "./LogoGrid";
 
 const ADD_COMMAND = "uvx tuskpoint-mcp";
 const SETUP_COMMAND = "curl -sL https://tuskpoint.xyz/skills/setup";
@@ -37,26 +24,11 @@ export function PlugsInto() {
         </Reveal>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2 lg:items-start">
-          {/* Client list */}
+          {/* Rotating client grid: each tile cycles through the MCP clients and
+              runtimes TuskPoint plugs into, so the same launcher visibly serves
+              all of them. */}
           <Reveal>
-            <ul className="grid gap-2.5 sm:grid-cols-2">
-              {CLIENTS.map((c) => (
-                <li
-                  key={c.label}
-                  className="flex items-baseline gap-2.5 rounded-xl border border-line bg-ink-950/40 px-4 py-3"
-                >
-                  <span className="text-flame">→</span>
-                  <span className="flex flex-col">
-                    <span className="text-sm font-semibold text-cream">
-                      {c.label}
-                    </span>
-                    <span className="font-mono text-[11px] text-slate-500">
-                      {c.note}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <LogoGrid />
           </Reveal>
 
           {/* One command */}
