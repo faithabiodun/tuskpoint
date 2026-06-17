@@ -198,7 +198,8 @@ html.tp-splash-seen #tp-splash {
       transition: none;
     }
     .animate-float,
-    .animate-marquee {
+    .animate-marquee,
+    .animate-marquee-rev {
       animation: none !important;
     }
   }
