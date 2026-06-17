@@ -21,11 +21,7 @@ function Chip({ c }: { c: ClientLogo }) {
             decoding="async"
           />
         </span>
-      ) : (
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-flame/25 bg-flame/10 font-mono text-[11px] font-bold text-flame">
-          {c.label.slice(0, 2)}
-        </span>
-      )}
+      ) : null}
       <span className="whitespace-nowrap text-sm font-semibold text-cream">
         {c.label}
       </span>
