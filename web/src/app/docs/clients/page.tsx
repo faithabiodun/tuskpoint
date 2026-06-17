@@ -5,7 +5,7 @@ import { DocTitle, H2, H3, P, Callout, Code } from "../ui";
 export const metadata: Metadata = {
   title: "Connect a client",
   description:
-    "Register the TuskPoint MCP server with Claude Desktop, Claude Code, Cursor, Windsurf, or any MCP client.",
+    "Register the TuskPoint MCP server with Claude Desktop, Claude Code, Cursor, Windsurf, Gemini CLI, VS Code, Codex CLI, or any MCP client.",
 };
 
 const baseConfig = `{
@@ -112,6 +112,20 @@ export default function ClientsPage() {
       <div className="mt-4">
         <CodeBlock
           label="~/.codeium/windsurf/mcp_config.json"
+          lang="json"
+          code={baseConfig}
+        />
+      </div>
+
+      <H2 id="gemini-cli">Gemini CLI</H2>
+      <P>
+        Add the block to <Code>~/.gemini/settings.json</Code> (or the
+        project-local <Code>.gemini/settings.json</Code>). Gemini CLI uses the
+        same <Code>mcpServers</Code> shape and expands env vars automatically.
+      </P>
+      <div className="mt-4">
+        <CodeBlock
+          label="~/.gemini/settings.json"
           lang="json"
           code={baseConfig}
         />

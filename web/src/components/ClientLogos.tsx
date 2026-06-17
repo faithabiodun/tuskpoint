@@ -14,17 +14,16 @@ export type ClientLogo = {
   dark?: boolean;
 };
 
+// Kept 1:1 with the clients that have a real setup block in `tuskpoint_info`
+// and /docs/clients, so the wall never implies support we don't document.
 export const CLIENT_LOGOS: ClientLogo[] = [
-  { label: "Claude", src: "/logos/claude.svg" },
-  { label: "Gemini", src: "/logos/gemini.svg" },
-  { label: "OpenAI Codex", src: "/logos/openai.svg", dark: true },
+  { label: "Claude Code", src: "/logos/claude.svg" },
+  { label: "Claude Desktop", src: "/logos/claude.svg" },
   { label: "Cursor", src: "/logos/cursor.svg", dark: true },
   { label: "Windsurf", src: "/logos/windsurf.svg", dark: true },
-  { label: "VS Code", src: "/logos/vscode.svg" },
-  { label: "GitHub Copilot", src: "/logos/copilot.svg", dark: true },
-  { label: "Zed", src: "/logos/zed.svg", dark: true },
-  // No bundled logo yet -> render the name as text (per design).
-  { label: "Cline" },
-  { label: "Continue" },
+  { label: "Gemini CLI", src: "/logos/gemini.svg" },
+  { label: "VS Code (Copilot)", src: "/logos/vscode.svg" },
+  { label: "OpenAI Codex", src: "/logos/openai.svg", dark: true },
+  // No bundled logo -> render the name as text (per design).
   { label: "Any MCP client" },
 ];

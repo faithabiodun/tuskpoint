@@ -448,9 +448,9 @@ def tuskpoint_info() -> str:
     """Describe this server and return ready-to-paste client setup.
 
     Returns the full tool list plus copy-paste MCP configuration for every common
-    client (Claude Desktop, Claude Code, Cursor, Windsurf, VS Code / Copilot,
-    OpenAI Codex CLI, and the generic ``.mcp.json`` form), so an agent or user can
-    connect TuskPoint without leaving the chat.
+    client (Claude Desktop, Claude Code, Cursor, Windsurf, Gemini CLI,
+    VS Code / Copilot, OpenAI Codex CLI, and the generic ``.mcp.json`` form), so
+    an agent or user can connect TuskPoint without leaving the chat.
 
     Returns:
         A JSON string ``{"name", "transport", "tools", "connect", "notes"}``.
@@ -487,6 +487,12 @@ def tuskpoint_info() -> str:
         },
         "windsurf": {
             "file": "~/.codeium/windsurf/mcp_config.json",
+            "config": {"mcpServers": {"tuskpoint": server_cmd}},
+        },
+        "gemini_cli": {
+            # Google Gemini CLI reads ~/.gemini/settings.json (or project
+            # .gemini/settings.json) and uses the same "mcpServers" shape.
+            "file": "~/.gemini/settings.json",
             "config": {"mcpServers": {"tuskpoint": server_cmd}},
         },
         "vscode": {

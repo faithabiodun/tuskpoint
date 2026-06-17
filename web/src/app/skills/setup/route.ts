@@ -35,6 +35,7 @@ claude mcp add tuskpoint -- uvx tuskpoint-mcp
 #   Claude Desktop      claude_desktop_config.json
 #   Cursor              .cursor/mcp.json
 #   Windsurf            ~/.codeium/windsurf/mcp_config.json
+#   Gemini CLI          ~/.gemini/settings.json   (same "mcpServers" shape)
 #   VS Code (Copilot)   .vscode/mcp.json   (uses a "servers" key + "type": "stdio")
 #   OpenAI Codex CLI    ~/.codex/config.toml   (TOML, see below)
 #   Any MCP client      .mcp.json
