@@ -17,8 +17,7 @@ export type ClientLogo = {
 // Kept 1:1 with the clients that have a real setup block in `tuskpoint_info`
 // and /docs/clients, so the wall never implies support we don't document.
 export const CLIENT_LOGOS: ClientLogo[] = [
-  { label: "Claude Code", src: "/logos/claude.svg" },
-  { label: "Claude Desktop", src: "/logos/claude.svg" },
+  { label: "Claude", src: "/logos/claude.svg" },
   { label: "Cursor", src: "/logos/cursor.svg", dark: true },
   { label: "Windsurf", src: "/logos/windsurf.svg", dark: true },
   { label: "Gemini CLI", src: "/logos/gemini.svg" },
