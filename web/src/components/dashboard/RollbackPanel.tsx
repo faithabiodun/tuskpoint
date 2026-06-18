@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   api,
   ApiError,
@@ -65,9 +65,12 @@ export function RollbackPanel({
   const [handing, setHanding] = useState(false);
   const [hoErr, setHoErr] = useState<string | null>(null);
 
-  const [adoptThread, setAdoptThread] = useState(
-    `adopt-${Math.random().toString(36).slice(2, 8)}`,
-  );
+  // Stable on first render (matches SSR), randomized after mount to avoid a
+  // hydration mismatch.
+  const [adoptThread, setAdoptThread] = useState("adopt-new");
+  useEffect(() => {
+    setAdoptThread(`adopt-${Math.random().toString(36).slice(2, 8)}`);
+  }, []);
   const [adopting, setAdopting] = useState(false);
   const [adoptErr, setAdoptErr] = useState<string | null>(null);
   const [adopted, setAdopted] = useState<{

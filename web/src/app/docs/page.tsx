@@ -22,7 +22,7 @@ const CARDS = [
   {
     href: "/docs/clients",
     title: "Connect a client",
-    body: "Copy-paste config for Claude Desktop, Claude Code, Cursor, Windsurf.",
+    body: "Copy-paste config for Claude, Cursor, Windsurf, Gemini CLI, VS Code, Codex CLI, or any MCP client.",
   },
   {
     href: "/docs/fork",
@@ -67,11 +67,12 @@ export default function DocsOverviewPage() {
 
       <H2>How the pieces fit</H2>
       <P>
-        Three layers, one drop-in saver. LangGraph calls the standard checkpoint
-        API; TuskPoint serializes and gzips the state, stores it on Walrus, and
-        records the blob in a per-thread manifest. MemWal adds a one-line
-        natural-language summary so you can recall checkpoints in plain English.
-        An MCP server exposes the whole thing as eleven tools any agent can call.
+        Two storage layers, one drop-in saver. LangGraph calls the standard
+        checkpoint API; TuskPoint serializes and gzips the state, stores it on
+        Walrus, and records the blob in a per-thread manifest. MemWal adds a
+        one-line natural-language summary so you can recall checkpoints in plain
+        English. On top of those two layers, an MCP server exposes the whole
+        thing as eleven tools any agent can call.
       </P>
 
       <ul className="mt-4 space-y-2 text-slate-400">

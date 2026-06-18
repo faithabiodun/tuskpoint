@@ -25,7 +25,7 @@ export function SiteFooter() {
               Tools
             </Link>
             <a
-              href="https://www.tuskpoint.xyz/skills/setup"
+              href="/skills/setup"
               target="_blank"
               rel="noreferrer"
               className="link-muted"

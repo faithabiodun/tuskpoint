@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api, ApiError, aggregatorFor } from "@/lib/api";
 import type { TimelineItem } from "./Timeline";
 import { CopyButton } from "../CopyButton";
@@ -62,9 +62,12 @@ export function WritePanel({
 
   // Fork
   const [srcCid, setSrcCid] = useState(items[0]?.id ?? "");
-  const [newThread, setNewThread] = useState(
-    `fork-${Math.random().toString(36).slice(2, 8)}`,
-  );
+  // Start with a stable value so server and client render the same HTML, then
+  // add a random suffix after mount (avoids a hydration mismatch).
+  const [newThread, setNewThread] = useState("fork-new");
+  useEffect(() => {
+    setNewThread(`fork-${Math.random().toString(36).slice(2, 8)}`);
+  }, []);
   const [forking, setForking] = useState(false);
   const [forkErr, setForkErr] = useState<string | null>(null);
   const [forked, setForked] = useState<{

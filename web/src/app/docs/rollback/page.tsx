@@ -16,10 +16,10 @@ export default function RollbackPage() {
         title="Rollback"
         intro={
           <>
-            <Code>rollback_to</Code> is a durable undo. It restores the state of
-            an earlier checkpoint as the new head of the <em>same</em> thread, so
-            the agent continues from a known-good moment, without erasing the
-            steps in between.
+            <Code>checkpoint_rollback</Code> is a durable undo. It restores the
+            state of an earlier checkpoint as the new head of the <em>same</em>{" "}
+            thread, so the agent continues from a known-good moment, without
+            erasing the steps in between.
           </>
         }
       />
@@ -53,8 +53,8 @@ export default function RollbackPage() {
         Both start from an earlier checkpoint, but they go opposite directions.{" "}
         <Code>fork</Code> branches that state into a <em>new</em> thread and
         leaves the original untouched, good for exploring an alternative path
-        side by side. <Code>rollback_to</Code> stays on the <em>same</em> thread
-        and makes the restored state the new head, good for &quot;continue from
+        side by side. <Code>checkpoint_rollback</Code> stays on the <em>same</em>{" "}
+        thread and makes the restored state the new head, good for &quot;continue from
         here, the last bit was wrong.&quot;
       </P>
 

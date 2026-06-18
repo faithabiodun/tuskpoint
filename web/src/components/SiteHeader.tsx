@@ -4,7 +4,7 @@ import { Logo } from "./Logo";
 
 const NAV = [
   { href: "/#tools", label: "Tools" },
-  { href: "https://www.tuskpoint.xyz/skills/setup", label: "Install", external: true },
+  { href: "/skills/setup", label: "Install", external: true },
   { href: "/dashboard", label: "Run" },
   { href: "/docs", label: "Docs" },
 ];
