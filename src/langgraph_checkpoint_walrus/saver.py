@@ -24,7 +24,6 @@ import os
 import json
 import gzip
 import time
-import uuid
 import base64
 import hashlib
 import threading
@@ -555,7 +554,10 @@ class WalrusSaver(BaseCheckpointSaver[str]):
             )
 
         forked_from = f"{source_thread_id}:{source_checkpoint_id}"
-        new_checkpoint_id = str(uuid.uuid1())
+        # uuid6 (not uuid1): the string form is lexically time-ordered, which the
+        # manifest relies on (`latest_id()` == lexical max). uuid1 leads with the
+        # low time bits that wrap, so its string order is not chronological.
+        new_checkpoint_id = str(uuid6(clock_seq=-2))
         ts = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
 
         # Genesis checkpoint for the new thread: same state, new identity, no
@@ -788,8 +790,10 @@ class WalrusSaver(BaseCheckpointSaver[str]):
 
         Returns:
             ``{"adopted_from", "new_thread_id", "checkpoint_id", "blob_id",
-            "verified"}`` where ``verified`` is True when the re-fetched blob's
-            hash matched the sender's (or no hash was provided to check).
+            "verified"}`` where ``verified`` is True only when the sender
+            provided an integrity hash AND the re-fetched blob matched it. If no
+            hash was provided there is nothing to prove, so ``verified`` is
+            False (a tamper-evident handoff always carries a hash).
 
         Raises:
             ValueError: if ``new_thread_id`` already has checkpoints, or the
@@ -811,7 +815,10 @@ class WalrusSaver(BaseCheckpointSaver[str]):
 
         # Integrity gate: the byte-level proof that what we adopt is exactly what
         # was handed off. A mismatch means the blob was tampered with in transit.
-        verified = True
+        # `verified` is only True when a hash was actually present AND matched;
+        # without a hash there is nothing to prove, so we report it honestly as
+        # unverified rather than implying a check passed.
+        verified = False
         if expected_hash is not None:
             actual = _sha256(raw)
             if actual != expected_hash:
@@ -819,6 +826,7 @@ class WalrusSaver(BaseCheckpointSaver[str]):
                     f"handoff integrity check FAILED for {source}: "
                     f"expected {expected_hash}, got {actual}"
                 )
+            verified = True
 
         # Unpack the handed-off state and write it under a fresh identity.
         env = self._unpack_envelope(raw)

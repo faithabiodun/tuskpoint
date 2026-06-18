@@ -21,7 +21,6 @@ from __future__ import annotations
 import json
 import os
 import time
-import uuid
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +28,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from langgraph.checkpoint.base.id import uuid6
 
 from langgraph_checkpoint_walrus import WalrusSaver, WalrusClient
 from langgraph_checkpoint_walrus.manifest import ThreadManifest
@@ -99,11 +99,16 @@ _saver = _build_saver()
 
 
 def _network() -> str:
-    """Best-effort label for which Walrus network this service writes to."""
+    """Best-effort label for which Walrus network this service writes to.
+
+    WalrusClient defaults to **testnet** when ``WALRUS_PUBLISHER_URL`` is unset
+    (see walrus_client.py), so an empty env var must report "testnet", not
+    "mainnet" - otherwise /health would tell the dashboard the wrong network.
+    """
     pub = os.getenv("WALRUS_PUBLISHER_URL", "")
-    if "testnet" in pub:
+    if not pub or "testnet" in pub:
         return "testnet"
-    if "mainnet" in pub or not pub:
+    if "mainnet" in pub:
         return "mainnet"
     return "custom"
 
@@ -115,7 +120,7 @@ def _network() -> str:
 def _new_checkpoint(state: dict[str, Any]) -> dict[str, Any]:
     return {
         "v": 1,
-        "id": str(uuid.uuid1()),
+        "id": str(uuid6()),  # lexically time-ordered, like LangGraph's IDs
         "ts": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
         "channel_values": {"state": state},
         "channel_versions": {"state": 1},

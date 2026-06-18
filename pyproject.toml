@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tuskpoint-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "TuskPoint: a verifiable LangGraph checkpointer backed by Walrus decentralized storage, with semantic recall via MemWal. Drop-in MCP plugin: 'uvx tuskpoint-mcp'."
 readme = "README.md"
 requires-python = ">=3.10"

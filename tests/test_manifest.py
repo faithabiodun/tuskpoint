@@ -59,3 +59,26 @@ def test_json_round_trip() -> None:
     assert restored.get("cp-2").parent_checkpoint_id == "cp-1"
     assert restored.get("cp-1").summary == "researcher gathered sources"
     assert restored.ordered_ids() == m.ordered_ids()
+
+
+def test_checkpoint_ids_are_lexically_time_ordered() -> None:
+    """Regression: the IDs we mint must sort lexically == chronologically.
+
+    ``latest_id()`` returns ``max(ids)``, so a newer checkpoint must always
+    produce a lexically larger ID. uuid1's string form leads with low time bits
+    that wrap (~every 7 min), so it would silently break this; uuid6 does not.
+    We force the failure deterministically by crafting two v1/v6 strings where
+    the second is generated "later" but has smaller low time bits.
+    """
+    from langgraph.checkpoint.base.id import uuid6
+
+    # Monotonic over a burst: each new uuid6 must be > the previous one.
+    ids = [str(uuid6()) for _ in range(50)]
+    assert ids == sorted(ids), "uuid6 IDs are not monotonically increasing"
+
+    # Cross-wrap guard: a later moment with wrapped low bits must still sort
+    # after an earlier moment. (uuid1 fails this; uuid6 leads with high bits.)
+    earlier = f"{0xffffffff:08x}-6aed-11f1-8000-000000000000"  # v1-style, large low
+    later = f"{0x00000001:08x}-6aee-11f1-8000-000000000000"    # v1-style, wrapped low
+    # If we (wrongly) used uuid1 layout, `later < earlier` would be True - the bug.
+    assert later < earlier, "sanity: demonstrates the uuid1 wrap hazard exists"

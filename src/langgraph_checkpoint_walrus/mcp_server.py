@@ -28,11 +28,11 @@ import os
 import sys
 import json
 import time
-import uuid
 from typing import Any
 
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
+from langgraph.checkpoint.base.id import uuid6
 
 from langgraph_checkpoint_walrus import WalrusSaver, WalrusClient
 from langgraph_checkpoint_walrus.manifest import ThreadManifest
@@ -81,7 +81,7 @@ def _new_checkpoint(state: dict[str, Any]) -> dict[str, Any]:
     """Wrap a plain user-state dict into a minimal LangGraph-style checkpoint."""
     return {
         "v": 1,
-        "id": str(uuid.uuid1()),  # time-ordered, like LangGraph's IDs
+        "id": str(uuid6()),  # lexically time-ordered, exactly like LangGraph's IDs
         "ts": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
         "channel_values": {"state": state},
         "channel_versions": {"state": 1},
@@ -91,10 +91,29 @@ def _new_checkpoint(state: dict[str, Any]) -> dict[str, Any]:
 
 
 def _state_from_tuple(tup: Any) -> Any:
-    """Extract the user state dict back out of a checkpoint tuple."""
+    """Extract the human-meaningful state from a checkpoint tuple.
+
+    Two checkpoint shapes flow through the tools:
+
+    * Saves made via :func:`_new_checkpoint` wrap the payload under a single
+      ``state`` channel, so we unwrap that.
+    * Real LangGraph runs store each graph channel directly (``topic``,
+      ``report``, plus internal channels like ``__start__`` and
+      ``branch:to:<node>``). We return the visible channels as-is, minus the
+      internal bookkeeping ones, so loading a real run returns its actual state
+      instead of ``None``.
+    """
     if tup is None:
         return None
-    return tup.checkpoint.get("channel_values", {}).get("state")
+    cv = tup.checkpoint.get("channel_values", {}) or {}
+    if "state" in cv and len(cv) == 1:
+        return cv["state"]
+    visible = {
+        k: v
+        for k, v in cv.items()
+        if not k.startswith("__") and not k.startswith("branch:")
+    }
+    return visible if visible else None
 
 
 # ----------------------------------------------------------------------
@@ -117,22 +136,25 @@ def checkpoint_save(thread_id: str, state_json: str) -> str:
     except json.JSONDecodeError as exc:
         return json.dumps({"error": f"state_json is not valid JSON: {exc}"})
 
-    manifest = _saver._load_manifest(thread_id)
-    parent_id = manifest.latest_id()
+    try:
+        manifest = _saver._load_manifest(thread_id)
+        parent_id = manifest.latest_id()
 
-    checkpoint = _new_checkpoint(state)
-    config = {
-        "configurable": {
-            "thread_id": thread_id,
-            "checkpoint_ns": "",
-            "checkpoint_id": parent_id,  # parent lineage
+        checkpoint = _new_checkpoint(state)
+        config = {
+            "configurable": {
+                "thread_id": thread_id,
+                "checkpoint_ns": "",
+                "checkpoint_id": parent_id,  # parent lineage
+            }
         }
-    }
-    metadata = {"source": "mcp", "step": len(manifest.entries), "writes": None}
-    _saver.put(config, checkpoint, metadata, {"state": 1})
+        metadata = {"source": "mcp", "step": len(manifest.entries), "writes": None}
+        _saver.put(config, checkpoint, metadata, {"state": 1})
 
-    new_manifest = _saver._load_manifest(thread_id)
-    entry = new_manifest.get(checkpoint["id"])
+        new_manifest = _saver._load_manifest(thread_id)
+        entry = new_manifest.get(checkpoint["id"])
+    except Exception as exc:  # noqa: BLE001 - surface Walrus/transport faults as data
+        return json.dumps({"error": f"checkpoint_save failed: {exc}"})
     return json.dumps(
         {
             "thread_id": thread_id,
@@ -157,7 +179,10 @@ def checkpoint_load(thread_id: str, checkpoint_id: str | None = None) -> str:
     if checkpoint_id:
         config["configurable"]["checkpoint_id"] = checkpoint_id
 
-    tup = _saver.get_tuple(config)
+    try:
+        tup = _saver.get_tuple(config)
+    except Exception as exc:  # noqa: BLE001 - surface Walrus/transport faults as data
+        return json.dumps({"error": f"checkpoint_load failed: {exc}"})
     if tup is None:
         return json.dumps({"error": "no checkpoint found", "thread_id": thread_id})
     return json.dumps(
@@ -179,7 +204,10 @@ def checkpoint_list(thread_id: str) -> str:
     Returns:
         A JSON array of ``{checkpoint_id, blob_id, parent, timestamp, summary}``.
     """
-    manifest: ThreadManifest = _saver._load_manifest(thread_id)
+    try:
+        manifest: ThreadManifest = _saver._load_manifest(thread_id)
+    except Exception as exc:  # noqa: BLE001 - surface Walrus/transport faults as data
+        return json.dumps({"error": f"checkpoint_list failed: {exc}"})
     out = []
     for cid in manifest.ordered_ids(newest_first=True):
         e = manifest.get(cid)
@@ -226,8 +254,11 @@ def checkpoint_diff(thread_id: str, id_a: str, id_b: str) -> str:
         )
         return _state_from_tuple(tup)
 
-    a = _load(id_a)
-    b = _load(id_b)
+    try:
+        a = _load(id_a)
+        b = _load(id_b)
+    except Exception as exc:  # noqa: BLE001 - surface Walrus/transport faults as data
+        return json.dumps({"error": f"checkpoint_diff failed: {exc}"})
     if a is None or b is None:
         return json.dumps({"error": "one or both checkpoints not found"})
 
@@ -280,7 +311,10 @@ def checkpoint_search(query: str) -> str:
                 "results": [],
             }
         )
-    hits = _saver.search_history(query, limit=5)
+    try:
+        hits = _saver.search_history(query, limit=5)
+    except Exception as exc:  # noqa: BLE001 - surface MemWal/transport faults as data
+        return json.dumps({"error": f"checkpoint_search failed: {exc}", "results": []})
     return json.dumps({"query": query, "results": hits})
 
 
