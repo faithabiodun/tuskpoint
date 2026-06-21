@@ -65,9 +65,17 @@ def _verify(blob_id: str, label: str) -> dict:
 
 
 def main() -> int:
-    print("[reseed] Building MemWal layer + real Walrus client (testnet)...")
+    # Seed blobs must outlive a short testnet lease, or the public dashboard goes
+    # empty when they expire. Write the seed chain for many epochs (override with
+    # WALRUS_SEED_EPOCHS) instead of the default 5-epoch lease used for ordinary
+    # writes.
+    seed_epochs = int(os.getenv("WALRUS_SEED_EPOCHS", "53"))
+    print(
+        f"[reseed] Building MemWal layer + real Walrus client (testnet, "
+        f"epochs={seed_epochs})..."
+    )
     layer = MemWalLayer.from_env()
-    client = WalrusClient()
+    client = WalrusClient(epochs=seed_epochs)
 
     # Isolated, empty cache: the agent starts run-43312 from a clean slate
     # instead of continuing the legacy chain, so the captured chain is exactly
@@ -85,12 +93,31 @@ def main() -> int:
     print(f"[reseed] New manifest blob id: {manifest_blob_id}")
 
     # Prove the freshly-written chain verifies before publishing the pointer.
+    # Testnet aggregators have read-after-write propagation lag, so a blob can
+    # 404 for a few seconds right after it is stored and verify will spuriously
+    # FAIL. Retry with backoff so we only abort on a genuinely bad chain.
+    import time
+
+    def _clean(res: dict) -> bool:
+        return bool(
+            res["ok"]
+            and res["tampered_count"] == 0
+            and res["verified"] == res["checkpoint_count"]
+        )
+
     result = saver.verify_trail(THREAD_ID)
+    for attempt in range(6):
+        if _clean(result):
+            break
+        wait = 5 * (attempt + 1)
+        print(f"[reseed] verify not clean yet (likely propagation lag); "
+              f"retrying in {wait}s...")
+        time.sleep(wait)
+        result = saver.verify_trail(THREAD_ID)
     for step in result["steps"]:
         print(f"    {step['status']:<10} {step['checkpoint_id'][:18]} "
               f"blob={step['blob_id'][:16]} hash={'set' if step['stored_hash'] else 'None'}")
-    if not (result["ok"] and result["tampered_count"] == 0
-            and result["verified"] == result["checkpoint_count"]):
+    if not _clean(result):
         print("[reseed] ABORT: fresh chain is not a clean full PASS; seed unchanged.")
         return 1
 
