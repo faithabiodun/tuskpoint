@@ -587,9 +587,31 @@ def main() -> None:
     """
     transport = os.getenv("MCP_TRANSPORT", "stdio").lower()
     if transport in ("http", "streamable-http", "streamable_http"):
+        from mcp.server.transport_security import TransportSecuritySettings
+
         mcp.settings.host = os.getenv("HOST", "0.0.0.0")
         mcp.settings.port = int(os.getenv("PORT", "8000"))
         mcp.settings.streamable_http_path = os.getenv("MCP_PATH", "/mcp")
+        # FastMCP's DNS-rebinding guard only trusts localhost, so behind a hosting
+        # proxy (Render/Fly/Railway) every request arrives with the public Host
+        # header and is rejected with 421. Its matcher has no catch-all, so for a
+        # public, unauthenticated tool server (nothing for that guard to protect)
+        # we turn the guard off by default. To lock it down, set MCP_ALLOWED_HOSTS
+        # (comma-separated exact hosts, e.g. "tuskpoint-mcp.onrender.com"); the
+        # guard then re-enables and only those hosts are accepted.
+        allowed_hosts_env = os.getenv("MCP_ALLOWED_HOSTS", "").strip()
+        if allowed_hosts_env:
+            origins_env = os.getenv("MCP_ALLOWED_ORIGINS", "").strip()
+            mcp.settings.transport_security = TransportSecuritySettings(
+                enable_dns_rebinding_protection=True,
+                allowed_hosts=[h.strip() for h in allowed_hosts_env.split(",") if h.strip()],
+                allowed_origins=[o.strip() for o in origins_env.split(",") if o.strip()]
+                or ["*"],
+            )
+        else:
+            mcp.settings.transport_security = TransportSecuritySettings(
+                enable_dns_rebinding_protection=False,
+            )
         mcp.run(transport="streamable-http")
     else:
         mcp.run(transport="stdio")
