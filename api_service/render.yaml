@@ -17,6 +17,10 @@ services:
         value: https://publisher.walrus-testnet.walrus.space
       - key: WALRUS_AGGREGATOR_URL
         value: https://aggregator.walrus-testnet.walrus.space
+      # Keep dashboard-written checkpoints alive well beyond the 5-epoch default
+      # so the live demo doesn't go empty when short leases lapse.
+      - key: WALRUS_EPOCHS
+        value: "53"
       - key: TUSKPOINT_DEMO_THREAD
         value: run-43312
       - key: MEMWAL_ENV

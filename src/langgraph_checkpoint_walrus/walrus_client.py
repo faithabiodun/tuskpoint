@@ -112,6 +112,9 @@ class WalrusClient:
         aggregator_url: Override aggregator base URL (else ``WALRUS_AGGREGATOR_URL``
             then public fallbacks).
         epochs: Storage duration in Walrus epochs (how long the blob persists).
+            When left as ``None``, reads ``WALRUS_EPOCHS`` (default 5). Raise this
+            for longer-lived checkpoints; testnet blobs are garbage-collected once
+            their lease lapses, so a low value makes old checkpoints disappear.
         timeout: Per-request timeout in seconds.
     """
 
@@ -120,10 +123,10 @@ class WalrusClient:
         publisher_url: str | None = None,
         aggregator_url: str | None = None,
         *,
-        epochs: int = 5,
+        epochs: int | None = None,
         timeout: float = 60.0,
     ) -> None:
-        self.epochs = epochs
+        self.epochs = epochs if epochs is not None else int(os.getenv("WALRUS_EPOCHS", "5"))
         # Split timeouts: fail fast if a node won't even accept a connection
         # (dead/overloaded public node), but still allow a long read/write since
         # a Walrus publisher legitimately takes seconds to encode + distribute a
