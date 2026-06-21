@@ -1,7 +1,11 @@
-# Render Blueprint for the TuskPoint API service (free tier, $0).
-# Render's Blueprint flow reads this file from the REPO ROOT on the main branch.
+# Render Blueprint for TuskPoint (free tier, $0).
+# Render's Blueprint flow reads THIS file from the REPO ROOT on the main branch.
 # In Render: New > Blueprint > pick this repo. Then set the secret env vars
 # (marked sync:false) in the dashboard.
+#
+# Two services:
+#   tuskpoint-api  — FastAPI engine the website dashboard proxies to.
+#   tuskpoint-mcp  — hosted MCP server (one HTTPS URL any MCP client connects to).
 services:
   - type: web
     name: tuskpoint-api
@@ -18,6 +22,10 @@ services:
         value: https://publisher.walrus-testnet.walrus.space
       - key: WALRUS_AGGREGATOR_URL
         value: https://aggregator.walrus-testnet.walrus.space
+      # Keep dashboard-written checkpoints alive well beyond the 5-epoch default
+      # so the live demo doesn't go empty when short leases lapse.
+      - key: WALRUS_EPOCHS
+        value: "53"
       - key: TUSKPOINT_DEMO_THREAD
         value: run-43312
       - key: MEMWAL_ENV
@@ -32,4 +40,34 @@ services:
       - key: TUSKPOINT_API_TOKEN
         sync: false
       - key: ALLOWED_ORIGIN
+        sync: false
+
+  # Hosted, remote MCP server: one HTTPS URL any MCP client (Claude's "Add custom
+  # connector", Cursor, etc.) can connect to with no local install. Serves the
+  # same 12 tools over Streamable HTTP at /mcp; /healthz returns 200 for Render.
+  - type: web
+    name: tuskpoint-mcp
+    runtime: python
+    plan: free
+    rootDir: .
+    buildCommand: pip install .
+    startCommand: python -m langgraph_checkpoint_walrus.mcp_server
+    healthCheckPath: /healthz
+    envVars:
+      - key: MCP_TRANSPORT
+        value: http
+      - key: WALRUS_PUBLISHER_URL
+        value: https://publisher.walrus-testnet.walrus.space
+      - key: WALRUS_AGGREGATOR_URL
+        value: https://aggregator.walrus-testnet.walrus.space
+      - key: WALRUS_EPOCHS
+        value: "53"
+      - key: MEMWAL_ENV
+        value: prod
+      - key: MEMWAL_NAMESPACE
+        value: tuskpoint
+      # Secrets: set these in the Render dashboard (never commit)
+      - key: MEMWAL_PRIVATE_KEY
+        sync: false
+      - key: MEMWAL_ACCOUNT_ID
         sync: false
