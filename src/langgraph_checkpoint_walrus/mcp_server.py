@@ -41,6 +41,15 @@ load_dotenv()
 
 mcp = FastMCP("tuskpoint-checkpoints")
 
+
+@mcp.custom_route("/healthz", methods=["GET"])
+async def _healthz(_request):  # type: ignore[no-untyped-def]
+    """Plain 200 for platform health checks (the MCP endpoint at /mcp speaks the
+    protocol and returns 406 to a bare GET, so hosts need a separate liveness URL)."""
+    from starlette.responses import JSONResponse
+
+    return JSONResponse({"ok": True, "service": "tuskpoint-mcp", "transport": "http"})
+
 # A single shared saver backed by real Walrus. The MemWal layer is attached only
 # if credentials are present, so the server still runs without them (semantic
 # search then returns an explanatory message instead of failing).
@@ -566,12 +575,24 @@ def tuskpoint_info() -> str:
 
 
 def main() -> None:
-    """Console entry point: run the TuskPoint MCP server over stdio.
+    """Console entry point for the TuskPoint MCP server.
 
-    Exposed as the ``tuskpoint-mcp`` script (see ``pyproject.toml`` ``[project.scripts]``)
-    so MCP clients can launch it with ``uvx tuskpoint-mcp`` — no clone, no cwd.
+    Defaults to **stdio** so MCP clients can launch it with ``uvx tuskpoint-mcp``
+    (no clone, no cwd) — this is unchanged and what local clients use.
+
+    For a **hosted, remote** server (one URL any client can connect to, no local
+    install), set ``MCP_TRANSPORT=http``. It then serves Streamable HTTP on
+    ``0.0.0.0:$PORT`` at ``/mcp`` — the shape Render/Fly/Railway expect and that
+    Claude's "Add custom connector" can point at. ``PORT`` defaults to 8000.
     """
-    mcp.run(transport="stdio")
+    transport = os.getenv("MCP_TRANSPORT", "stdio").lower()
+    if transport in ("http", "streamable-http", "streamable_http"):
+        mcp.settings.host = os.getenv("HOST", "0.0.0.0")
+        mcp.settings.port = int(os.getenv("PORT", "8000"))
+        mcp.settings.streamable_http_path = os.getenv("MCP_PATH", "/mcp")
+        mcp.run(transport="streamable-http")
+    else:
+        mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":
