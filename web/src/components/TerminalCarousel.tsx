@@ -2,12 +2,12 @@
 
 import { CopyButton } from "./CopyButton";
 
-// The one copy-and-run line that adds TuskPoint as a plugin in any MCP client.
-// Kept as a single static terminal card so the hero shows exactly the command a
-// first-time visitor can run.
-const INSTALL = {
-  tag: "install",
-  command: "uvx tuskpoint-mcp",
+// The hosted MCP endpoint a visitor pastes into any MCP client ("Add custom
+// connector") to use TuskPoint with no local install. Kept as a single static
+// card so the hero shows exactly the URL to copy.
+const CONNECT = {
+  tag: "mcp server",
+  url: "https://tuskpoint-mcp.onrender.com/mcp",
 };
 
 export function TerminalCarousel() {
@@ -25,18 +25,17 @@ export function TerminalCarousel() {
             />
           ))}
           <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500">
-            {INSTALL.tag}
+            {CONNECT.tag}
           </span>
         </div>
 
-        {/* Command + output */}
+        {/* Connect URL */}
         <div className="px-4 py-4 text-left">
           <div className="flex items-center justify-between gap-3">
             <code className="truncate font-mono text-sm text-slate-200 sm:text-[15px]">
-              <span className="text-flame">$ </span>
-              {INSTALL.command}
+              {CONNECT.url}
             </code>
-            <CopyButton text={INSTALL.command} />
+            <CopyButton text={CONNECT.url} />
           </div>
         </div>
       </div>
